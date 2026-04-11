@@ -1,0 +1,38 @@
+%% DG-201: Sistem Context Diyagrami (C4 Level 1)
+%% Durum: DRAFT
+%% Editor: https://mermaid.live
+%% Aciklama: Sistem ve dis dunyayla iliskisi - en ust seviye gorunum
+%% ---
+
+graph TB
+    subgraph "Dis Aktorler"
+        WEBUSER((Web Kullanici<br/>Tarayici))
+        MOBUSER((Mobil Kullanici<br/>iOS/Android))
+        ADMIN((Admin<br/>Yonetim Paneli))
+    end
+
+    subgraph "Hedef Sistem"
+        SYS["[PROJE_ADI]<br/>Ana Sistem<br/>(Web + API + DB)"]
+    end
+
+    subgraph "Dis Sistemler"
+        PAYMENT[Odeme Sistemi<br/>iyzico/Stripe]
+        EMAIL[Email Servisi<br/>SendGrid/SES]
+        SMS[SMS Servisi<br/>Twilio/Netgsm]
+        STORAGE[Dosya Depolama<br/>S3/GCS]
+        AUTH_EXT[Sosyal Giris<br/>Google/Apple/FB]
+        ANALYTICS[Analytics<br/>GA4/Mixpanel]
+        CDN[CDN<br/>CloudFront/Cloudflare]
+    end
+
+    WEBUSER -->|HTTPS| SYS
+    MOBUSER -->|HTTPS| SYS
+    ADMIN -->|HTTPS| SYS
+
+    SYS -->|API| PAYMENT
+    SYS -->|SMTP/API| EMAIL
+    SYS -->|API| SMS
+    SYS -->|SDK| STORAGE
+    SYS -->|OAuth 2.0| AUTH_EXT
+    SYS -->|JS SDK| ANALYTICS
+    SYS -->|Origin Pull| CDN

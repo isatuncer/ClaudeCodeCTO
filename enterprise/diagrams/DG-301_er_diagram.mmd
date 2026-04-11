@@ -1,0 +1,125 @@
+%% DG-301: ER (Entity Relationship) Diyagrami
+%% Durum: DRAFT
+%% Editor: https://mermaid.live veya https://dbdiagram.io
+%% Aciklama: Veritabani tablolari ve iliskileri
+%% ---
+
+erDiagram
+    users ||--o{ orders : "places"
+    users ||--o{ addresses : "has"
+    users ||--o{ notifications : "receives"
+    users {
+        uuid id PK
+        string email UK
+        string password_hash
+        string first_name
+        string last_name
+        string phone
+        enum role "admin|user|moderator"
+        boolean is_active
+        boolean email_verified
+        timestamp last_login_at
+        timestamp created_at
+        string created_by
+        timestamp updated_at
+        string updated_by
+        timestamp deleted_at
+        string deleted_by
+    }
+
+    products ||--o{ order_items : "included_in"
+    products ||--o{ product_images : "has"
+    products {
+        uuid id PK
+        string name
+        text description
+        decimal price
+        decimal discount_price
+        integer stock_quantity
+        uuid category_id FK
+        boolean is_active
+        jsonb metadata
+        tsvector search_vector
+        timestamp created_at
+        string created_by
+        timestamp updated_at
+        string updated_by
+        timestamp deleted_at
+        string deleted_by
+    }
+
+    categories ||--o{ products : "contains"
+    categories {
+        uuid id PK
+        string name
+        string slug UK
+        uuid parent_id FK "self-reference"
+        integer sort_order
+        boolean is_active
+    }
+
+    orders ||--|{ order_items : "contains"
+    orders ||--o| payments : "paid_by"
+    orders {
+        uuid id PK
+        uuid user_id FK
+        string order_number UK
+        enum status "pending|confirmed|shipped|delivered|cancelled"
+        decimal subtotal
+        decimal discount
+        decimal shipping_fee
+        decimal total
+        uuid address_id FK
+        text notes
+        timestamp created_at
+        string created_by
+        timestamp updated_at
+        string updated_by
+    }
+
+    order_items {
+        uuid id PK
+        uuid order_id FK
+        uuid product_id FK
+        integer quantity
+        decimal unit_price
+        decimal total_price
+    }
+
+    payments {
+        uuid id PK
+        uuid order_id FK
+        string provider "stripe|iyzico"
+        string provider_payment_id
+        decimal amount
+        string currency "TRY"
+        enum status "pending|completed|failed|refunded"
+        string card_last_four
+        boolean threed_secure
+        timestamp created_at
+    }
+
+    addresses {
+        uuid id PK
+        uuid user_id FK
+        string title
+        string full_name
+        string phone
+        string city
+        string district
+        text address_line
+        string postal_code
+        boolean is_default
+    }
+
+    audit_log {
+        bigint id PK "auto-increment"
+        string table_name
+        uuid record_id
+        enum action "INSERT|UPDATE|DELETE"
+        jsonb old_values
+        jsonb new_values
+        string changed_by
+        timestamp changed_at
+        inet ip_address
+    }

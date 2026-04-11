@@ -1,0 +1,46 @@
+%% DG-405: Dosya Yukleme Sequence Diyagrami
+%% Durum: DRAFT
+%% Editor: https://mermaid.live
+%% Aciklama: Presigned URL ile guvenli dosya yukleme akisi
+%% ---
+
+sequenceDiagram
+    actor User
+    participant Client as Frontend
+    participant API as API Server
+    participant S3 as Object Storage<br/>(S3/GCS)
+    participant Worker as Background Worker
+    participant CDN as CDN
+
+    Note over User, CDN: === Buyuk Dosya (Presigned URL) ===
+
+    User->>Client: Dosya sec
+    Client->>Client: Client-side validation (tip, boyut)
+    Client->>API: POST /api/v1/upload/presign {fileName, fileType, fileSize}
+    API->>API: Validate (tip whitelist, max boyut)
+    API->>S3: Generate presigned PUT URL (15dk TTL)
+    S3-->>API: {upload_url, file_key}
+    API-->>Client: {uploadUrl, fileId, fileKey}
+
+    Client->>S3: PUT dosya (dogrudan, backend'den gecmez)
+    S3-->>Client: 200 OK
+
+    Client->>API: POST /api/v1/upload/confirm {fileId}
+    API->>S3: HEAD object (dosya var mi?)
+    S3-->>API: 200 (var, boyut dogrulandi)
+    API->>Worker: Queue: process_file {fileId, fileKey}
+    API-->>Client: 200 {fileId, status: "processing"}
+
+    Worker->>S3: Download original
+    Worker->>Worker: Virus scan (ClamAV)
+    Worker->>Worker: Resize (thumbnail, medium, large)
+    Worker->>Worker: Convert to WebP
+    Worker->>S3: Upload processed versions
+    Worker->>API: Update DB record (urls, processed: true)
+
+    Note over User, CDN: === Erisim ===
+    User->>Client: Gorsel goruntule
+    Client->>CDN: GET image URL
+    CDN->>S3: Origin pull (ilk kez)
+    S3-->>CDN: Image data
+    CDN-->>Client: Image (cached)

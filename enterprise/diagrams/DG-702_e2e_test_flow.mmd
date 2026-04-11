@@ -1,0 +1,53 @@
+%% DG-702: E2E Test Akis Diyagrami
+%% Durum: DRAFT
+%% Editor: https://mermaid.live
+%% Aciklama: Kritik kullanici akislarinin E2E test sirasi
+%% ---
+
+flowchart TD
+    START((E2E Test Start)) --> SETUP["Setup<br/>Test DB seed + clean state"]
+
+    SETUP --> AUTH_FLOW["Auth Flow"]
+    subgraph "Auth Test Suite"
+        AUTH_REG["Register<br/>Yeni hesap olustur"]
+        AUTH_LOGIN["Login<br/>Email + sifre ile giris"]
+        AUTH_SOCIAL["Social Login<br/>Google mock"]
+        AUTH_FORGOT["Forgot Password<br/>Reset akisi"]
+        AUTH_LOGOUT["Logout<br/>Session temizleme"]
+    end
+    AUTH_FLOW --> AUTH_REG --> AUTH_LOGIN --> AUTH_SOCIAL --> AUTH_FORGOT --> AUTH_LOGOUT
+
+    AUTH_LOGOUT --> CORE_FLOW["Core Flow"]
+    subgraph "Core Test Suite"
+        BROWSE["Browse<br/>Kategori/liste gezme"]
+        SEARCH["Search<br/>Arama + filtre"]
+        DETAIL["Detail<br/>Detay sayfasi"]
+        ACTION["Action<br/>Sepet/favori/islem"]
+    end
+    CORE_FLOW --> BROWSE --> SEARCH --> DETAIL --> ACTION
+
+    ACTION --> ORDER_FLOW["Order Flow"]
+    subgraph "Order Test Suite"
+        CART["Cart<br/>Sepet yonetimi"]
+        CHECKOUT["Checkout<br/>Adres + odeme"]
+        PAY["Payment<br/>Test karti ile ode"]
+        CONFIRM["Confirmation<br/>Onay sayfasi"]
+        TRACK["Track<br/>Siparis takip"]
+        CANCEL["Cancel<br/>Siparis iptal"]
+    end
+    ORDER_FLOW --> CART --> CHECKOUT --> PAY --> CONFIRM --> TRACK --> CANCEL
+
+    CANCEL --> ADMIN_FLOW["Admin Flow"]
+    subgraph "Admin Test Suite"
+        ADMIN_LOGIN["Admin Login"]
+        ADMIN_DASH["Dashboard<br/>Stats gorunum"]
+        ADMIN_CRUD["CRUD<br/>Icerik yonetimi"]
+        ADMIN_USER["User Mgmt<br/>Rol atama"]
+    end
+    ADMIN_FLOW --> ADMIN_LOGIN --> ADMIN_DASH --> ADMIN_CRUD --> ADMIN_USER
+
+    ADMIN_USER --> RESPONSIVE["Responsive Test<br/>Mobile + Tablet + Desktop"]
+    RESPONSIVE --> A11Y["Accessibility Scan<br/>axe-core tum sayfalar"]
+    A11Y --> VISUAL["Visual Regression<br/>Screenshot karsilastir"]
+    VISUAL --> REPORT["Test Raporu<br/>Pass/Fail + Coverage + Video"]
+    REPORT --> END((E2E Test End))

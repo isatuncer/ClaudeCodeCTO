@@ -1,0 +1,51 @@
+%% DG-205: Guvenlik Mimarisi
+%% Durum: DRAFT
+%% Editor: https://mermaid.live
+%% Aciklama: Katmanli guvenlik yapisi
+%% ---
+
+graph TB
+    subgraph "Layer 1: Edge Security"
+        CDN["CDN + DDoS Protection"]
+        WAF["WAF Rules<br/>OWASP Core Rule Set"]
+        SSL["TLS 1.3<br/>SSL Termination"]
+    end
+
+    subgraph "Layer 2: Application Security"
+        RATE["Rate Limiter<br/>Token Bucket"]
+        CORS["CORS<br/>Origin Whitelist"]
+        CSRF["CSRF Protection<br/>Double Submit Cookie"]
+        CSP["Content Security Policy<br/>Script/Style/Img Source"]
+    end
+
+    subgraph "Layer 3: Authentication"
+        JWT["JWT Validation<br/>Access + Refresh Token"]
+        OAUTH["OAuth 2.0 / OIDC<br/>Google, Apple, FB"]
+        MFA["MFA<br/>TOTP / SMS / WebAuthn"]
+    end
+
+    subgraph "Layer 4: Authorization"
+        RBAC["RBAC<br/>Role-Based Access"]
+        POLICY["Policy Engine<br/>Resource:Action:Scope"]
+        ROW_SEC["Row-Level Security<br/>Kullanici kendi verisini gorur"]
+    end
+
+    subgraph "Layer 5: Data Security"
+        ENCRYPT_TRANSIT["Encryption in Transit<br/>TLS 1.3"]
+        ENCRYPT_REST["Encryption at Rest<br/>AES-256"]
+        PII_MASK["PII Masking<br/>Log + Test ortami"]
+        PARAM_QUERY["Parameterized Queries<br/>SQL Injection Prevention"]
+    end
+
+    subgraph "Layer 6: Audit & Monitoring"
+        AUDIT["Audit Log<br/>Append-only, Immutable"]
+        SIEM["Security Monitoring<br/>Anormal aktivite tespiti"]
+        ALERT["Alert System<br/>Brute force, SQLi denemesi"]
+    end
+
+    CDN --> WAF --> SSL
+    SSL --> RATE --> CORS --> CSRF --> CSP
+    CSP --> JWT --> OAUTH --> MFA
+    MFA --> RBAC --> POLICY --> ROW_SEC
+    ROW_SEC --> ENCRYPT_TRANSIT --> ENCRYPT_REST --> PII_MASK --> PARAM_QUERY
+    PARAM_QUERY --> AUDIT --> SIEM --> ALERT

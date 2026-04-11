@@ -1,0 +1,50 @@
+%% DG-403: Odeme Akis Sequence Diyagrami
+%% Durum: DRAFT
+%% Editor: https://mermaid.live
+%% Aciklama: Siparis -> odeme -> onay -> kargo akisi
+%% ---
+
+sequenceDiagram
+    actor User
+    participant Client as Frontend
+    participant API as API Server
+    participant DB as PostgreSQL
+    participant PG as Odeme Saglayici<br/>(iyzico/Stripe)
+    participant Email as Email Service
+    participant Cargo as Kargo Sistemi
+
+    User->>Client: "Siparis Ver" tikla
+    Client->>API: POST /api/v1/orders {items, address_id}
+    API->>DB: Stok kontrolu
+    DB-->>API: Stok yeterli
+    API->>DB: INSERT order (status: payment_pending)
+    API->>API: Toplam hesapla (subtotal + shipping - discount)
+    API->>PG: Create payment intent {amount, currency, order_id}
+    PG-->>API: {payment_id, client_secret}
+    API-->>Client: {order_id, client_secret, redirect_url}
+
+    Client->>PG: 3D Secure sayfasi
+    User->>PG: Kart bilgileri + OTP
+    PG-->>Client: Odeme sonucu
+
+    Note over PG, API: Webhook (guvenilir kanal)
+    PG->>API: POST /webhooks/payment {event: payment.completed}
+    API->>API: Webhook imza dogrula (HMAC)
+    API->>DB: UPDATE order SET status='paid'
+    API->>DB: UPDATE stock (decrement)
+    API->>DB: INSERT payment record
+    API->>Email: Siparis onay emaili
+    Email-->>User: "Siparisininiz alindi #12345"
+
+    Note over API, Cargo: Siparis hazirlama
+    API->>Cargo: Gonderim talebi {order_id, address}
+    Cargo-->>API: {tracking_number}
+    API->>DB: UPDATE order SET status='shipped', tracking=...
+    API->>Email: Kargo bildirim emaili
+    Email-->>User: "Siparisininiz kargoya verildi"
+
+    Note over Cargo, User: Teslimat
+    Cargo->>API: Webhook: delivered
+    API->>DB: UPDATE order SET status='delivered'
+    API->>Email: Teslimat bildirimi
+    Email-->>User: "Siparisininiz teslim edildi"

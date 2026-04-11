@@ -1,0 +1,30 @@
+%% DG-104: Veri Akis Genel Gorunumu (DFD Level 0)
+%% Durum: DRAFT
+%% Editor: https://mermaid.live
+%% Aciklama: Sistemdeki ana veri akislari
+%% ---
+
+flowchart LR
+    USER([Kullanici]) -->|Kayit bilgileri| SYS[Sistem]
+    USER -->|Arama sorgusu| SYS
+    USER -->|Siparis bilgileri| SYS
+    USER -->|Odeme bilgileri| SYS
+
+    SYS -->|Urun listesi| USER
+    SYS -->|Siparis durumu| USER
+    SYS -->|Bildirimler| USER
+    SYS -->|Fatura| USER
+
+    ADMIN([Admin]) -->|Urun yonetimi| SYS
+    ADMIN -->|Kullanici yonetimi| SYS
+    SYS -->|Raporlar| ADMIN
+    SYS -->|Dashboard verileri| ADMIN
+
+    PAYMENT([Odeme Sistemi]) -->|Odeme sonucu| SYS
+    SYS -->|Odeme talebi| PAYMENT
+
+    CARGO([Kargo Sistemi]) -->|Takip bilgisi| SYS
+    SYS -->|Gonderim talebi| CARGO
+
+    EMAIL([Email Servisi]) <-->|Bildirimler| SYS
+    SMS([SMS Servisi]) <-->|OTP/Bildirim| SYS

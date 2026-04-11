@@ -1,0 +1,36 @@
+%% DG-404: Bildirim Sistemi Sequence Diyagrami
+%% Durum: DRAFT
+%% Editor: https://mermaid.live
+%% Aciklama: Event-driven bildirim akisi (in-app, push, email, SMS)
+%% ---
+
+sequenceDiagram
+    participant SVC as Any Service
+    participant Queue as Message Queue<br/>(Redis/RabbitMQ)
+    participant NS as Notification Service
+    participant DB as Preferences DB
+    participant InApp as In-App Writer
+    participant Push as Push Service<br/>(FCM/APNs)
+    participant Email as Email Service<br/>(SendGrid/SES)
+    participant SMS as SMS Service<br/>(Twilio)
+
+    SVC->>Queue: Publish event {type: "order.created", user_id, data}
+
+    Queue->>NS: Consume event
+    NS->>DB: Kullanici tercihlerini al
+    DB-->>NS: {in_app: true, push: true, email: true, sms: false}
+
+    NS->>NS: Template sec + render
+
+    par Paralel gonderim
+        NS->>InApp: INSERT notification (zil ikonu icin)
+        and
+        NS->>Push: Send push {title, body, deep_link}
+        Push-->>NS: Delivered
+        and
+        NS->>Email: Send email {to, subject, html}
+        Email-->>NS: Sent
+    end
+
+    Note over NS: SMS kapali (kullanici tercihi) -> gonderilmedi
+    NS->>DB: Log: notification_sent {channels, status}

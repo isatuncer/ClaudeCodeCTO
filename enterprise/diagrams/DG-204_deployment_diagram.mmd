@@ -1,0 +1,63 @@
+%% DG-204: Deployment Diyagrami
+%% Durum: DRAFT
+%% Editor: https://mermaid.live
+%% Aciklama: Production ortami fiziksel/cloud mimarisi
+%% ---
+
+graph TB
+    INTERNET((Internet))
+
+    subgraph "CDN / Edge"
+        CF["CloudFront / Cloudflare<br/>Static Assets + Cache"]
+    end
+
+    subgraph "Public Subnet"
+        WAF["WAF<br/>Web Application Firewall"]
+        LB["Load Balancer<br/>SSL Termination"]
+    end
+
+    subgraph "Private Subnet - App"
+        APP1["App Instance 1<br/>Docker Container"]
+        APP2["App Instance 2<br/>Docker Container"]
+        APP3["App Instance N<br/>Auto-scale"]
+        WORKER1["Worker 1<br/>Background Jobs"]
+    end
+
+    subgraph "Private Subnet - Data"
+        DB_PRIMARY[("DB Primary<br/>PostgreSQL")]
+        DB_REPLICA[("DB Replica<br/>Read Only")]
+        REDIS_CLUSTER[("Redis Cluster<br/>Cache + Queue")]
+    end
+
+    subgraph "Storage"
+        S3["Object Storage<br/>S3/GCS"]
+    end
+
+    subgraph "Monitoring"
+        PROMETHEUS["Prometheus"]
+        GRAFANA["Grafana"]
+        SENTRY["Sentry"]
+        LOKI["Loki / ELK"]
+    end
+
+    INTERNET --> CF
+    CF --> WAF
+    WAF --> LB
+    LB --> APP1
+    LB --> APP2
+    LB --> APP3
+
+    APP1 & APP2 & APP3 --> DB_PRIMARY
+    APP1 & APP2 & APP3 --> DB_REPLICA
+    APP1 & APP2 & APP3 --> REDIS_CLUSTER
+    APP1 & APP2 & APP3 --> S3
+
+    REDIS_CLUSTER --> WORKER1
+    WORKER1 --> DB_PRIMARY
+
+    DB_PRIMARY -->|Replication| DB_REPLICA
+
+    APP1 & APP2 --> PROMETHEUS
+    APP1 & APP2 --> LOKI
+    APP1 & APP2 --> SENTRY
+    PROMETHEUS --> GRAFANA

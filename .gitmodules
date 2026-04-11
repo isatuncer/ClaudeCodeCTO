@@ -1,0 +1,45 @@
+[submodule "sources/anthropics-skills"]
+	path = sources/anthropics-skills
+	url = https://github.com/anthropics/skills.git
+[submodule "sources/everything-claude-code"]
+	path = sources/everything-claude-code
+	url = https://github.com/affaan-m/everything-claude-code.git
+[submodule "sources/antigravity-awesome-skills"]
+	path = sources/antigravity-awesome-skills
+	url = https://github.com/sickn33/antigravity-awesome-skills.git
+[submodule "sources/alirezarezvani-claude-skills"]
+	path = sources/alirezarezvani-claude-skills
+	url = https://github.com/alirezarezvani/claude-skills.git
+[submodule "sources/voltagent-subagents"]
+	path = sources/voltagent-subagents
+	url = https://github.com/VoltAgent/awesome-claude-code-subagents.git
+[submodule "sources/rohitg00-toolkit"]
+	path = sources/rohitg00-toolkit
+	url = https://github.com/rohitg00/awesome-claude-code-toolkit.git
+[submodule "sources/system-prompts-collection"]
+	path = sources/system-prompts-collection
+	url = https://github.com/x1xhlol/system-prompts-and-models-of-ai-tools.git
+[submodule "sources/elifuzz-system-prompts"]
+	path = sources/elifuzz-system-prompts
+	url = https://github.com/EliFuzz/awesome-system-prompts.git
+[submodule "sources/piebald-claude-prompts"]
+	path = sources/piebald-claude-prompts
+	url = https://github.com/Piebald-AI/claude-code-system-prompts.git
+[submodule "sources/awesome-cursorrules"]
+	path = sources/awesome-cursorrules
+	url = https://github.com/PatrickJS/awesome-cursorrules.git
+[submodule "sources/awesome-claude-code"]
+	path = sources/awesome-claude-code
+	url = https://github.com/hesreallyhim/awesome-claude-code.git
+[submodule "sources/awesome-chatgpt-prompts"]
+	path = sources/awesome-chatgpt-prompts
+	url = https://github.com/f/awesome-chatgpt-prompts.git
+[submodule "sources/prompt-engineering-guide"]
+	path = sources/prompt-engineering-guide
+	url = https://github.com/dair-ai/Prompt-Engineering-Guide.git
+[submodule "sources/continuous-claude-v3"]
+	path = sources/continuous-claude-v3
+	url = https://github.com/parcadei/Continuous-Claude-v3.git
+[submodule "sources/enterprise-software-house"]
+	path = sources/enterprise-software-house
+	url = https://github.com/isatuncer/enterprise-software-house.git

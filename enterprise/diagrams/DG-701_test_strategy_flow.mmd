@@ -1,0 +1,53 @@
+%% DG-701: Test Stratejisi Akis Diyagrami
+%% Durum: DRAFT
+%% Editor: https://mermaid.live
+%% Aciklama: Hangi test ne zaman calisir, gate kriterleri
+%% ---
+
+flowchart TD
+    CODE[Kod Yazildi] --> UNIT["Unit Test<br/>Jest/Pytest/Go test"]
+    UNIT --> UNIT_GATE{Coverage >= 80%?}
+    UNIT_GATE -->|Hayir| FIX_UNIT[Test ekle/duzelt]
+    FIX_UNIT --> UNIT
+    UNIT_GATE -->|Evet| LINT["Lint + Format<br/>ESLint/Ruff"]
+    LINT --> SECRET["Secret Scan<br/>gitleaks"]
+    SECRET --> INTEGRATION["Integration Test<br/>API + DB"]
+
+    INTEGRATION --> INT_GATE{Hepsi PASS?}
+    INT_GATE -->|Hayir| FIX_INT[Bug fix]
+    FIX_INT --> CODE
+    INT_GATE -->|Evet| BUILD["Build + Type Check"]
+
+    BUILD --> SCA["Dependency Scan<br/>Snyk/npm audit"]
+    SCA --> SAST["SAST<br/>Semgrep/CodeQL"]
+    SAST --> SEC_GATE{0 Critical + 0 High?}
+    SEC_GATE -->|Hayir| FIX_SEC[Guvenlik fix]
+    FIX_SEC --> CODE
+    SEC_GATE -->|Evet| DEPLOY_STG["Deploy Staging"]
+
+    DEPLOY_STG --> E2E["E2E Test<br/>Playwright"]
+    E2E --> VISUAL["Visual Regression<br/>Screenshot diff"]
+    VISUAL --> A11Y["Accessibility<br/>axe-core"]
+    A11Y --> LIGHTHOUSE["Lighthouse CI<br/>Performance + SEO"]
+
+    LIGHTHOUSE --> QA_GATE{Tum QA PASS?}
+    QA_GATE -->|Hayir| FIX_QA[QA fix]
+    FIX_QA --> CODE
+    QA_GATE -->|Evet| MANUAL["Manuel QA<br/>Exploratory + Regression"]
+
+    MANUAL --> UAT{UAT Gerekli?}
+    UAT -->|Evet| UAT_TEST["UAT<br/>Musteri testi"]
+    UAT -->|Hayir| RELEASE_GATE
+    UAT_TEST --> RELEASE_GATE{Release Gate}
+
+    RELEASE_GATE -->|PASS| DEPLOY_PROD["Deploy Production"]
+    RELEASE_GATE -->|FAIL| FIX_RELEASE[Duzelt + Retest]
+    FIX_RELEASE --> CODE
+
+    DEPLOY_PROD --> SMOKE["Smoke Test"]
+    SMOKE --> MONITOR["Monitor 30dk"]
+    MONITOR --> DONE((Basarili Release))
+
+    style SEC_GATE fill:#dc2626,color:#fff
+    style QA_GATE fill:#f59e0b,color:#000
+    style RELEASE_GATE fill:#16a34a,color:#fff

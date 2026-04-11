@@ -1,0 +1,41 @@
+%% DG-102: Is Sureci Akis Diyagrami (BPMN)
+%% Durum: DRAFT
+%% Editor: https://mermaid.live
+%% Aciklama: Ana is akisi - kullanici perspektifi
+%% ---
+
+flowchart TD
+    START((Baslangic)) --> DISCOVER[Urun/Hizmet Kesfet]
+    DISCOVER --> BROWSE[Kategori/Arama ile Gez]
+    BROWSE --> DETAIL[Detay Incele]
+    DETAIL --> DECIDE{Satin Alma Karari}
+
+    DECIDE -->|Hayir| BROWSE
+    DECIDE -->|Evet| CART[Sepete Ekle]
+
+    CART --> MORE{Baska Urun?}
+    MORE -->|Evet| BROWSE
+    MORE -->|Hayir| CHECKOUT[Odeme Sayfasi]
+
+    CHECKOUT --> AUTH{Giris Yapti mi?}
+    AUTH -->|Hayir| LOGIN[Giris / Kayit]
+    AUTH -->|Evet| ADDRESS[Adres Sec/Ekle]
+    LOGIN --> ADDRESS
+
+    ADDRESS --> PAYMENT[Odeme Yontemi Sec]
+    PAYMENT --> CONFIRM{Siparisi Onayla}
+    CONFIRM -->|Iptal| CART
+    CONFIRM -->|Onayla| PROCESS[Odeme Isle]
+
+    PROCESS --> RESULT{Odeme Sonucu}
+    RESULT -->|Basarisiz| PAYMENT
+    RESULT -->|Basarili| ORDER_CREATED[Siparis Olusturuldu]
+
+    ORDER_CREATED --> NOTIFY[Bildirim Gonder]
+    NOTIFY --> PREPARE[Siparis Hazirla]
+    PREPARE --> SHIP[Kargoya Ver]
+    SHIP --> DELIVER[Teslim Et]
+    DELIVER --> FEEDBACK{Degerlendirme?}
+    FEEDBACK -->|Evet| REVIEW[Yorum Yaz]
+    FEEDBACK -->|Hayir| END_OK((Bitis))
+    REVIEW --> END_OK

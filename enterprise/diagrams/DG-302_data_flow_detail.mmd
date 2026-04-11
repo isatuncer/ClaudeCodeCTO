@@ -1,0 +1,33 @@
+%% DG-302: Detayli Veri Akis Diyagrami
+%% Durum: DRAFT
+%% Editor: https://mermaid.live
+%% Aciklama: Read/Write veri akisi, cache, replikasyon
+%% ---
+
+flowchart LR
+    CLIENT[Client App] -->|Write Request| API[API Server]
+    CLIENT -->|Read Request| API
+
+    API -->|Write| PRIMARY[(Primary DB<br/>PostgreSQL)]
+    API -->|Read - Heavy| REPLICA[(Read Replica)]
+    API -->|Cache Check| REDIS[(Redis Cache)]
+
+    REDIS -->|Hit| API
+    REDIS -.->|Miss| PRIMARY
+
+    API -->|Async Job| QUEUE[Redis Queue]
+    QUEUE -->|Process| WORKER[Background Worker]
+    WORKER -->|Write| PRIMARY
+    WORKER -->|Send| EMAIL[Email Service]
+    WORKER -->|Send| PUSH[Push Service]
+
+    API -->|Upload| S3[(Object Storage)]
+    S3 -->|Serve| CDN[CDN]
+    CDN -->|Static| CLIENT
+
+    PRIMARY -->|Streaming Replication| REPLICA
+    PRIMARY -->|WAL Archive| BACKUP[(Backup Storage)]
+
+    subgraph "Audit"
+        PRIMARY -->|Trigger| AUDIT[(Audit Log<br/>Append Only)]
+    end

@@ -1,0 +1,91 @@
+%% DG-603: Class Diyagrami (Layered Architecture)
+%% Durum: DRAFT
+%% Editor: https://mermaid.live
+%% Aciklama: Controller -> Service -> Repository katmanli yaklasim
+%% ---
+
+classDiagram
+    class BaseController {
+        #handleResponse(data, status)
+        #handleError(error)
+        #getPagination(query)
+    }
+
+    class ResourceController {
+        +list(req, res)
+        +getById(req, res)
+        +create(req, res)
+        +update(req, res)
+        +delete(req, res)
+    }
+
+    class BaseService {
+        #repository: BaseRepository
+        #cache: CacheService
+        #eventBus: EventBus
+    }
+
+    class ResourceService {
+        +findAll(filter, pagination): PaginatedResult
+        +findById(id): Resource
+        +create(dto): Resource
+        +update(id, dto): Resource
+        +softDelete(id): void
+    }
+
+    class BaseRepository {
+        #db: Database
+        +findMany(filter): Entity[]
+        +findUnique(id): Entity
+        +create(data): Entity
+        +update(id, data): Entity
+        +softDelete(id): void
+        +count(filter): number
+    }
+
+    class CreateResourceDTO {
+        +name: string
+        +description: string
+        +validate(): boolean
+    }
+
+    class UpdateResourceDTO {
+        +name?: string
+        +description?: string
+        +validate(): boolean
+    }
+
+    class ResourceEntity {
+        +id: UUID
+        +name: string
+        +description: string
+        +isActive: boolean
+        +createdAt: DateTime
+        +createdBy: string
+        +updatedAt: DateTime
+        +updatedBy: string
+        +deletedAt?: DateTime
+        +deletedBy?: string
+    }
+
+    class CacheService {
+        +get(key): any
+        +set(key, value, ttl): void
+        +del(key): void
+        +invalidatePattern(pattern): void
+    }
+
+    class EventBus {
+        +emit(event, data): void
+        +on(event, handler): void
+    }
+
+    BaseController <|-- ResourceController
+    BaseService <|-- ResourceService
+    ResourceController --> ResourceService
+    ResourceService --> BaseRepository
+    ResourceService --> CacheService
+    ResourceService --> EventBus
+    ResourceService ..> CreateResourceDTO
+    ResourceService ..> UpdateResourceDTO
+    BaseRepository ..> ResourceEntity
