@@ -90,6 +90,7 @@ That's it. All 1800+ skills, 300+ agents, 80+ commands, and enterprise templates
 ```bash
 bash setup.sh                # Interactive mode (choose what to install)
 bash setup.sh --all          # Install everything
+bash setup.sh --update       # Pull latest + re-scan + re-install (for updates)
 bash setup.sh --skills       # Skills only
 bash setup.sh --agents       # Agents only
 bash setup.sh --commands     # Commands only
@@ -596,17 +597,51 @@ ClaudeCodeCTO/
 
 ## Keeping Up to Date
 
+### One Command Update
+
+```bash
+cd ClaudeCodeCTO
+bash setup.sh --update
+```
+
+This single command does everything:
+
+1. **Pulls the latest ClaudeCodeCTO** -- new templates, standards, commands, bugfixes
+2. **Updates all 15 source repos** -- fetches latest skills, agents, prompts from GitHub
+3. **Re-scans for conflicts** -- detects new or changed components
+4. **Re-installs with backup** -- old files get `.bak` extension before overwriting
+
+Your existing Claude Code configuration is preserved. Only ClaudeCodeCTO components are updated.
+
+### Manual Update (step by step)
+
+If you prefer manual control:
+
 ```bash
 cd ClaudeCodeCTO
 
-# Update all 15 source repos, re-scan, and re-install
-bash scripts/weekly-scan.sh
+# Step 1: Pull latest ClaudeCodeCTO changes
+git pull origin main
 
-# Or step by step:
-git submodule update --remote          # Pull latest from all sources
-bash scripts/scanner.sh                # Re-scan and detect changes
-bash setup.sh --all --backup           # Re-install with backup
+# Step 2: Update all 15 source repos
+git submodule update --remote
+
+# Step 3: Re-scan for new components and conflicts
+bash scripts/scanner.sh
+
+# Step 4: Re-install (with backup)
+bash setup.sh --all --backup
 ```
+
+### Weekly Auto-Scan
+
+For automated weekly updates, use the included weekly scan script:
+
+```bash
+bash scripts/weekly-scan.sh
+```
+
+This updates sources, runs a full scan, and generates a changelog at `decisions/changelog.md`.
 
 ---
 

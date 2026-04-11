@@ -8,6 +8,7 @@
 # Usage:
 #   bash setup.sh              # Interactive mode
 #   bash setup.sh --all        # Install everything
+#   bash setup.sh --update     # Pull latest + re-scan + re-install
 #   bash setup.sh --skills     # Skills only
 #   bash setup.sh --agents     # Agents only
 #   bash setup.sh --commands   # Commands only
@@ -807,6 +808,111 @@ show_summary() {
 }
 
 # ============================================================
+# UPDATE — Pull latest sources + re-scan + re-install
+# ============================================================
+
+do_update() {
+    print_banner
+    log_step "Updating ClaudeCodeCTO"
+
+    # 1. Pull latest repo changes (setup.sh, commands, templates, etc.)
+    log_info "[1/5] Pulling latest ClaudeCodeCTO changes..."
+    cd "$ROOT"
+    local OLD_HEAD
+    OLD_HEAD=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
+    git pull --ff-only origin main 2>/dev/null || git pull origin main 2>/dev/null || {
+        log_warn "Could not pull ClaudeCodeCTO repo. Continuing with local version."
+    }
+    local NEW_HEAD
+    NEW_HEAD=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
+    if [ "$OLD_HEAD" != "$NEW_HEAD" ]; then
+        local REPO_CHANGES
+        REPO_CHANGES=$(git log --oneline "$OLD_HEAD".."$NEW_HEAD" 2>/dev/null | wc -l | tr -d '[:space:]')
+        log_ok "ClaudeCodeCTO updated: $REPO_CHANGES new commits"
+
+        # If setup.sh itself changed, warn user to re-run
+        if git diff --name-only "$OLD_HEAD".."$NEW_HEAD" 2>/dev/null | grep -q "^setup.sh$"; then
+            log_warn "setup.sh was updated. Re-run 'bash setup.sh --update' for latest installer."
+        fi
+    else
+        log_ok "ClaudeCodeCTO is already up to date"
+    fi
+
+    # 2. Update all submodules (pull latest from each source)
+    log_info "[2/5] Updating 15 source repositories..."
+    local UPDATED=0
+    local TOTAL=0
+    for repo_dir in "$SOURCES"/*/; do
+        [ -d "$repo_dir/.git" ] || [ -f "$repo_dir/.git" ] || continue
+        TOTAL=$((TOTAL + 1))
+        local repo_name
+        repo_name=$(basename "$repo_dir")
+
+        cd "$repo_dir"
+        local OLD_COMMIT
+        OLD_COMMIT=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
+
+        git fetch origin 2>/dev/null || true
+        local DEFAULT_BRANCH
+        DEFAULT_BRANCH=$(git remote show origin 2>/dev/null | grep "HEAD branch" | awk '{print $NF}' 2>/dev/null || echo "main")
+        git checkout "$DEFAULT_BRANCH" 2>/dev/null || true
+        git pull origin "$DEFAULT_BRANCH" 2>/dev/null || true
+
+        local NEW_COMMIT
+        NEW_COMMIT=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
+
+        if [ "$OLD_COMMIT" != "$NEW_COMMIT" ]; then
+            local CHANGES
+            CHANGES=$(git log --oneline "$OLD_COMMIT".."$NEW_COMMIT" 2>/dev/null | wc -l | tr -d '[:space:]')
+            log_ok "$repo_name: $CHANGES new commits"
+            UPDATED=$((UPDATED + 1))
+        fi
+        cd "$ROOT"
+    done
+    log_ok "Sources checked: $TOTAL | Updated: $UPDATED"
+
+    # 3. Re-scan for new/changed components and conflicts
+    log_info "[3/5] Re-scanning components and conflicts..."
+    if [ -f "$ROOT/scripts/scanner.sh" ]; then
+        bash "$ROOT/scripts/scanner.sh" 2>/dev/null || true
+        log_ok "Scan complete"
+    else
+        log_warn "Scanner script not found, skipping scan"
+    fi
+
+    # 4. Re-install everything with backup
+    log_info "[4/5] Re-installing all components (with backup)..."
+    BACKUP=true
+    INSTALL_ALL=true
+    DRY_RUN=false
+
+    mkdir -p "$SKILLS_DIR" "$AGENTS_DIR" "$COMMANDS_DIR" "$HOOKS_DIR" "$RULES_DIR" "$PROMPTS_DIR"
+
+    setup_skills
+    setup_agents
+    setup_commands
+    setup_hooks
+    setup_rules
+    setup_prompts
+    setup_enterprise
+    install_prompt_suggester
+
+    # 5. Summary
+    log_step "[5/5] Update complete!"
+    echo ""
+    echo -e "  ${GREEN}What happened:${NC}"
+    echo -e "    1. ClaudeCodeCTO repo pulled to latest"
+    echo -e "    2. All 15 source repos updated"
+    echo -e "    3. Components re-scanned for conflicts"
+    echo -e "    4. Best versions re-installed (old files backed up with .bak)"
+    echo ""
+    echo -e "  ${CYAN}Run 'bash setup.sh --all' for a clean reinstall without backup.${NC}"
+    echo ""
+
+    show_summary
+}
+
+# ============================================================
 # UNINSTALL
 # ============================================================
 
@@ -857,11 +963,12 @@ interactive_menu() {
     echo -e "  ${BLUE}5)${NC} Hooks only"
     echo -e "  ${BLUE}6)${NC} Rules only"
     echo -e "  ${BLUE}7)${NC} Prompt libraries only"
-    echo -e "  ${YELLOW}8)${NC} Dry-run (preview without installing)"
-    echo -e "  ${RED}9)${NC} Uninstall"
+    echo -e "  ${YELLOW}8)${NC} Update (pull latest + re-scan + re-install)"
+    echo -e "  ${YELLOW}9)${NC} Dry-run (preview without installing)"
+    echo -e "  ${RED}10)${NC} Uninstall"
     echo -e "  ${DIM}0)${NC} Exit"
     echo ""
-    read -p "  Your choice [0-9]: " choice
+    read -p "  Your choice [0-10]: " choice
 
     case $choice in
         1) INSTALL_ALL=true ;;
@@ -871,8 +978,9 @@ interactive_menu() {
         5) INSTALL_HOOKS=true ;;
         6) INSTALL_RULES=true ;;
         7) INSTALL_PROMPTS=true ;;
-        8) DRY_RUN=true; INSTALL_ALL=true ;;
-        9) uninstall; exit 0 ;;
+        8) do_update; exit 0 ;;
+        9) DRY_RUN=true; INSTALL_ALL=true ;;
+        10) uninstall; exit 0 ;;
         0) exit 0 ;;
         *) log_err "Invalid choice"; exit 1 ;;
     esac
@@ -910,12 +1018,14 @@ parse_args() {
             --prompts)   INSTALL_PROMPTS=true; INTERACTIVE=false ;;
             --dry-run)   DRY_RUN=true ;;
             --backup)    BACKUP=true ;;
+            --update)    detect_os; resolve_paths; do_update; exit 0 ;;
             --uninstall) uninstall; exit 0 ;;
             --help|-h)
                 echo "Usage: bash setup.sh [OPTIONS]"
                 echo ""
                 echo "Options:"
                 echo "  --all        Install all components"
+                echo "  --update     Pull latest sources + re-scan + re-install"
                 echo "  --skills     Install skills only"
                 echo "  --agents     Install agents only"
                 echo "  --commands   Install slash commands only"
