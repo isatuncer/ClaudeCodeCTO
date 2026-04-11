@@ -77,7 +77,7 @@
 | Criterion | Score | Reasoning |
 |-----------|------:|-----------|
 | Content Quality | 24/30 | Good business focus. Well-organized by function. |
-| Coverage | 16/20 | 220+ skills, 26 agents. 12 coding agent support. |
+| Coverage | 16/20 | 25 agents. 12 coding agent support. |
 | Freshness | 12/15 | Active updates. |
 | Community | 10/15 | 10K stars, 1K+ forks. |
 | Contributors | 6/10 | 15+ contributors. |
@@ -291,7 +291,7 @@
 | 7 | S03 | **82** | Largest skill pool | 1,370+ skills |
 | 8 | S12 | **80** | Discovery directory | Curated links |
 | 9 | S08 | **78** | Version-tracked tool prompts | AI coding tool prompts |
-| 10 | S04 | **76** | Business function skills | 220+ skills, 26 agents |
+| 10 | S04 | **76** | Business function skills | 25 agents |
 | 11 | S09 | **76** | Claude Code internals | System prompt + 24 tools |
 | 12 | S05 | **74** | Categorized subagents | 140+ subagents |
 | 13 | S14 | **72** | Hook patterns | Context management |

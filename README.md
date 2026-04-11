@@ -2,12 +2,12 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-brightgreen.svg)](#installation)
-[![Skills](https://img.shields.io/badge/Skills-1800%2B-orange.svg)](#whats-included)
-[![Agents](https://img.shields.io/badge/Agents-300%2B-purple.svg)](#whats-included)
+[![Skills](https://img.shields.io/badge/Skills-1%2C575-orange.svg)](#whats-included)
+[![Agents](https://img.shields.io/badge/Agents-263-purple.svg)](#whats-included)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Required-black.svg)](https://claude.ai/code)
 
 > Turn Claude Code into a full CTO that runs your software company.
-> 1800+ skills, 300+ agents, 69 document templates, 72 enterprise standards.
+> 1,575 skills, 263 agents, 69 document templates, 72 enterprise standards.
 > One command. Any OS.
 
 [English](README.md) | [Turkce](docs/i18n/README.tr.md) | [Deutsch](docs/i18n/README.de.md) | [Espanol](docs/i18n/README.es.md) | [Francais](docs/i18n/README.fr.md) | [Italiano](docs/i18n/README.it.md) | [Portugues](docs/i18n/README.pt-BR.md) | [Русский](docs/i18n/README.ru.md) | [日本語](docs/i18n/README.ja.md) | [中文](docs/i18n/README.zh-CN.md) | [한국어](docs/i18n/README.ko.md) | [हिन्दी](docs/i18n/README.hi.md) | [العربية](docs/i18n/README.ar.md)
@@ -73,7 +73,7 @@ cd ClaudeCodeCTO
 bash setup.sh --all
 ```
 
-That's it. All 1800+ skills, 300+ agents, 80+ commands, and enterprise templates are now installed to `~/.claude/`.
+That's it. All 1,575 skills, 263 agents, 137 commands, and enterprise templates are now installed to `~/.claude/`.
 
 ### Platform Support
 
@@ -125,9 +125,9 @@ After `bash setup.sh --all`, these get installed to `~/.claude/`:
 
 | Category | Count | Description |
 |----------|------:|-------------|
-| **Skills** | 1,800+ | Coding patterns for every language, framework, and domain |
-| **Agents** | 300+ | Specialized agents (code review, security, TDD, build fix, architect) |
-| **Commands** | 80+ | Slash commands including `/startCTO`, `/doc-create`, `/cto-*` |
+| **Skills** | 1,575 | Coding patterns for every language, framework, and domain |
+| **Agents** | 263 | Specialized agents (code review, security, TDD, build fix, architect) |
+| **Commands** | 137 | Slash commands including `/startCTO`, `/doc-create`, `/cto-*` |
 | **Hooks** | 23+ | Auto-format, auto-test, context management, session continuity |
 | **Rules** | 76+ | Coding standards for 13+ programming languages |
 | **Prompts** | 6,800+ | System prompts from 28+ AI tools for reference and analysis |
@@ -440,7 +440,7 @@ All 15 source repositories are scored on a **100-point scale** across 6 criteria
 | 7 | S03 | **82** | 1,370+ skills | Largest skill pool. Covers niche domains (logistics, healthcare, IoT, gaming). Installer CLI included. | Individual niche repos | No single alternative covers this breadth; would need 50+ repos |
 | 8 | S12 | **80** | Curated directory | Best discovery resource for finding new Claude Code repos (37.5K stars). Ongoing reference. | awesome-ai-agents | Different scope (general AI agents, not Claude Code specific) |
 | 9 | S08 | **78** | AI tool prompts | Date-stamped system prompt archive. Per-tool definitions. Version tracking. | Individual tool docs | Scattered across vendor sites, no unified archive |
-| 10 | S04 | **76** | 220+ skills, 26 agents | Business function organization (C-level, finance, marketing). 12 coding agent support. | enterprise-ai-prompts | Less structured, no agents, fewer business domains |
+| 10 | S04 | **76** | 25 agents | Business function organization (C-level, finance, marketing). 12 coding agent support. | enterprise-ai-prompts | Less structured, no agents, fewer business domains |
 | 11 | S09 | **76** | Claude Code internals | 24 built-in tool definitions. Sub-agent prompts. Version-tracked per Claude Code release. | Reverse-engineering yourself | Fragile, breaks on updates, this repo is maintained |
 | 12 | S05 | **74** | 140+ subagents | Categorized subagent system across 10 domains. Clean structure. | Building agents manually | Would take weeks; these are community-tested and categorized |
 | 13 | S14 | **72** | Hook patterns | Context management via hooks. Ledger + handoff system for long sessions. | Custom hook scripts | Unproven patterns; S14 is battle-tested in production |
@@ -449,18 +449,17 @@ All 15 source repositories are scored on a **100-point scale** across 6 criteria
 ### Component Distribution
 
 ```
-Skills (1,800+ unique):
-  S03 ########################################  1,370+  (largest pool)
-  S04 ########                                  220+    (business-focused)
+Skills (1,575 unique after conflict resolution):
+  S03 ########################################  1,376   (largest pool)
   S01 ##############                            181     (highest quality)
   S06 ##                                        35      (toolkit)
   S02 #                                         17      (official reference)
 
-Agents (300+):
-  S05 ####################                      140+    (categorized subagents)
-  S06 ####################################      135     (toolkit agents)
+Agents (263 unique after deduplication):
+  S05 ####################                      140     (categorized subagents)
+  S06 ####################################      136     (toolkit agents)
   S01 ###########                               47      (core development)
-  S04 ######                                    26      (business function)
+  S04 ######                                    25      (business function)
 
 Commands (80+):
   S01 ##################################        70+     (primary source)
@@ -576,7 +575,7 @@ ClaudeCodeCTO/
 |   +-- anthropics-skills/            # S02: Official Anthropic (17 skills)
 |   +-- everything-claude-code/       # S01: 181 skills, 47 agents, 70+ cmds
 |   +-- antigravity-awesome-skills/   # S03: 1,370+ skills
-|   +-- alirezarezvani-claude-skills/ # S04: 220+ skills, 26 agents
+|   +-- alirezarezvani-claude-skills/ # S04: 25 agents
 |   +-- voltagent-subagents/          # S05: 140+ subagents
 |   +-- rohitg00-toolkit/             # S06: 35 skills, 135 agents
 |   +-- system-prompts-collection/    # S07: 6,500+ system prompts

@@ -247,13 +247,12 @@ backup_existing() {
 
 setup_skills() {
     log_step "Step 3/8 — Installing Skills"
-    log_info "Scanning 1800+ skills from 5 sources, selecting the best version of each..."
+    log_info "Scanning 1,600+ skills from 4 sources, selecting the best version of each..."
 
     local SKILL_SOURCES=(
         "anthropics-skills"
         "everything-claude-code"
         "antigravity-awesome-skills"
-        "alirezarezvani-claude-skills"
         "rohitg00-toolkit"
     )
 
@@ -304,7 +303,7 @@ setup_skills() {
 
 setup_agents() {
     log_step "Step 4/8 — Installing Agents"
-    log_info "Scanning 300+ agents from 4 sources..."
+    log_info "Scanning 348 agents from 4 sources, deduplicating to ~263 unique..."
 
     local AGENT_SOURCES=(
         "everything-claude-code"

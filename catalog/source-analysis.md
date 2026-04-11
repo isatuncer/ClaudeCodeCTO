@@ -10,7 +10,7 @@
 | S01 | 92/100 | 147K | 8K+ | 50+ | Active (daily) | 181 skills, 47 agents, 70+ cmds | Most comprehensive single package. Hackathon winner. Daily updates. |
 | S02 | 88/100 | 112K | 2K+ | Anthropic team | Active | 17 skills | Official source. Production-ready quality. Every skill tested. |
 | S03 | 82/100 | 32K | 3K+ | 30+ | Active (weekly) | 1370+ skills | Largest skill pool. Installer CLI. Multi-platform. |
-| S04 | 76/100 | 10K | 1K+ | 15+ | Active | 220+ skills, 26 agents | Business function organization. 12 coding agent support. |
+| S04 | 76/100 | 10K | 1K+ | 15+ | Active | 25 agents | Business function organization. 12 coding agent support. |
 | S05 | 74/100 | 17K | 1.5K+ | 20+ | Active | 140+ subagents | Categorized subagent system. 10 domains. |
 | S06 | 68/100 | 1.1K | 200+ | 10+ | Active | 35 skills, 135 agents | Compact but complete toolkit. Templates included. |
 | S07 | 95/100 | 134K | 10K+ | 100+ | Active (daily) | 6500+ system prompts | Internal prompts from 28+ AI tools. Continuously updated. |
@@ -46,7 +46,7 @@ S08  ░░░░░░░░░░░░░░░░░░░░░░░░░
 ## Component Distribution (What Comes From Where)
 
 ```
-Skills (1800+ unique):
+Skills (1,575 unique):
   S03 ████████████████████████████████████  1370+  (largest pool)
   S01 ██████████████                        181    (highest quality)
   S04 ████████                              220+   (business-focused)
@@ -89,8 +89,8 @@ Rules:
 ## Summary
 
 When a developer downloads this repo:
-1. **1800+ skills** — best versions pre-selected from conflicts
-2. **300+ agents** — ready and categorized
+1. **1,575 skills** — best versions pre-selected from conflicts
+2. **263 agents** — ready and categorized
 3. **6500+ system prompts** — full competitor analysis
 4. **Conflicts resolved** — best version chosen for same-named components
 5. **One-command install** — `bash setup.sh --all`
