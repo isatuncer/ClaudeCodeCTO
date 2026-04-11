@@ -244,12 +244,27 @@ backup_existing() {
 }
 
 # ============================================================
+# INSTALL LOG — Track every installed component
+# ============================================================
+
+INSTALL_LOG="$CLAUDE_HOME/.cto-install.log"
+
+log_install() {
+    # Usage: log_install <type> <name> <source>
+    echo -e "$1\t$2\t$3\t$(date +%Y-%m-%d)" >> "$INSTALL_LOG"
+}
+
+init_install_log() {
+    mkdir -p "$CLAUDE_HOME"
+    echo -e "type\tname\tsource\tdate" > "$INSTALL_LOG"
+}
+
+# ============================================================
 # INSTALLATION FUNCTIONS
 # ============================================================
 
 setup_skills() {
     log_step "Step 3/8 — Installing Skills"
-    log_info "Scanning 1,600+ skills from 4 sources, selecting the best version of each..."
 
     local SKILL_SOURCES=(
         "anthropics-skills"
@@ -258,16 +273,8 @@ setup_skills() {
         "rohitg00-toolkit"
     )
 
-    # Count total first
-    local total=0
-    for repo in "${SKILL_SOURCES[@]}"; do
-        local rp="$SOURCES/$repo"
-        [ -d "$rp/skills" ] && total=$((total + $(find "$rp/skills" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)))
-    done
-
     local installed=0
     local skipped=0
-    local current=0
 
     mkdir -p "$SKILLS_DIR"
 
@@ -275,14 +282,12 @@ setup_skills() {
         local repo_path="$SOURCES/$repo"
         [ -d "$repo_path/skills" ] || continue
 
+        local repo_installed=0
         for skill_dir in "$repo_path/skills"/*/; do
             [ -d "$skill_dir" ] || continue
             local skill_name=$(basename "$skill_dir")
 
             [[ "$skill_name" == "__pycache__" || "$skill_name" == "node_modules" || "$skill_name" == ".git" ]] && continue
-
-            current=$((current + 1))
-            progress_bar "$current" "$total" "$skill_name"
 
             if ! should_install "skills" "$skill_name" "$repo"; then
                 skipped=$((skipped + 1))
@@ -294,18 +299,19 @@ setup_skills() {
                 backup_existing "$target"
                 mkdir -p "$target"
                 cp -r "$skill_dir"/* "$target/" 2>/dev/null || true
+                log_install "skill" "$skill_name" "$repo"
             fi
             installed=$((installed + 1))
+            repo_installed=$((repo_installed + 1))
         done
+        echo -e "  ${GREEN}✓${NC}  ${BOLD}$repo${NC}: $repo_installed skills"
     done
 
-    echo ""
-    log_ok "Skills installed: ${GREEN}$installed${NC} | Skipped (conflict): ${DIM}$skipped${NC} | Total scanned: $current"
+    log_ok "Skills: ${GREEN}$installed installed${NC}, ${DIM}$skipped skipped (conflict)${NC}"
 }
 
 setup_agents() {
     log_step "Step 4/8 — Installing Agents"
-    log_info "Scanning 348 agents from 4 sources, deduplicating to ~263 unique..."
 
     local AGENT_SOURCES=(
         "everything-claude-code"
@@ -314,98 +320,102 @@ setup_agents() {
         "alirezarezvani-claude-skills"
     )
 
-    local installed=0
-    local skipped=0
     mkdir -p "$AGENTS_DIR"
 
     for repo in "${AGENT_SOURCES[@]}"; do
         local repo_path="$SOURCES/$repo"
+        local repo_installed=0
 
         # agents/ directory
         if [ -d "$repo_path/agents" ]; then
-            find "$repo_path/agents" -name "*.md" -not -name "README.md" -type f 2>/dev/null | while IFS= read -r agent_file; do
+            while IFS= read -r agent_file; do
                 local agent_name=$(basename "$agent_file" .md)
                 if should_install "agents" "$agent_name" "$repo"; then
                     if [ "$DRY_RUN" = false ]; then
                         backup_existing "$AGENTS_DIR/$agent_name.md"
                         cp "$agent_file" "$AGENTS_DIR/$agent_name.md" 2>/dev/null || true
+                        log_install "agent" "$agent_name" "$repo"
                     fi
-                    echo "installed" >> /tmp/cccto_agent_count 2>/dev/null
-                else
-                    echo "skipped" >> /tmp/cccto_agent_count 2>/dev/null
+                    repo_installed=$((repo_installed + 1))
                 fi
-            done
+            done < <(find "$repo_path/agents" -name "*.md" -not -name "README.md" -not -name "CLAUDE.md" -type f 2>/dev/null)
         fi
 
-        # categories/ directory (VoltAgent structure)
+        # categories/ directory (VoltAgent)
         if [ -d "$repo_path/categories" ]; then
-            find "$repo_path/categories" -name "*.md" -not -name "README.md" -type f 2>/dev/null | while IFS= read -r agent_file; do
+            while IFS= read -r agent_file; do
                 local agent_name=$(basename "$agent_file" .md)
                 if should_install "agents" "$agent_name" "$repo"; then
                     if [ "$DRY_RUN" = false ]; then
                         backup_existing "$AGENTS_DIR/$agent_name.md"
                         cp "$agent_file" "$AGENTS_DIR/$agent_name.md" 2>/dev/null || true
+                        log_install "agent" "$agent_name" "$repo"
                     fi
+                    repo_installed=$((repo_installed + 1))
                 fi
-            done
+            done < <(find "$repo_path/categories" -name "*.md" -not -name "README.md" -type f 2>/dev/null)
         fi
+
+        [ "$repo_installed" -gt 0 ] && echo -e "  ${GREEN}✓${NC}  ${BOLD}$repo${NC}: $repo_installed agents"
     done
 
-    installed=$(ls "$AGENTS_DIR"/*.md 2>/dev/null | wc -l)
-    rm -f /tmp/cccto_agent_count 2>/dev/null
-    log_ok "Agents installed: ${GREEN}$installed${NC}"
+    local total=$(ls "$AGENTS_DIR"/*.md 2>/dev/null | wc -l | tr -d '[:space:]')
+    log_ok "Agents: ${GREEN}$total installed${NC}"
 }
 
 setup_commands() {
     log_step "Step 5/8 — Installing Slash Commands"
-    log_info "Installing slash commands + CTO management commands..."
 
     local CMD_SOURCES=(
         "everything-claude-code"
         "rohitg00-toolkit"
     )
 
-    local installed=0
     mkdir -p "$COMMANDS_DIR"
 
     # Source repo commands
     for repo in "${CMD_SOURCES[@]}"; do
         local repo_path="$SOURCES/$repo"
         [ -d "$repo_path/commands" ] || continue
+        local repo_installed=0
 
-        find "$repo_path/commands" -name "*.md" -not -name "README.md" -type f 2>/dev/null | while IFS= read -r cmd_file; do
+        while IFS= read -r cmd_file; do
             local cmd_name=$(basename "$cmd_file" .md)
             if should_install "commands" "$cmd_name" "$repo"; then
                 if [ "$DRY_RUN" = false ]; then
                     backup_existing "$COMMANDS_DIR/$cmd_name.md"
                     cp "$cmd_file" "$COMMANDS_DIR/$cmd_name.md" 2>/dev/null || true
+                    log_install "command" "$cmd_name" "$repo"
                 fi
+                repo_installed=$((repo_installed + 1))
             fi
-        done
+        done < <(find "$repo_path/commands" -name "*.md" -not -name "README.md" -type f 2>/dev/null)
+
+        [ "$repo_installed" -gt 0 ] && echo -e "  ${GREEN}✓${NC}  ${BOLD}$repo${NC}: $repo_installed commands"
     done
 
-    # ClaudeCodeCTO's own commands (always install — ours, no conflict)
+    # ClaudeCodeCTO's own commands
     if [ -d "$ROOT/commands" ]; then
-        local cto_cmd_count=0
+        local cto_count=0
         for cmd_file in "$ROOT/commands"/*.md; do
             [ -f "$cmd_file" ] || continue
             local cmd_name=$(basename "$cmd_file" .md)
             if [ "$DRY_RUN" = false ]; then
                 backup_existing "$COMMANDS_DIR/$cmd_name.md"
                 cp "$cmd_file" "$COMMANDS_DIR/$cmd_name.md" 2>/dev/null || true
+                log_install "command" "$cmd_name" "ClaudeCodeCTO"
             fi
-            cto_cmd_count=$((cto_cmd_count + 1))
+            cto_count=$((cto_count + 1))
         done
-        log_ok "CTO commands ($cto_cmd_count) installed: /startCTO, /doc-create, /cto-* etc."
+        echo -e "  ${GREEN}✓${NC}  ${BOLD}ClaudeCodeCTO${NC}: $cto_count commands (/startCTO, /doc-create, /cto-*)"
     fi
 
-    installed=$(ls "$COMMANDS_DIR"/*.md 2>/dev/null | wc -l)
-    log_ok "Total commands installed: ${GREEN}$installed${NC}"
+    local total=$(ls "$COMMANDS_DIR"/*.md 2>/dev/null | wc -l | tr -d '[:space:]')
+    log_ok "Commands: ${GREEN}$total installed${NC}"
 }
 
 setup_hooks() {
     log_step "Step 6/8 — Installing Hooks"
-    log_info "Installing hook scripts and configurations..."
 
     local HOOK_SOURCES=(
         "everything-claude-code"
@@ -414,29 +424,37 @@ setup_hooks() {
     )
 
     mkdir -p "$HOOKS_DIR"
-    local installed=0
 
     for repo in "${HOOK_SOURCES[@]}"; do
         local repo_path="$SOURCES/$repo"
         [ -d "$repo_path/hooks" ] || continue
+        local before=$(find "$HOOKS_DIR" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
 
         if [ "$DRY_RUN" = false ]; then
-            # Use cp -n (no-clobber) to avoid overwriting
             case "$OS" in
                 macos) cp -Rn "$repo_path/hooks"/* "$HOOKS_DIR/" 2>/dev/null || true ;;
                 *)     cp -rn "$repo_path/hooks"/* "$HOOKS_DIR/" 2>/dev/null || true ;;
             esac
         fi
-        installed=$((installed + 1))
+
+        local after=$(find "$HOOKS_DIR" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+        local added=$((after - before))
+        [ "$added" -gt 0 ] && echo -e "  ${GREEN}✓${NC}  ${BOLD}$repo${NC}: $added hooks"
     done
 
-    local hook_count=$(find "$HOOKS_DIR" -type f 2>/dev/null | wc -l)
-    log_ok "Hooks installed: ${GREEN}$hook_count${NC} files from $installed sources"
+    # Log all hooks
+    if [ "$DRY_RUN" = false ]; then
+        find "$HOOKS_DIR" -type f 2>/dev/null | while read -r f; do
+            log_install "hook" "$(basename "$f")" "mixed"
+        done
+    fi
+
+    local hook_count=$(find "$HOOKS_DIR" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+    log_ok "Hooks: ${GREEN}$hook_count installed${NC}"
 }
 
 setup_rules() {
     log_step "Step 7/8 — Installing Rules"
-    log_info "Installing coding rules (13 languages) and IDE rules..."
 
     mkdir -p "$RULES_DIR"
 
@@ -448,9 +466,12 @@ setup_rules() {
                 macos) cp -Rn "$repo_path/rules"/* "$RULES_DIR/" 2>/dev/null || true ;;
                 *)     cp -rn "$repo_path/rules"/* "$RULES_DIR/" 2>/dev/null || true ;;
             esac
+            find "$RULES_DIR" -name "*.md" -type f 2>/dev/null | while read -r f; do
+                log_install "rule" "$(basename "$f" .md)" "everything-claude-code"
+            done
         fi
-        local rule_count=$(find "$RULES_DIR" -name "*.md" -type f 2>/dev/null | wc -l)
-        log_ok "Coding rules installed: ${GREEN}$rule_count${NC} files"
+        local rule_count=$(find "$RULES_DIR" -name "*.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+        echo -e "  ${GREEN}✓${NC}  ${BOLD}everything-claude-code${NC}: $rule_count rules"
     fi
 
     # Cursor rules as reference
@@ -469,32 +490,33 @@ setup_rules() {
 
 setup_prompts() {
     log_step "Step 8/8 — Installing Prompt Libraries"
-    log_info "Installing 6800+ prompts from 5 sources..."
 
     mkdir -p "$PROMPTS_DIR"
 
     # 1. AI tool system prompts (S07)
-    log_info "  [1/4] System prompts from 28+ AI tools..."
     local sys_prompts="$SOURCES/system-prompts-collection"
     if [ -d "$sys_prompts" ] && [ "$DRY_RUN" = false ]; then
         mkdir -p "$PROMPTS_DIR/system-prompts"
+        local p_count=0
         find "$sys_prompts" -maxdepth 3 -name "*.md" -type f 2>/dev/null | head -200 | while IFS= read -r f; do
             cp "$f" "$PROMPTS_DIR/system-prompts/$(basename "$f")" 2>/dev/null || true
         done
-        log_ok "System prompts installed"
+        p_count=$(find "$PROMPTS_DIR/system-prompts" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+        log_install "prompt" "system-prompts($p_count)" "system-prompts-collection"
+        echo -e "  ${GREEN}✓${NC}  ${BOLD}system-prompts-collection${NC}: $p_count prompts"
     fi
 
     # 2. Claude Code internals (S09)
-    log_info "  [2/4] Claude Code internal prompts..."
     local claude_prompts="$SOURCES/piebald-claude-prompts"
     if [ -d "$claude_prompts" ] && [ "$DRY_RUN" = false ]; then
         mkdir -p "$PROMPTS_DIR/claude-code-internals"
         cp "$claude_prompts"/*.md "$PROMPTS_DIR/claude-code-internals/" 2>/dev/null || true
-        log_ok "Claude Code internals installed"
+        local p_count=$(find "$PROMPTS_DIR/claude-code-internals" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+        log_install "prompt" "claude-internals($p_count)" "piebald-claude-prompts"
+        echo -e "  ${GREEN}✓${NC}  ${BOLD}piebald-claude-prompts${NC}: $p_count prompts"
     fi
 
     # 3. AI coding tool prompts (S08)
-    log_info "  [3/4] AI coding tool prompts..."
     local eli_prompts="$SOURCES/elifuzz-system-prompts"
     if [ -d "$eli_prompts" ] && [ "$DRY_RUN" = false ]; then
         mkdir -p "$PROMPTS_DIR/coding-tool-prompts"
@@ -502,22 +524,25 @@ setup_prompts() {
             macos) cp -Rn "$eli_prompts"/* "$PROMPTS_DIR/coding-tool-prompts/" 2>/dev/null || true ;;
             *)     cp -rn "$eli_prompts"/* "$PROMPTS_DIR/coding-tool-prompts/" 2>/dev/null || true ;;
         esac
-        log_ok "Coding tool prompts installed"
+        local p_count=$(find "$PROMPTS_DIR/coding-tool-prompts" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+        log_install "prompt" "coding-tools($p_count)" "elifuzz-system-prompts"
+        echo -e "  ${GREEN}✓${NC}  ${BOLD}elifuzz-system-prompts${NC}: $p_count prompts"
     fi
 
     # 4. Prompt Engineering Guide (S13)
-    log_info "  [4/4] Prompt Engineering Guide..."
     local pe_guide="$SOURCES/prompt-engineering-guide"
     if [ -d "$pe_guide" ] && [ "$DRY_RUN" = false ]; then
         mkdir -p "$PROMPTS_DIR/prompt-engineering-guide"
         find "$pe_guide" -maxdepth 2 -name "*.md" -type f 2>/dev/null | head -50 | while IFS= read -r f; do
             cp "$f" "$PROMPTS_DIR/prompt-engineering-guide/$(basename "$f")" 2>/dev/null || true
         done
-        log_ok "Prompt Engineering Guide installed"
+        local p_count=$(find "$PROMPTS_DIR/prompt-engineering-guide" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+        log_install "prompt" "engineering-guide($p_count)" "prompt-engineering-guide"
+        echo -e "  ${GREEN}✓${NC}  ${BOLD}prompt-engineering-guide${NC}: $p_count prompts"
     fi
 
-    local total_prompts=$(find "$PROMPTS_DIR" -type f 2>/dev/null | wc -l)
-    log_ok "Total prompt files installed: ${GREEN}$total_prompts${NC}"
+    local total_prompts=$(find "$PROMPTS_DIR" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+    log_ok "Prompts: ${GREEN}$total_prompts installed${NC}"
 }
 
 # ============================================================
@@ -526,7 +551,6 @@ setup_prompts() {
 
 setup_enterprise() {
     log_step "Step 9/10 — Installing Enterprise Components"
-    log_info "Installing CTO-level project delivery system..."
 
     local ENT_SRC="$ROOT/enterprise"
     local ENT_DST="$CLAUDE_HOME/enterprise"
@@ -538,48 +562,48 @@ setup_enterprise() {
 
     mkdir -p "$ENT_DST"
 
-    # 1. Templates (69 document templates)
-    log_info "  [1/6] Document templates (69 types across 14 categories)..."
+    # 1. Templates
     if [ "$DRY_RUN" = false ]; then
         case "$OS" in
             macos) cp -Rn "$ENT_SRC/templates" "$ENT_DST/" 2>/dev/null || true ;;
             *)     cp -rn "$ENT_SRC/templates" "$ENT_DST/" 2>/dev/null || true ;;
         esac
     fi
-    local tpl_count=$(find "$ENT_DST/templates" -name "*.md" -type f 2>/dev/null | wc -l)
-    log_ok "Templates: $tpl_count files"
+    local tpl_count=$(find "$ENT_DST/templates" -name "*.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+    [ "$DRY_RUN" = false ] && find "$ENT_DST/templates" -name "*.md" -type f 2>/dev/null | while read -r f; do log_install "template" "$(basename "$f" .md)" "enterprise"; done
+    echo -e "  ${GREEN}✓${NC}  Templates: $tpl_count"
 
-    # 2. Mermaid Diagrams (30 templates)
-    log_info "  [2/6] Mermaid diagram templates (30 diagrams)..."
+    # 2. Diagrams
     if [ "$DRY_RUN" = false ]; then
         mkdir -p "$ENT_DST/diagrams"
         cp "$ENT_SRC/diagrams"/*.mmd "$ENT_DST/diagrams/" 2>/dev/null || true
         cp "$ENT_SRC/diagrams"/*.md "$ENT_DST/diagrams/" 2>/dev/null || true
     fi
-    local diag_count=$(find "$ENT_DST/diagrams" -name "*.mmd" -type f 2>/dev/null | wc -l)
-    log_ok "Diagrams: $diag_count templates"
+    local diag_count=$(find "$ENT_DST/diagrams" -name "*.mmd" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+    [ "$DRY_RUN" = false ] && find "$ENT_DST/diagrams" -name "*.mmd" -type f 2>/dev/null | while read -r f; do log_install "diagram" "$(basename "$f" .mmd)" "enterprise"; done
+    echo -e "  ${GREEN}✓${NC}  Diagrams: $diag_count"
 
-    # 3. Enterprise Standards (72 standards)
-    log_info "  [3/6] Enterprise standards (72 — ISO, IEEE, NIST, OWASP)..."
+    # 3. Standards
     if [ "$DRY_RUN" = false ]; then
         case "$OS" in
             macos) cp -Rn "$ENT_SRC/standards" "$ENT_DST/" 2>/dev/null || true ;;
             *)     cp -rn "$ENT_SRC/standards" "$ENT_DST/" 2>/dev/null || true ;;
         esac
     fi
-    local std_count=$(find "$ENT_DST/standards" -name "*.md" -type f 2>/dev/null | wc -l)
-    log_ok "Standards: $std_count files"
+    local std_count=$(find "$ENT_DST/standards" -name "*.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+    [ "$DRY_RUN" = false ] && find "$ENT_DST/standards" -name "*.md" -type f 2>/dev/null | while read -r f; do log_install "standard" "$(basename "$f" .md)" "enterprise"; done
+    echo -e "  ${GREEN}✓${NC}  Standards: $std_count"
 
-    # 4. Role Definitions (20 enterprise roles)
-    log_info "  [4/6] Enterprise roles (20 — CTO, Architect, QA, DevSecOps...)..."
+    # 4. Roles
     if [ "$DRY_RUN" = false ]; then
         case "$OS" in
             macos) cp -Rn "$ENT_SRC/roles" "$ENT_DST/" 2>/dev/null || true ;;
             *)     cp -rn "$ENT_SRC/roles" "$ENT_DST/" 2>/dev/null || true ;;
         esac
     fi
-    local role_count=$(find "$ENT_DST/roles" -name "*.md" -type f 2>/dev/null | wc -l)
-    log_ok "Roles: $role_count definitions"
+    local role_count=$(find "$ENT_DST/roles" -name "*.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+    [ "$DRY_RUN" = false ] && find "$ENT_DST/roles" -name "*.md" -type f 2>/dev/null | while read -r f; do log_install "role" "$(basename "$f" .md)" "enterprise"; done
+    echo -e "  ${GREEN}✓${NC}  Roles: $role_count"
 
     # 5. GitHub Actions (3 workflows)
     log_info "  [5/6] GitHub Actions (CI, Deploy, Security Scan)..."
@@ -751,39 +775,58 @@ SKILLEOF
 
 MANIFEST="${CLAUDE_HOME:-$HOME/.claude}/.cto-manifest.tsv"
 
-# Fast status from manifest (no scanning)
+# Fast status from install log (no filesystem scanning)
 show_status() {
     print_banner
 
-    if [ ! -f "$MANIFEST" ]; then
-        log_warn "No manifest found. Run 'bash setup.sh --all' to install first."
+    local log_file="$CLAUDE_HOME/.cto-install.log"
+
+    if [ ! -f "$log_file" ]; then
+        log_warn "No install log found. Run 'bash setup.sh --all' to install first."
         return
     fi
 
-    local updated=$(head -2 "$MANIFEST" | grep "Updated:" | sed 's/.*Updated: //')
+    local install_date=$(tail -n +2 "$log_file" | tail -1 | cut -f4 2>/dev/null || echo "unknown")
 
-    echo -e "  ${BOLD}Installed Components${NC} ${DIM}(last install: $updated)${NC}"
+    echo -e "  ${BOLD}Installed Components${NC} ${DIM}(installed: $install_date)${NC}"
     echo ""
 
-    while IFS=$'\t' read -r category count path; do
-        [[ "$category" == "#"* ]] && continue
-        [[ "$category" == "category" ]] && continue
-        printf "  ${GREEN}%-14s${NC} ${BOLD}%s${NC}\n" "$category" "$count"
-    done < "$MANIFEST"
+    # Count from log (instant — no filesystem scan)
+    local s_count=$(grep -c "^skill	" "$log_file" 2>/dev/null || echo 0)
+    local a_count=$(grep -c "^agent	" "$log_file" 2>/dev/null || echo 0)
+    local c_count=$(grep -c "^command	" "$log_file" 2>/dev/null || echo 0)
+    local h_count=$(grep -c "^hook	" "$log_file" 2>/dev/null || echo 0)
+    local r_count=$(grep -c "^rule	" "$log_file" 2>/dev/null || echo 0)
+    local p_count=$(grep -c "^prompt	" "$log_file" 2>/dev/null || echo 0)
+    local t_count=$(grep -c "^template	" "$log_file" 2>/dev/null || echo 0)
+    local d_count=$(grep -c "^diagram	" "$log_file" 2>/dev/null || echo 0)
+    local st_count=$(grep -c "^standard	" "$log_file" 2>/dev/null || echo 0)
+    local ro_count=$(grep -c "^role	" "$log_file" 2>/dev/null || echo 0)
 
-    # Prompt breakdown (live count, fast)
+    printf "  ${GREEN}%-14s${NC} ${BOLD}%-6s${NC}\n" "Skills" "$s_count"
+    printf "  ${GREEN}%-14s${NC} ${BOLD}%-6s${NC}\n" "Agents" "$a_count"
+    printf "  ${GREEN}%-14s${NC} ${BOLD}%-6s${NC}\n" "Commands" "$c_count"
+    printf "  ${GREEN}%-14s${NC} ${BOLD}%-6s${NC}\n" "Hooks" "$h_count"
+    printf "  ${GREEN}%-14s${NC} ${BOLD}%-6s${NC}\n" "Rules" "$r_count"
+    printf "  ${GREEN}%-14s${NC} ${BOLD}%-6s${NC}\n" "Prompts" "$p_count"
     echo ""
-    echo -e "  ${BOLD}Prompt Breakdown:${NC}"
-    for pdir in "$PROMPTS_DIR"/*/; do
-        [ -d "$pdir" ] || continue
-        local pname=$(basename "$pdir")
-        local pcount=$(find "$pdir" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
-        printf "    ${DIM}%-30s${NC} %s files\n" "$pname" "$pcount"
+    echo -e "  ${BOLD}Enterprise:${NC}"
+    printf "  ${GREEN}%-14s${NC} ${BOLD}%-6s${NC}\n" "Templates" "$t_count"
+    printf "  ${GREEN}%-14s${NC} ${BOLD}%-6s${NC}\n" "Diagrams" "$d_count"
+    printf "  ${GREEN}%-14s${NC} ${BOLD}%-6s${NC}\n" "Standards" "$st_count"
+    printf "  ${GREEN}%-14s${NC} ${BOLD}%-6s${NC}\n" "Roles" "$ro_count"
+
+    # Top sources by component count
+    echo ""
+    echo -e "  ${BOLD}Top Sources:${NC}"
+    tail -n +2 "$log_file" | cut -f3 | sort | uniq -c | sort -rn | head -5 | while read -r cnt src; do
+        printf "    %-35s %s components\n" "$src" "$cnt"
     done
 
     echo ""
     echo -e "  ${BOLD}Source Repos:${NC} $(ls -d "$ROOT/sources"/*/ 2>/dev/null | wc -l | tr -d '[:space:]') tracked"
     echo -e "  ${BOLD}Target:${NC} $CLAUDE_HOME"
+    echo -e "  ${BOLD}Log:${NC} ${DIM}$log_file${NC}"
     echo ""
     echo -e "  ${DIM}Run 'bash setup.sh --update' to pull latest and re-install${NC}"
     echo ""
@@ -1229,6 +1272,9 @@ main() {
         log_step "Running first-time scan for conflict detection..."
         bash "$ROOT/scripts/scanner.sh" 2>/dev/null || true
     fi
+
+    # Initialize install log
+    init_install_log
 
     # Create target directories
     mkdir -p "$SKILLS_DIR" "$AGENTS_DIR" "$COMMANDS_DIR" "$HOOKS_DIR" "$RULES_DIR" "$PROMPTS_DIR"
