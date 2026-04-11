@@ -52,10 +52,10 @@ PREV_SKILL_COUNT=0 PREV_AGENT_COUNT=0 PREV_CMD_COUNT=0 PREV_HOOK_COUNT=0
 [ -n "$PREV_HOOKS" ] && PREV_HOOK_COUNT=$(echo "$PREV_HOOKS" | wc -l | tr -d '[:space:]')
 
 echo ""
-echo -e "${CYAN}╔═══════════════════════════════════════════════╗${NC}"
-echo -e "${CYAN}║${NC}${BOLD}       ClaudeCodeCTO Scanner v2.0            ${NC}${CYAN}║${NC}"
-echo -e "${CYAN}║${NC}  ${DIM}$TIMESTAMP${NC}                                   ${CYAN}║${NC}"
-echo -e "${CYAN}╚═══════════════════════════════════════════════╝${NC}"
+echo -e "${CYAN}  ==============================================${NC}"
+echo -e "${BOLD}   ClaudeCodeCTO Scanner v2.0${NC}"
+echo -e "   ${DIM}$TIMESTAMP${NC}"
+echo -e "${CYAN}  ==============================================${NC}"
 echo ""
 
 if [ "$PREV_SKILL_COUNT" -gt 0 ] 2>/dev/null; then
@@ -443,29 +443,29 @@ echo -e "  ${GREEN}✓${NC}  Conflict report: ${DIM}decisions/conflicts-${TIMEST
 # FINAL SUMMARY
 # ============================================================
 echo ""
-echo -e "${CYAN}╔═══════════════════════════════════════════════╗${NC}"
-echo -e "${CYAN}║${NC}${BOLD}            Scan Complete                    ${NC}${CYAN}║${NC}"
-echo -e "${CYAN}╠═══════════════════════════════════════════════╣${NC}"
-echo -e "${CYAN}║${NC}                                               ${CYAN}║${NC}"
-echo -e "${CYAN}║${NC}  Skills:   ${GREEN}${UNIQUE_SKILLS}${NC} unique (${TOTAL_SKILLS} raw, ${CONFLICT_SKILLS} conflicts) ${CYAN}║${NC}"
-echo -e "${CYAN}║${NC}  Agents:   ${GREEN}${UNIQUE_AGENTS}${NC} unique (${TOTAL_AGENTS} raw, ${CONFLICT_AGENTS} conflicts) ${CYAN}║${NC}"
-echo -e "${CYAN}║${NC}  Commands: ${GREEN}${UNIQUE_COMMANDS}${NC} unique (${TOTAL_COMMANDS} raw, ${CONFLICT_COMMANDS} conflicts) ${CYAN}║${NC}"
-echo -e "${CYAN}║${NC}  Hooks:    ${GREEN}${TOTAL_HOOKS}${NC}                                  ${CYAN}║${NC}"
-echo -e "${CYAN}║${NC}  Prompts:  ${GREEN}${TOTAL_PROMPT_FILES}${NC} files across 5 sources           ${CYAN}║${NC}"
-echo -e "${CYAN}║${NC}                                               ${CYAN}║${NC}"
+echo -e "${CYAN}  ==============================================${NC}"
+echo -e "${BOLD}   Scan Complete${NC}"
+echo -e "${CYAN}  ==============================================${NC}"
+echo ""
+echo -e "  Skills:   ${GREEN}${UNIQUE_SKILLS}${NC} unique (${TOTAL_SKILLS} raw, ${CONFLICT_SKILLS} conflicts)"
+echo -e "  Agents:   ${GREEN}${UNIQUE_AGENTS}${NC} unique (${TOTAL_AGENTS} raw, ${CONFLICT_AGENTS} conflicts)"
+echo -e "  Commands: ${GREEN}${UNIQUE_COMMANDS}${NC} unique (${TOTAL_COMMANDS} raw, ${CONFLICT_COMMANDS} conflicts)"
+echo -e "  Hooks:    ${GREEN}${TOTAL_HOOKS}${NC}"
+echo -e "  Prompts:  ${GREEN}${TOTAL_PROMPT_FILES}${NC} files across 5 sources"
+echo ""
 
 if [ "$PREV_SKILL_COUNT" -gt 0 ] 2>/dev/null; then
     TOTAL_NEW=$((NEW_SKILL_COUNT + NEW_AGENT_COUNT + NEW_CMD_COUNT))
     TOTAL_REMOVED=$((REMOVED_SKILL_COUNT + REMOVED_AGENT_COUNT + REMOVED_CMD_COUNT))
     if [ "$TOTAL_NEW" -gt 0 ] || [ "$TOTAL_REMOVED" -gt 0 ]; then
-        echo -e "${CYAN}║${NC}  Changes: ${GREEN}+${TOTAL_NEW} new${NC}, ${RED}-${TOTAL_REMOVED} removed${NC}              ${CYAN}║${NC}"
+        echo -e "  Changes: ${GREEN}+${TOTAL_NEW} new${NC}, ${RED}-${TOTAL_REMOVED} removed${NC}"
     else
-        echo -e "${CYAN}║${NC}  ${DIM}No changes since last scan${NC}                   ${CYAN}║${NC}"
+        echo -e "  ${DIM}No changes since last scan${NC}"
     fi
 else
-    echo -e "${CYAN}║${NC}  ${DIM}First scan — no previous data to compare${NC}   ${CYAN}║${NC}"
+    echo -e "  ${DIM}First scan -- no previous data to compare${NC}"
 fi
 
-echo -e "${CYAN}║${NC}                                               ${CYAN}║${NC}"
-echo -e "${CYAN}╚═══════════════════════════════════════════════╝${NC}"
+echo ""
+echo -e "${CYAN}  ==============================================${NC}"
 echo ""
