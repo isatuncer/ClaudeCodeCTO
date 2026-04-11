@@ -255,20 +255,14 @@ backup_existing() {
 
 INSTALL_LOG=""  # Set by resolve_paths()
 
-file_hash() {
-    # Fast content hash (works on all OS)
-    if command -v md5sum &>/dev/null; then
-        md5sum "$1" 2>/dev/null | cut -d' ' -f1
-    elif command -v md5 &>/dev/null; then
-        md5 -q "$1" 2>/dev/null
-    else
-        cksum "$1" 2>/dev/null | cut -d' ' -f1
-    fi
+file_fingerprint() {
+    # Fast: just file size (no content read, instant)
+    wc -c < "$1" 2>/dev/null | tr -d '[:space:]'
 }
 
-dir_hash() {
-    # Hash for a skill directory (concat all file hashes)
-    find "$1" -type f 2>/dev/null | sort | xargs cat 2>/dev/null | md5sum 2>/dev/null | cut -d' ' -f1 || echo "0"
+dir_fingerprint() {
+    # Fast: count files in dir (no content read)
+    find "$1" -type f 2>/dev/null | wc -l | tr -d '[:space:]'
 }
 
 log_install() {
@@ -307,7 +301,14 @@ setup_skills() {
         "rohitg00-toolkit"
     )
 
-    local installed=0 skipped=0 updated=0
+    local installed=0 skipped=0 current=0
+
+    # Count total for progress
+    local total=0
+    for repo in "${SKILL_SOURCES[@]}"; do
+        local rp="$SOURCES/$repo"
+        [ -d "$rp/skills" ] && total=$((total + $(ls -d "$rp/skills"/*/ 2>/dev/null | wc -l | tr -d '[:space:]')))
+    done
 
     mkdir -p "$SKILLS_DIR"
 
@@ -315,57 +316,37 @@ setup_skills() {
         local repo_path="$SOURCES/$repo"
         [ -d "$repo_path/skills" ] || continue
 
-        local repo_new=0 repo_upd=0
         for skill_dir in "$repo_path/skills"/*/; do
             [ -d "$skill_dir" ] || continue
             local skill_name=$(basename "$skill_dir")
             [[ "$skill_name" == "__pycache__" || "$skill_name" == "node_modules" || "$skill_name" == ".git" ]] && continue
+
+            current=$((current + 1))
+            # Show progress every 50 items
+            if [ $((current % 50)) -eq 0 ] || [ "$current" -eq "$total" ]; then
+                local pct=$((current * 100 / total))
+                printf "\r  [%3d%%] %d/%d skills processed..." "$pct" "$current" "$total"
+            fi
 
             if ! should_install "skills" "$skill_name" "$repo"; then
                 skipped=$((skipped + 1))
                 continue
             fi
 
-            # Compute source hash + size
-            local src_hash src_size
-            src_hash=$(dir_hash "$skill_dir")
-            src_size=$(du -sb "$skill_dir" 2>/dev/null | cut -f1 || echo 0)
-
-            # Check if already installed with same hash
-            local old_hash
-            old_hash=$(get_installed_hash "skill" "$skill_name")
-
             if [ "$DRY_RUN" = false ]; then
-                if [ -n "$old_hash" ] && [ "$old_hash" = "$src_hash" ]; then
-                    # Same content, just re-log
-                    log_install "skill" "$skill_name" "$repo" "$src_hash" "$src_size"
-                    continue
-                fi
-
                 local target="$SKILLS_DIR/$skill_name"
+                local src_fp=$(dir_fingerprint "$skill_dir")
                 backup_existing "$target"
                 mkdir -p "$target"
                 cp -r "$skill_dir"/* "$target/" 2>/dev/null || true
-                log_install "skill" "$skill_name" "$repo" "$src_hash" "$src_size"
-
-                if [ -n "$old_hash" ]; then
-                    repo_upd=$((repo_upd + 1))
-                    updated=$((updated + 1))
-                else
-                    repo_new=$((repo_new + 1))
-                fi
+                log_install "skill" "$skill_name" "$repo" "$src_fp" "0"
             fi
             installed=$((installed + 1))
         done
-
-        local detail=""
-        [ "$repo_new" -gt 0 ] && detail="${GREEN}$repo_new new${NC}"
-        [ "$repo_upd" -gt 0 ] && detail="$detail ${YELLOW}$repo_upd updated${NC}"
-        [ -z "$detail" ] && detail="${DIM}no changes${NC}"
-        echo -e "  ${GREEN}✓${NC}  ${BOLD}$repo${NC}: $((repo_new + repo_upd)) ($detail)"
     done
 
-    log_ok "Skills: ${GREEN}$installed installed${NC}, ${YELLOW}$updated updated${NC}, ${DIM}$skipped skipped${NC}"
+    echo ""
+    log_ok "Skills: ${GREEN}$installed installed${NC}, ${DIM}$skipped conflict-skipped${NC}, $total scanned"
 }
 
 setup_agents() {
@@ -909,7 +890,7 @@ show_status() {
             [ -z "$hash" ] || [ "$hash" = "0" ] && continue
             local src_dir="$SOURCES/$source/skills/$name"
             [ -d "$src_dir" ] || continue
-            local cur_hash=$(dir_hash "$src_dir")
+            local cur_hash=$(dir_fingerprint "$src_dir")
             [ "$cur_hash" != "$hash" ] && stale=$((stale + 1))
         done < "$log_file"
 
