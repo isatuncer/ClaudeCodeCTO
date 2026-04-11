@@ -383,16 +383,19 @@ setup_commands() {
         done
     done
 
-    # CTO management commands (always install — ours, no conflict)
+    # ClaudeCodeCTO's own commands (always install — ours, no conflict)
     if [ -d "$ROOT/commands" ]; then
-        for cmd_file in "$ROOT/commands"/cto-*.md; do
+        local cto_cmd_count=0
+        for cmd_file in "$ROOT/commands"/*.md; do
             [ -f "$cmd_file" ] || continue
             local cmd_name=$(basename "$cmd_file" .md)
             if [ "$DRY_RUN" = false ]; then
+                backup_existing "$COMMANDS_DIR/$cmd_name.md"
                 cp "$cmd_file" "$COMMANDS_DIR/$cmd_name.md" 2>/dev/null || true
             fi
+            cto_cmd_count=$((cto_cmd_count + 1))
         done
-        log_ok "CTO commands (9) installed: /cto-add, /cto-scan, etc."
+        log_ok "CTO commands ($cto_cmd_count) installed: /startCTO, /doc-create, /cto-* etc."
     fi
 
     installed=$(ls "$COMMANDS_DIR"/*.md 2>/dev/null | wc -l)
@@ -598,15 +601,6 @@ setup_enterprise() {
         mkdir -p "$SKILLS_DIR/doc-generator"
         cp -r "$ROOT/skills/doc-generator"/* "$SKILLS_DIR/doc-generator/" 2>/dev/null || true
         log_ok "Document generator skill installed"
-    fi
-
-    # Install doc commands
-    if [ "$DRY_RUN" = false ]; then
-        for cmd_file in "$ROOT/commands"/doc-*.md; do
-            [ -f "$cmd_file" ] || continue
-            cp "$cmd_file" "$COMMANDS_DIR/" 2>/dev/null || true
-        done
-        log_ok "Document commands installed (/doc-create, /doc-export, /doc-list)"
     fi
 
     # Install doc-export script
