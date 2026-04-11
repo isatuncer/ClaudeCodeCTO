@@ -341,6 +341,7 @@ Missing critical: HLD, LLD, ADR, API Spec, Threat Model
 | `/cto-remove alias` | Remove a source repo |
 | `/cto-setup --all` | Re-install best components |
 | `/cto-update` | Update all sources from GitHub |
+| `/cto-sync` | Daily sync: pull + re-scan + diff maps + change report |
 | `/cto-conflicts` | Analyze and resolve conflicts |
 | `/cto-search query` | Search GitHub for new repos |
 
@@ -632,15 +633,43 @@ bash scripts/scanner.sh
 bash setup.sh --all --backup
 ```
 
-### Weekly Auto-Scan
+### Daily Sync (recommended)
 
-For automated weekly updates, use the included weekly scan script:
+Track changes across all sources with a single command:
 
 ```bash
-bash scripts/weekly-scan.sh
+bash scripts/daily-sync.sh
 ```
 
-This updates sources, runs a full scan, and generates a changelog at `decisions/changelog.md`.
+This does everything:
+1. Pulls latest from all 15 source repos
+2. Re-scans all skills, agents, commands, hooks
+3. Compares with previous maps -- detects new and removed components
+4. Updates `repo-registry.tsv` with real counts per repo
+5. Generates a change report at `decisions/reports/sync-{timestamp}.md`
+
+Options:
+```bash
+bash scripts/daily-sync.sh --scan-only   # Skip git pull, just re-scan
+bash scripts/daily-sync.sh --dry-run     # Preview without changing anything
+```
+
+Or use the slash command inside Claude Code:
+```
+/cto-sync
+```
+
+### Scheduling Daily Sync
+
+**Linux/macOS** (crontab):
+```bash
+0 6 * * * cd /path/to/ClaudeCodeCTO && bash scripts/daily-sync.sh >> /tmp/cto-sync.log 2>&1
+```
+
+**Windows** (Task Scheduler):
+- Program: `bash`
+- Arguments: `C:\path\to\ClaudeCodeCTO\scripts\daily-sync.sh`
+- Trigger: Daily at 06:00
 
 ---
 
