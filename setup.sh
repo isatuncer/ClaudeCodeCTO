@@ -801,6 +801,53 @@ show_summary() {
 }
 
 # ============================================================
+# SELF-UPDATE — Pull repo first, re-exec if setup.sh changed
+# ============================================================
+
+self_update_and_run() {
+    local ROOT
+    ROOT="$(cd "$(dirname "$0")" && pwd)"
+
+    # Colors (minimal, just for this bootstrap phase)
+    local CYAN='\033[0;36m' GREEN='\033[0;32m' YELLOW='\033[1;33m'
+    local BOLD='\033[1m' NC='\033[0m'
+
+    echo ""
+    echo -e "${CYAN}━━━ ClaudeCodeCTO Self-Update ━━━${NC}"
+
+    cd "$ROOT"
+
+    # Save current setup.sh hash
+    local OLD_HASH
+    OLD_HASH=$(git hash-object setup.sh 2>/dev/null || echo "none")
+
+    # Pull latest
+    echo -e "  Pulling latest from GitHub..."
+    git pull --ff-only origin main 2>/dev/null || git pull origin main 2>/dev/null || {
+        echo -e "  ${YELLOW}⚠${NC}  Could not pull. Continuing with local version."
+    }
+
+    # Check if setup.sh changed
+    local NEW_HASH
+    NEW_HASH=$(git hash-object setup.sh 2>/dev/null || echo "none")
+
+    if [ "$OLD_HASH" != "$NEW_HASH" ] && [ "$OLD_HASH" != "none" ]; then
+        echo -e "  ${GREEN}✓${NC}  setup.sh updated — restarting with new version..."
+        echo ""
+        # Re-exec the NEW setup.sh with --update-continue (skip self-update loop)
+        exec bash "$ROOT/setup.sh" --update-continue
+    fi
+
+    echo -e "  ${GREEN}✓${NC}  Already on latest version"
+    echo ""
+
+    # Continue with update
+    detect_os
+    resolve_paths
+    do_update
+}
+
+# ============================================================
 # UPDATE — Pull latest sources + re-scan + re-install
 # ============================================================
 
@@ -808,31 +855,8 @@ do_update() {
     print_banner
     log_step "Updating ClaudeCodeCTO"
 
-    # 1. Pull latest repo changes (setup.sh, commands, templates, etc.)
-    log_info "[1/5] Pulling latest ClaudeCodeCTO changes..."
-    cd "$ROOT"
-    local OLD_HEAD
-    OLD_HEAD=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
-    git pull --ff-only origin main 2>/dev/null || git pull origin main 2>/dev/null || {
-        log_warn "Could not pull ClaudeCodeCTO repo. Continuing with local version."
-    }
-    local NEW_HEAD
-    NEW_HEAD=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
-    if [ "$OLD_HEAD" != "$NEW_HEAD" ]; then
-        local REPO_CHANGES
-        REPO_CHANGES=$(git log --oneline "$OLD_HEAD".."$NEW_HEAD" 2>/dev/null | wc -l | tr -d '[:space:]')
-        log_ok "ClaudeCodeCTO updated: $REPO_CHANGES new commits"
-
-        # If setup.sh itself changed, warn user to re-run
-        if git diff --name-only "$OLD_HEAD".."$NEW_HEAD" 2>/dev/null | grep -q "^setup.sh$"; then
-            log_warn "setup.sh was updated. Re-run 'bash setup.sh --update' for latest installer."
-        fi
-    else
-        log_ok "ClaudeCodeCTO is already up to date"
-    fi
-
-    # 2. Update all submodules (pull latest from each source)
-    log_info "[2/5] Updating 15 source repositories..."
+    # 1. Update all submodules (pull latest from each source)
+    log_info "[1/4] Updating source repositories..."
     local UPDATED=0
     local TOTAL=0
     for repo_dir in "$SOURCES"/*/; do
@@ -864,8 +888,8 @@ do_update() {
     done
     log_ok "Sources checked: $TOTAL | Updated: $UPDATED"
 
-    # 3. Re-scan for new/changed components and conflicts
-    log_info "[3/5] Re-scanning components and conflicts..."
+    # 2. Re-scan for new/changed components and conflicts
+    log_info "[2/4] Re-scanning components and conflicts..."
     if [ -f "$ROOT/scripts/scanner.sh" ]; then
         bash "$ROOT/scripts/scanner.sh" 2>/dev/null || true
         log_ok "Scan complete"
@@ -873,8 +897,8 @@ do_update() {
         log_warn "Scanner script not found, skipping scan"
     fi
 
-    # 4. Re-install everything with backup
-    log_info "[4/5] Re-installing all components (with backup)..."
+    # 3. Re-install everything with backup
+    log_info "[3/4] Re-installing all components (with backup)..."
     BACKUP=true
     INSTALL_ALL=true
     DRY_RUN=false
@@ -890,12 +914,12 @@ do_update() {
     setup_enterprise
     install_prompt_suggester
 
-    # 5. Summary
-    log_step "[5/5] Update complete!"
+    # 4. Summary
+    log_step "[4/4] Update complete!"
     echo ""
     echo -e "  ${GREEN}What happened:${NC}"
-    echo -e "    1. ClaudeCodeCTO repo pulled to latest"
-    echo -e "    2. All 15 source repos updated"
+    echo -e "    1. ClaudeCodeCTO repo pulled to latest (self-update)"
+    echo -e "    2. All source repos updated from GitHub"
     echo -e "    3. Components re-scanned for conflicts"
     echo -e "    4. Best versions re-installed (old files backed up with .bak)"
     echo ""
@@ -971,7 +995,7 @@ interactive_menu() {
         5) INSTALL_HOOKS=true ;;
         6) INSTALL_RULES=true ;;
         7) INSTALL_PROMPTS=true ;;
-        8) do_update; exit 0 ;;
+        8) self_update_and_run; exit 0 ;;
         9) DRY_RUN=true; INSTALL_ALL=true ;;
         10) uninstall; exit 0 ;;
         0) exit 0 ;;
@@ -1011,7 +1035,8 @@ parse_args() {
             --prompts)   INSTALL_PROMPTS=true; INTERACTIVE=false ;;
             --dry-run)   DRY_RUN=true ;;
             --backup)    BACKUP=true ;;
-            --update)    detect_os; resolve_paths; do_update; exit 0 ;;
+            --update)    self_update_and_run; exit 0 ;;
+            --update-continue) detect_os; resolve_paths; do_update; exit 0 ;;
             --uninstall) uninstall; exit 0 ;;
             --help|-h)
                 echo "Usage: bash setup.sh [OPTIONS]"
