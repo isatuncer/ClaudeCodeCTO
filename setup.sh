@@ -214,12 +214,19 @@ should_install() {
 
     [ -f "$map_file" ] || return 0
 
-    local entries=$(grep "^${component_name}	" "$map_file" 2>/dev/null || echo "")
-    local entry_count=$(echo "$entries" | grep -c . 2>/dev/null || echo 0)
+    # Use grep with fixed string and tab delimiter; suppress errors
+    local entries
+    entries=$(grep -F "${component_name}	" "$map_file" 2>/dev/null | grep "^${component_name}	") || true
 
-    [ "$entry_count" -le 1 ] && return 0
+    # If no entries or single entry, install without conflict check
+    [ -z "$entries" ] && return 0
+    local entry_count
+    entry_count=$(printf '%s\n' "$entries" | wc -l | tr -d '[:space:]')
+    [ "$entry_count" -le 1 ] 2>/dev/null && return 0
 
-    local best_repo=$(echo "$entries" | sort -t$'\t' -k4 -nr | head -1 | cut -f2)
+    # Multiple entries = conflict. Pick best by file_size (column 4)
+    local best_repo
+    best_repo=$(printf '%s\n' "$entries" | sort -t$'\t' -k4 -nr | head -1 | cut -f2)
 
     [ "$best_repo" = "$source_repo" ] && return 0
     return 1
