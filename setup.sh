@@ -82,6 +82,8 @@ resolve_paths() {
     HOOKS_DIR="$CLAUDE_HOME/hooks"
     RULES_DIR="$CLAUDE_HOME/rules"
     PROMPTS_DIR="$CLAUDE_HOME/prompts"
+    INSTALL_LOG="$CLAUDE_HOME/.cto-install.log"
+    MANIFEST="$CLAUDE_HOME/.cto-manifest.tsv"
 }
 
 # ============================================================
@@ -251,7 +253,7 @@ backup_existing() {
 # On update: if source hash differs from installed hash → re-install.
 # On conflict: if alternative source has larger size → switch.
 
-INSTALL_LOG="$CLAUDE_HOME/.cto-install.log"
+INSTALL_LOG=""  # Set by resolve_paths()
 
 file_hash() {
     # Fast content hash (works on all OS)
@@ -848,13 +850,13 @@ SKILLEOF
 # MANIFEST & STATUS — Track what's installed
 # ============================================================
 
-MANIFEST="${CLAUDE_HOME:-$HOME/.claude}/.cto-manifest.tsv"
+MANIFEST=""  # Set by resolve_paths()
 
 # Fast status from install log (no filesystem scanning)
 show_status() {
     print_banner
 
-    local log_file="$CLAUDE_HOME/.cto-install.log"
+    local log_file="$INSTALL_LOG"
 
     if [ ! -f "$log_file" ]; then
         log_warn "No install log found. Run 'bash setup.sh --all' to install first."
