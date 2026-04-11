@@ -892,8 +892,8 @@ self_update_and_run() {
     OLD_HASH=$(git hash-object setup.sh 2>/dev/null || echo "none")
 
     # Pull latest
-    echo -e "  Pulling latest from GitHub..."
-    git pull --ff-only origin main 2>/dev/null || git pull origin main 2>/dev/null || {
+    echo -e "  Pulling latest ClaudeCodeCTO from GitHub..."
+    git pull --ff-only origin main >/dev/null 2>&1 || git pull origin main >/dev/null 2>&1 || {
         echo -e "  ${YELLOW}⚠${NC}  Could not pull. Continuing with local version."
     }
 
@@ -927,6 +927,7 @@ do_update() {
 
     # 1. Update all submodules (pull latest from each source)
     log_info "[1/4] Updating source repositories..."
+    echo ""
     local UPDATED=0
     local TOTAL=0
     for repo_dir in "$SOURCES"/*/; do
@@ -939,11 +940,11 @@ do_update() {
         local OLD_COMMIT
         OLD_COMMIT=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
 
-        git fetch origin 2>/dev/null || true
+        git fetch origin >/dev/null 2>&1 || true
         local DEFAULT_BRANCH
         DEFAULT_BRANCH=$(git remote show origin 2>/dev/null | grep "HEAD branch" | awk '{print $NF}' 2>/dev/null || echo "main")
-        git checkout "$DEFAULT_BRANCH" 2>/dev/null || true
-        git pull origin "$DEFAULT_BRANCH" 2>/dev/null || true
+        git checkout "$DEFAULT_BRANCH" >/dev/null 2>&1 || true
+        git pull origin "$DEFAULT_BRANCH" >/dev/null 2>&1 || true
 
         local NEW_COMMIT
         NEW_COMMIT=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
@@ -951,12 +952,15 @@ do_update() {
         if [ "$OLD_COMMIT" != "$NEW_COMMIT" ]; then
             local CHANGES
             CHANGES=$(git log --oneline "$OLD_COMMIT".."$NEW_COMMIT" 2>/dev/null | wc -l | tr -d '[:space:]')
-            log_ok "$repo_name: $CHANGES new commits"
+            echo -e "  ${GREEN}✓${NC}  ${BOLD}$repo_name${NC}: ${GREEN}$CHANGES new commits${NC}"
             UPDATED=$((UPDATED + 1))
+        else
+            echo -e "  ${DIM}-  $repo_name: up to date${NC}"
         fi
         cd "$ROOT"
     done
-    log_ok "Sources checked: $TOTAL | Updated: $UPDATED"
+    echo ""
+    log_ok "Sources: $TOTAL checked, ${GREEN}$UPDATED updated${NC}"
 
     # 2. Re-scan for new/changed components and conflicts
     log_info "[2/4] Re-scanning components and conflicts..."

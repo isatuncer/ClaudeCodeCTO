@@ -83,7 +83,7 @@ else
     cd "$ROOT"
     OLD_SELF=$(git rev-parse HEAD 2>/dev/null || echo "none")
     if [ "$DRY_RUN" = false ]; then
-        git pull --ff-only origin main 2>/dev/null || true
+        git pull --ff-only origin main >/dev/null 2>&1 || true
     fi
     NEW_SELF=$(git rev-parse HEAD 2>/dev/null || echo "none")
     if [ "$OLD_SELF" != "$NEW_SELF" ]; then
@@ -100,10 +100,10 @@ else
         OLD_COMMIT=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
 
         if [ "$DRY_RUN" = false ]; then
-            git fetch origin 2>/dev/null || true
+            git fetch origin >/dev/null 2>&1 || true
             DEFAULT_BRANCH=$(git remote show origin 2>/dev/null | grep "HEAD branch" | awk '{print $NF}' 2>/dev/null || echo "main")
-            git checkout "$DEFAULT_BRANCH" 2>/dev/null || true
-            git pull origin "$DEFAULT_BRANCH" 2>/dev/null || true
+            git checkout "$DEFAULT_BRANCH" >/dev/null 2>&1 || true
+            git pull origin "$DEFAULT_BRANCH" >/dev/null 2>&1 || true
         fi
 
         NEW_COMMIT=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
