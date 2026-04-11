@@ -16,8 +16,10 @@
 #   bash setup.sh --rules      # Rules only
 #   bash setup.sh --prompts    # Prompt libraries only
 #   bash setup.sh --dry-run    # Preview without installing
+#   bash setup.sh --status     # Quick status check (from manifest)
 #   bash setup.sh --backup     # Backup existing files first
-#   bash setup.sh --uninstall  # Remove installed components
+#   bash setup.sh --uninstall  # Remove ALL installed components
+#   bash setup.sh --uninstall skills  # Remove skills only
 # ============================================================
 
 set -uo pipefail
@@ -743,61 +745,129 @@ SKILLEOF
 # POST-INSTALL SUMMARY
 # ============================================================
 
-show_summary() {
-    local skills_count=$(find "$SKILLS_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
-    local agents_count=$(find "$AGENTS_DIR" -name "*.md" 2>/dev/null | wc -l)
-    local commands_count=$(find "$COMMANDS_DIR" -name "*.md" 2>/dev/null | wc -l)
-    local hooks_count=$(find "$HOOKS_DIR" -type f 2>/dev/null | wc -l)
-    local rules_count=$(find "$RULES_DIR" -name "*.md" -type f 2>/dev/null | wc -l)
-    local prompts_count=$(find "$PROMPTS_DIR" -type f 2>/dev/null | wc -l)
+# ============================================================
+# MANIFEST & STATUS — Track what's installed
+# ============================================================
+
+MANIFEST="${CLAUDE_HOME:-$HOME/.claude}/.cto-manifest.tsv"
+
+# Fast status from manifest (no scanning)
+show_status() {
+    print_banner
+
+    if [ ! -f "$MANIFEST" ]; then
+        log_warn "No manifest found. Run 'bash setup.sh --all' to install first."
+        return
+    fi
+
+    local updated=$(head -2 "$MANIFEST" | grep "Updated:" | sed 's/.*Updated: //')
+
+    echo -e "  ${BOLD}Installed Components${NC} ${DIM}(last install: $updated)${NC}"
+    echo ""
+
+    while IFS=$'\t' read -r category count path; do
+        [[ "$category" == "#"* ]] && continue
+        [[ "$category" == "category" ]] && continue
+        printf "  ${GREEN}%-14s${NC} ${BOLD}%s${NC}\n" "$category" "$count"
+    done < "$MANIFEST"
+
+    # Prompt breakdown (live count, fast)
+    echo ""
+    echo -e "  ${BOLD}Prompt Breakdown:${NC}"
+    for pdir in "$PROMPTS_DIR"/*/; do
+        [ -d "$pdir" ] || continue
+        local pname=$(basename "$pdir")
+        local pcount=$(find "$pdir" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+        printf "    ${DIM}%-30s${NC} %s files\n" "$pname" "$pcount"
+    done
 
     echo ""
-    echo -e "${CYAN}╔═══════════════════════════════════════════════════╗${NC}"
-    echo -e "${CYAN}║${NC}${BOLD}            Installation Complete!                 ${NC}${CYAN}║${NC}"
-    echo -e "${CYAN}╠═══════════════════════════════════════════════════╣${NC}"
-    echo -e "${CYAN}║${NC}                                                   ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}  ${GREEN}Skills${NC}     ${BOLD}$skills_count${NC} installed                        ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}  ${GREEN}Agents${NC}     ${BOLD}$agents_count${NC} installed                        ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}  ${GREEN}Commands${NC}   ${BOLD}$commands_count${NC} installed                        ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}  ${GREEN}Hooks${NC}      ${BOLD}$hooks_count${NC} files                            ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}  ${GREEN}Rules${NC}      ${BOLD}$rules_count${NC} files                            ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}  ${GREEN}Prompts${NC}    ${BOLD}$prompts_count${NC} files                            ${CYAN}║${NC}"
+    echo -e "  ${BOLD}Source Repos:${NC} $(ls -d "$ROOT/sources"/*/ 2>/dev/null | wc -l | tr -d '[:space:]') tracked"
+    echo -e "  ${BOLD}Target:${NC} $CLAUDE_HOME"
+    echo ""
+    echo -e "  ${DIM}Run 'bash setup.sh --update' to pull latest and re-install${NC}"
+    echo ""
+}
 
-    local ent_templates=$(find "$CLAUDE_HOME/enterprise/templates" -name "*.md" -type f 2>/dev/null | wc -l)
-    local ent_diagrams=$(find "$CLAUDE_HOME/enterprise/diagrams" -name "*.mmd" -type f 2>/dev/null | wc -l)
-    local ent_standards=$(find "$CLAUDE_HOME/enterprise/standards" -name "*.md" -type f 2>/dev/null | wc -l)
-    local ent_roles=$(find "$CLAUDE_HOME/enterprise/roles" -name "*.md" -type f 2>/dev/null | wc -l)
+write_manifest() {
+    local skills_count=$(find "$SKILLS_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l | tr -d '[:space:]')
+    local agents_count=$(find "$AGENTS_DIR" -name "*.md" 2>/dev/null | wc -l | tr -d '[:space:]')
+    local commands_count=$(find "$COMMANDS_DIR" -name "*.md" 2>/dev/null | wc -l | tr -d '[:space:]')
+    local hooks_count=$(find "$HOOKS_DIR" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+    local rules_count=$(find "$RULES_DIR" -name "*.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+    local prompts_count=$(find "$PROMPTS_DIR" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+    local templates_count=$(find "$CLAUDE_HOME/enterprise/templates" -name "*.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+    local diagrams_count=$(find "$CLAUDE_HOME/enterprise/diagrams" -name "*.mmd" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+    local standards_count=$(find "$CLAUDE_HOME/enterprise/standards" -name "*.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+    local roles_count=$(find "$CLAUDE_HOME/enterprise/roles" -name "*.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+    local ga_count=$(find "$CLAUDE_HOME/enterprise/github-actions" -name "*.yml" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
 
-    echo -e "${CYAN}║${NC}                                                   ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}  ${BOLD}Enterprise:${NC}                                      ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}  ${GREEN}Templates${NC}  ${BOLD}$ent_templates${NC} document templates               ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}  ${GREEN}Diagrams${NC}   ${BOLD}$ent_diagrams${NC} Mermaid templates                 ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}  ${GREEN}Standards${NC}  ${BOLD}$ent_standards${NC} enterprise standards              ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}  ${GREEN}Roles${NC}      ${BOLD}$ent_roles${NC} role definitions                  ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}                                                   ${CYAN}║${NC}"
+    cat > "$MANIFEST" << MEOF
+# ClaudeCodeCTO Manifest — auto-generated, do not edit
+# Updated: $(date +%Y-%m-%d_%H:%M:%S)
+category	count	path
+skills	$skills_count	$SKILLS_DIR
+agents	$agents_count	$AGENTS_DIR
+commands	$commands_count	$COMMANDS_DIR
+hooks	$hooks_count	$HOOKS_DIR
+rules	$rules_count	$RULES_DIR
+prompts	$prompts_count	$PROMPTS_DIR
+templates	$templates_count	$CLAUDE_HOME/enterprise/templates
+diagrams	$diagrams_count	$CLAUDE_HOME/enterprise/diagrams
+standards	$standards_count	$CLAUDE_HOME/enterprise/standards
+roles	$roles_count	$CLAUDE_HOME/enterprise/roles
+github-actions	$ga_count	$CLAUDE_HOME/enterprise/github-actions
+MEOF
+}
+
+show_summary() {
+    # Read counts from live filesystem
+    local skills_count=$(find "$SKILLS_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l | tr -d '[:space:]')
+    local agents_count=$(find "$AGENTS_DIR" -name "*.md" 2>/dev/null | wc -l | tr -d '[:space:]')
+    local commands_count=$(find "$COMMANDS_DIR" -name "*.md" 2>/dev/null | wc -l | tr -d '[:space:]')
+    local hooks_count=$(find "$HOOKS_DIR" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+    local rules_count=$(find "$RULES_DIR" -name "*.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+    local prompts_count=$(find "$PROMPTS_DIR" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+    local templates_count=$(find "$CLAUDE_HOME/enterprise/templates" -name "*.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+    local diagrams_count=$(find "$CLAUDE_HOME/enterprise/diagrams" -name "*.mmd" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+    local standards_count=$(find "$CLAUDE_HOME/enterprise/standards" -name "*.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+    local roles_count=$(find "$CLAUDE_HOME/enterprise/roles" -name "*.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+
+    # Prompt breakdown
+    local p_system=$(find "$PROMPTS_DIR/system-prompts" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+    local p_claude=$(find "$PROMPTS_DIR/claude-code-internals" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+    local p_coding=$(find "$PROMPTS_DIR/coding-tool-prompts" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+    local p_guide=$(find "$PROMPTS_DIR/prompt-engineering-guide" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+
+    echo ""
+    echo -e "${CYAN}╔════════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║${NC}${BOLD}             Installation Complete!                 ${NC}${CYAN}║${NC}"
+    echo -e "${CYAN}╠════════════════════════════════════════════════════╣${NC}"
+    echo -e "${CYAN}║${NC}  ${GREEN}Skills${NC}      ${BOLD}$(printf '%-6s' "$skills_count")${NC}  ${DIM}coding patterns${NC}                ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  ${GREEN}Agents${NC}      ${BOLD}$(printf '%-6s' "$agents_count")${NC}  ${DIM}specialized agents${NC}             ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  ${GREEN}Commands${NC}    ${BOLD}$(printf '%-6s' "$commands_count")${NC}  ${DIM}slash commands${NC}                 ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  ${GREEN}Hooks${NC}       ${BOLD}$(printf '%-6s' "$hooks_count")${NC}  ${DIM}auto-format, auto-test${NC}          ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  ${GREEN}Rules${NC}       ${BOLD}$(printf '%-6s' "$rules_count")${NC}  ${DIM}coding standards${NC}               ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  ${GREEN}Prompts${NC}     ${BOLD}$(printf '%-6s' "$prompts_count")${NC}  ${DIM}system: $p_system  claude: $p_claude  tools: $p_coding  guide: $p_guide${NC}"
+    echo -e "${CYAN}║${NC}                                                    ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  ${BOLD}Enterprise:${NC}                                        ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  ${GREEN}Templates${NC}   ${BOLD}$(printf '%-6s' "$templates_count")${NC}  ${DIM}document templates${NC}             ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  ${GREEN}Diagrams${NC}    ${BOLD}$(printf '%-6s' "$diagrams_count")${NC}  ${DIM}Mermaid templates${NC}              ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  ${GREEN}Standards${NC}   ${BOLD}$(printf '%-6s' "$standards_count")${NC}  ${DIM}ISO, IEEE, NIST, OWASP${NC}        ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  ${GREEN}Roles${NC}       ${BOLD}$(printf '%-6s' "$roles_count")${NC}  ${DIM}CTO to DevSecOps${NC}               ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}                                                    ${CYAN}║${NC}"
     echo -e "${CYAN}║${NC}  Target: ${DIM}$CLAUDE_HOME${NC}"
     echo -e "${CYAN}║${NC}  OS:     ${DIM}$OS${NC}"
-    echo -e "${CYAN}║${NC}                                                   ${CYAN}║${NC}"
-    echo -e "${CYAN}╠═══════════════════════════════════════════════════╣${NC}"
-    echo -e "${CYAN}║${NC}${BOLD}  Your Claude is now a CTO. Try:                   ${NC}${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}                                                   ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}  ${GREEN}/doc-create SRS${NC}     Generate requirements doc    ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}  ${GREEN}/doc-create ADR${NC}     Architecture decision record ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}  ${GREEN}/doc-create HLD${NC}     High level design            ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}  ${GREEN}/doc-export${NC}         Convert MD to PDF/DOCX       ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}  ${GREEN}/doc-list${NC}           Show document coverage       ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}  ${GREEN}/cto-status${NC}    System dashboard              ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}                                                   ${CYAN}║${NC}"
-    echo -e "${CYAN}╠═══════════════════════════════════════════════════╣${NC}"
-    echo -e "${CYAN}║${NC}${BOLD}  Start a project like a software company:         ${NC}${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}                                                   ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}  ${YELLOW}\"Create a new project called X with Y stack\"${NC}      ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}  ${YELLOW}\"Generate all requirements documents\"${NC}              ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}  ${YELLOW}\"Design the system architecture for X\"${NC}            ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}  ${YELLOW}\"Create a threat model for this API\"${NC}              ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}                                                   ${CYAN}║${NC}"
-    echo -e "${CYAN}╚═══════════════════════════════════════════════════╝${NC}"
+    echo -e "${CYAN}╠════════════════════════════════════════════════════╣${NC}"
+    echo -e "${CYAN}║${NC}  ${GREEN}/startCTO${NC}       Launch CTO mode                    ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  ${GREEN}/doc-create${NC}     Generate enterprise documents       ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  ${GREEN}/cto-sync${NC}       Daily sync + GitHub discovery       ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  ${GREEN}/cto-status${NC}     System dashboard                    ${CYAN}║${NC}"
+    echo -e "${CYAN}╚════════════════════════════════════════════════════╝${NC}"
     echo ""
+
+    # Write manifest
+    write_manifest
 }
 
 # ============================================================
@@ -934,34 +1004,78 @@ do_update() {
 # ============================================================
 
 uninstall() {
-    log_step "Uninstalling ClaudeCodeCTO components"
+    local target="${1:-all}"
 
-    echo -e "  ${YELLOW}This will remove all components installed by ClaudeCodeCTO.${NC}"
-    echo -e "  ${YELLOW}Your original Claude Code files will NOT be affected.${NC}"
+    detect_os
+    resolve_paths
+
+    if [ "$target" = "all" ]; then
+        log_step "Uninstalling ALL ClaudeCodeCTO components"
+        echo -e "  ${YELLOW}This will remove everything installed by ClaudeCodeCTO.${NC}"
+    else
+        log_step "Uninstalling: $target"
+    fi
+
     echo ""
     read -p "  Continue? [y/N]: " confirm
     [[ ! "$confirm" =~ ^[Yy]$ ]] && { echo "  Cancelled."; exit 0; }
-
-    # Remove cto commands
-    rm -f "$COMMANDS_DIR"/cto-*.md 2>/dev/null
-    log_ok "CTO commands removed"
-
-    # Remove prompt suggester
-    rm -rf "$SKILLS_DIR/cto-prompt-suggester" 2>/dev/null
-    log_ok "Prompt suggester removed"
-
-    # Remove prompt libraries
-    rm -rf "$PROMPTS_DIR" 2>/dev/null
-    log_ok "Prompt libraries removed"
-
-    # Remove cursor rules reference
-    rm -rf "$CLAUDE_HOME/references/cursor-rules" 2>/dev/null
-    log_ok "Cursor rules reference removed"
-
-    log_warn "Skills, agents, and rules from source repos were NOT removed."
-    log_warn "These are mixed with your existing files. Manual cleanup needed."
     echo ""
-    log_ok "Uninstall complete."
+
+    local removed=0
+
+    do_remove() {
+        local category="$1" target_dir="$2" pattern="${3:-}"
+        if [ -d "$target_dir" ]; then
+            local count
+            if [ -n "$pattern" ]; then
+                count=$(find "$target_dir" -name "$pattern" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+                find "$target_dir" -name "$pattern" -type f -delete 2>/dev/null || true
+            else
+                count=$(find "$target_dir" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+                rm -rf "$target_dir" 2>/dev/null || true
+            fi
+            log_ok "$category: $count files removed"
+            removed=$((removed + count))
+        else
+            echo -e "  ${DIM}-  $category: not installed${NC}"
+        fi
+    }
+
+    case "$target" in
+        skills|all)
+            do_remove "Skills" "$SKILLS_DIR" ;;
+        agents|all)
+            do_remove "Agents" "$AGENTS_DIR" "*.md" ;;
+        commands|all)
+            do_remove "Commands" "$COMMANDS_DIR" "*.md" ;;
+        hooks|all)
+            do_remove "Hooks" "$HOOKS_DIR" ;;
+        rules|all)
+            do_remove "Rules" "$RULES_DIR" ;;
+        prompts|all)
+            do_remove "Prompts" "$PROMPTS_DIR" ;;
+        enterprise|all)
+            do_remove "Enterprise" "$CLAUDE_HOME/enterprise" ;;
+        *) log_err "Unknown category: $target"
+           echo "  Valid: skills, agents, commands, hooks, rules, prompts, enterprise, all"
+           exit 1 ;;
+    esac
+
+    # If uninstalling all, also clean up extras
+    if [ "$target" = "all" ]; then
+        rm -rf "$CLAUDE_HOME/references/cursor-rules" 2>/dev/null
+        rm -f "$CLAUDE_HOME/.cto-manifest.tsv" 2>/dev/null
+        rm -rf "$CLAUDE_HOME/scripts" 2>/dev/null
+        log_ok "References and manifest cleaned"
+    fi
+
+    # Update manifest if partial uninstall
+    if [ "$target" != "all" ] && [ -d "$CLAUDE_HOME" ]; then
+        write_manifest 2>/dev/null || true
+    fi
+
+    echo ""
+    log_ok "Uninstall complete. $removed files removed."
 }
 
 # ============================================================
@@ -1037,13 +1151,17 @@ parse_args() {
             --backup)    BACKUP=true ;;
             --update)    self_update_and_run; exit 0 ;;
             --update-continue) detect_os; resolve_paths; do_update; exit 0 ;;
-            --uninstall) uninstall; exit 0 ;;
+            --uninstall)
+                shift
+                uninstall "${1:-all}"; exit 0 ;;
+            --status) detect_os; resolve_paths; show_status; exit 0 ;;
             --help|-h)
                 echo "Usage: bash setup.sh [OPTIONS]"
                 echo ""
                 echo "Options:"
                 echo "  --all        Install all components"
-                echo "  --update     Pull latest sources + re-scan + re-install"
+                echo "  --update     Pull latest + re-scan + re-install (self-updating)"
+                echo "  --status     Show installed component counts (fast, from manifest)"
                 echo "  --skills     Install skills only"
                 echo "  --agents     Install agents only"
                 echo "  --commands   Install slash commands only"
@@ -1052,8 +1170,16 @@ parse_args() {
                 echo "  --prompts    Install prompt libraries only"
                 echo "  --dry-run    Preview what will be installed"
                 echo "  --backup     Backup existing files before overwriting"
-                echo "  --uninstall  Remove installed components"
+                echo "  --uninstall [category]  Remove components (all/skills/agents/commands/"
+                echo "                          hooks/rules/prompts/enterprise)"
                 echo "  --help       Show this help"
+                echo ""
+                echo "Examples:"
+                echo "  bash setup.sh --all              # Full install"
+                echo "  bash setup.sh --update           # Update everything"
+                echo "  bash setup.sh --status           # Quick status check"
+                echo "  bash setup.sh --uninstall        # Remove everything"
+                echo "  bash setup.sh --uninstall skills  # Remove skills only"
                 exit 0
                 ;;
             *)

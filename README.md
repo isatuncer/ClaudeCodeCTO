@@ -90,17 +90,22 @@ That's it. All 1,575 skills, 263 agents, 137 commands, and enterprise templates 
 ```bash
 bash setup.sh                # Interactive mode (choose what to install)
 bash setup.sh --all          # Install everything
-bash setup.sh --update       # Pull latest + re-scan + re-install (for updates)
-bash setup.sh --skills       # Skills only
-bash setup.sh --agents       # Agents only
-bash setup.sh --commands     # Commands only
-bash setup.sh --hooks        # Hooks only
-bash setup.sh --rules        # Rules only
-bash setup.sh --prompts      # Prompt libraries only
+bash setup.sh --update       # Pull latest + re-scan + re-install (self-updating)
+bash setup.sh --status       # Quick status check (from manifest, no scanning)
+bash setup.sh --skills       # Install skills only
+bash setup.sh --agents       # Install agents only
+bash setup.sh --commands     # Install commands only
+bash setup.sh --hooks        # Install hooks only
+bash setup.sh --rules        # Install rules only
+bash setup.sh --prompts      # Install prompt libraries only
 bash setup.sh --dry-run      # Preview without installing
 bash setup.sh --backup       # Backup existing files before install
 bash setup.sh --all --backup # Install everything with backup
-bash setup.sh --uninstall    # Remove all installed components
+bash setup.sh --uninstall           # Remove ALL installed components
+bash setup.sh --uninstall skills    # Remove skills only
+bash setup.sh --uninstall agents    # Remove agents only
+bash setup.sh --uninstall prompts   # Remove prompts only
+bash setup.sh --uninstall enterprise # Remove enterprise templates/standards
 ```
 
 ---

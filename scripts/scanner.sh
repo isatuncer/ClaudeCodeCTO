@@ -66,7 +66,7 @@ fi
 # ============================================================
 # 1. SKILLS SCAN
 # ============================================================
-echo -e "${CYAN}━━━ [1/5] Scanning skills ━━━${NC}"
+echo -e "${CYAN}━━━ [1/6] Scanning skills ━━━${NC}"
 
 SKILLS_MAP="$DECISIONS/skills-map.tsv"
 echo -e "skill_name\tsource_repo\tfile_path\tfile_size\tline_count" > "$SKILLS_MAP"
@@ -146,7 +146,7 @@ echo ""
 # ============================================================
 # 2. AGENTS SCAN
 # ============================================================
-echo -e "${CYAN}━━━ [2/5] Scanning agents ━━━${NC}"
+echo -e "${CYAN}━━━ [2/6] Scanning agents ━━━${NC}"
 
 AGENTS_MAP="$DECISIONS/agents-map.tsv"
 echo -e "agent_name\tsource_repo\tfile_path\tfile_size\tline_count" > "$AGENTS_MAP"
@@ -223,7 +223,7 @@ echo ""
 # ============================================================
 # 3. COMMANDS SCAN
 # ============================================================
-echo -e "${CYAN}━━━ [3/5] Scanning commands ━━━${NC}"
+echo -e "${CYAN}━━━ [3/6] Scanning commands ━━━${NC}"
 
 COMMANDS_MAP="$DECISIONS/commands-map.tsv"
 echo -e "command_name\tsource_repo\tfile_path\tfile_size\tline_count" > "$COMMANDS_MAP"
@@ -273,7 +273,7 @@ echo ""
 # ============================================================
 # 4. HOOKS SCAN
 # ============================================================
-echo -e "${CYAN}━━━ [4/5] Scanning hooks ━━━${NC}"
+echo -e "${CYAN}━━━ [4/6] Scanning hooks ━━━${NC}"
 
 HOOKS_MAP="$DECISIONS/hooks-map.tsv"
 echo -e "hook_name\tsource_repo\tfile_path\tfile_size" > "$HOOKS_MAP"
@@ -300,12 +300,49 @@ echo -e "\n  ${BOLD}Total:${NC} ${GREEN}$TOTAL_HOOKS hooks${NC}"
 echo ""
 
 # ============================================================
-# 5. FIX PATHS + GENERATE CONFLICT REPORT
+# 5. PROMPTS SCAN
 # ============================================================
-echo -e "${CYAN}━━━ [5/5] Generating conflict report ━━━${NC}"
+echo -e "${CYAN}━━━ [5/6] Scanning prompts ━━━${NC}"
+
+PROMPTS_MAP="$DECISIONS/prompts-map.tsv"
+echo -e "prompt_source\tcategory\tfile_count\ttotal_size_kb" > "$PROMPTS_MAP"
+
+PROMPT_SOURCES=(
+    "system-prompts-collection:system-prompts:AI tool system prompts (28+ tools)"
+    "piebald-claude-prompts:claude-internals:Claude Code internal prompts"
+    "elifuzz-system-prompts:coding-tools:AI coding tool prompts"
+    "prompt-engineering-guide:education:Prompt engineering techniques"
+    "awesome-chatgpt-prompts:general:General prompt library"
+)
+
+TOTAL_PROMPT_FILES=0
+
+for entry in "${PROMPT_SOURCES[@]}"; do
+    IFS=':' read -r repo_name category description <<< "$entry"
+    repo_path="$SOURCES/$repo_name"
+
+    if [ -d "$repo_path" ]; then
+        file_count=$(find "$repo_path" -name "*.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+        total_kb=$(find "$repo_path" -name "*.md" -type f -exec wc -c {} + 2>/dev/null | tail -1 | awk '{printf "%.0f", $1/1024}' 2>/dev/null || echo "0")
+        echo -e "${repo_name}\t${category}\t${file_count}\t${total_kb}" >> "$PROMPTS_MAP"
+        TOTAL_PROMPT_FILES=$((TOTAL_PROMPT_FILES + file_count))
+        echo -e "  ${GREEN}✓${NC}  ${BOLD}$repo_name${NC}: $file_count files ($total_kb KB) — $description"
+    else
+        echo -e "  ${DIM}-  $repo_name: not cloned${NC}"
+    fi
+done
+
+echo ""
+echo -e "  ${BOLD}Total:${NC} ${GREEN}$TOTAL_PROMPT_FILES prompt files${NC} across ${#PROMPT_SOURCES[@]} sources"
+echo ""
+
+# ============================================================
+# 6. FIX PATHS + GENERATE CONFLICT REPORT
+# ============================================================
+echo -e "${CYAN}━━━ [6/6] Generating conflict report ━━━${NC}"
 
 # Fix absolute paths
-for tsv_file in "$SKILLS_MAP" "$AGENTS_MAP" "$COMMANDS_MAP" "$HOOKS_MAP"; do
+for tsv_file in "$SKILLS_MAP" "$AGENTS_MAP" "$COMMANDS_MAP" "$HOOKS_MAP" "$PROMPTS_MAP"; do
     if [ -f "$tsv_file" ]; then
         sed -i "s|${ROOT}/||g" "$tsv_file" 2>/dev/null || \
         sed -i '' "s|${ROOT}/||g" "$tsv_file" 2>/dev/null || true
@@ -324,6 +361,7 @@ cat > "$CONFLICT_REPORT" << HEADER
 | Agents | $TOTAL_AGENTS | $UNIQUE_AGENTS | $CONFLICT_AGENTS | $([ "$PREV_AGENT_COUNT" -gt 0 ] 2>/dev/null && echo "${PREV_AGENT_COUNT} → ${UNIQUE_AGENTS}" || echo "first scan") |
 | Commands | $TOTAL_COMMANDS | $UNIQUE_COMMANDS | $CONFLICT_COMMANDS | $([ "$PREV_CMD_COUNT" -gt 0 ] 2>/dev/null && echo "${PREV_CMD_COUNT} → ${UNIQUE_COMMANDS}" || echo "first scan") |
 | Hooks | $TOTAL_HOOKS | - | - | $([ "$PREV_HOOK_COUNT" -gt 0 ] 2>/dev/null && echo "${PREV_HOOK_COUNT} → ${TOTAL_HOOKS}" || echo "first scan") |
+| Prompts | $TOTAL_PROMPT_FILES | - | - | - |
 
 HEADER
 
@@ -413,6 +451,7 @@ echo -e "${CYAN}║${NC}  Skills:   ${GREEN}${UNIQUE_SKILLS}${NC} unique (${TOTA
 echo -e "${CYAN}║${NC}  Agents:   ${GREEN}${UNIQUE_AGENTS}${NC} unique (${TOTAL_AGENTS} raw, ${CONFLICT_AGENTS} conflicts) ${CYAN}║${NC}"
 echo -e "${CYAN}║${NC}  Commands: ${GREEN}${UNIQUE_COMMANDS}${NC} unique (${TOTAL_COMMANDS} raw, ${CONFLICT_COMMANDS} conflicts) ${CYAN}║${NC}"
 echo -e "${CYAN}║${NC}  Hooks:    ${GREEN}${TOTAL_HOOKS}${NC}                                  ${CYAN}║${NC}"
+echo -e "${CYAN}║${NC}  Prompts:  ${GREEN}${TOTAL_PROMPT_FILES}${NC} files across 5 sources           ${CYAN}║${NC}"
 echo -e "${CYAN}║${NC}                                               ${CYAN}║${NC}"
 
 if [ "$PREV_SKILL_COUNT" -gt 0 ] 2>/dev/null; then
