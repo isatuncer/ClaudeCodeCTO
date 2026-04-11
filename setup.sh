@@ -297,7 +297,7 @@ init_install_log() {
 declare -A SKILL_WINNERS AGENT_WINNERS CMD_WINNERS
 
 load_winner_maps() {
-    log_info "Loading conflict resolution maps..."
+    log_info "Loading component maps..."
 
     # Skills: name\trepo\tpath\tfile_size\tline_count
     local map="$DECISIONS/skills-map.tsv"
@@ -323,7 +323,33 @@ load_winner_maps() {
         done < <(tail -n +2 "$map" | sort -t$'\t' -k1,1 -k4,4nr 2>/dev/null)
     fi
 
-    log_ok "Maps loaded: ${#SKILL_WINNERS[@]} skills, ${#AGENT_WINNERS[@]} agents, ${#CMD_WINNERS[@]} commands"
+    # Show per-repo breakdown
+    log_ok "Skills map (${#SKILL_WINNERS[@]} unique):"
+    declare -A _sk_counts
+    for repo in "${SKILL_WINNERS[@]}"; do
+        _sk_counts[$repo]=$(( ${_sk_counts[$repo]:-0} + 1 ))
+    done
+    for repo in $(echo "${!_sk_counts[@]}" | tr ' ' '\n' | sort); do
+        echo -e "     ${GREEN}${_sk_counts[$repo]}${NC} from ${BOLD}$repo${NC}"
+    done
+
+    log_ok "Agents map (${#AGENT_WINNERS[@]} unique):"
+    declare -A _ag_counts
+    for repo in "${AGENT_WINNERS[@]}"; do
+        _ag_counts[$repo]=$(( ${_ag_counts[$repo]:-0} + 1 ))
+    done
+    for repo in $(echo "${!_ag_counts[@]}" | tr ' ' '\n' | sort); do
+        echo -e "     ${GREEN}${_ag_counts[$repo]}${NC} from ${BOLD}$repo${NC}"
+    done
+
+    log_ok "Commands map (${#CMD_WINNERS[@]} unique):"
+    declare -A _cm_counts
+    for repo in "${CMD_WINNERS[@]}"; do
+        _cm_counts[$repo]=$(( ${_cm_counts[$repo]:-0} + 1 ))
+    done
+    for repo in $(echo "${!_cm_counts[@]}" | tr ' ' '\n' | sort); do
+        echo -e "     ${GREEN}${_cm_counts[$repo]}${NC} from ${BOLD}$repo${NC}"
+    done
 }
 
 # Fast conflict check using pre-loaded maps (no grep, no subprocess)
