@@ -254,6 +254,7 @@ backup_existing() {
 # On conflict: if alternative source has larger size → switch.
 
 INSTALL_LOG=""  # Set by resolve_paths()
+FAST_MODE=false  # true for --all (skip per-item checks), false for --update
 
 file_fingerprint() {
     # Fast: just file size (no content read, instant)
@@ -285,6 +286,70 @@ get_installed_source() {
 init_install_log() {
     mkdir -p "$CLAUDE_HOME"
     echo -e "type\tname\tsource\tdate\thash\tsize" > "$INSTALL_LOG"
+}
+
+# ============================================================
+# WINNER MAP — Pre-load conflict resolution into memory
+# ============================================================
+# Reads TSV maps once, builds associative arrays for O(1) lookup.
+# Used in FAST_MODE (--all) to avoid per-item grep on every skill.
+
+declare -A SKILL_WINNERS AGENT_WINNERS CMD_WINNERS
+
+load_winner_maps() {
+    log_info "Loading conflict resolution maps..."
+
+    # Skills: name\trepo\tpath\tfile_size\tline_count
+    local map="$DECISIONS/skills-map.tsv"
+    if [ -f "$map" ]; then
+        while IFS=$'\t' read -r name repo rest; do
+            [ -z "${SKILL_WINNERS[$name]+x}" ] && SKILL_WINNERS[$name]="$repo"
+        done < <(tail -n +2 "$map" | sort -t$'\t' -k1,1 -k4,4nr 2>/dev/null)
+    fi
+
+    # Agents: name\trepo\tpath\tfile_size\tline_count
+    map="$DECISIONS/agents-map.tsv"
+    if [ -f "$map" ]; then
+        while IFS=$'\t' read -r name repo rest; do
+            [ -z "${AGENT_WINNERS[$name]+x}" ] && AGENT_WINNERS[$name]="$repo"
+        done < <(tail -n +2 "$map" | sort -t$'\t' -k1,1 -k4,4nr 2>/dev/null)
+    fi
+
+    # Commands: name\trepo\tpath\tfile_size\tline_count
+    map="$DECISIONS/commands-map.tsv"
+    if [ -f "$map" ]; then
+        while IFS=$'\t' read -r name repo rest; do
+            [ -z "${CMD_WINNERS[$name]+x}" ] && CMD_WINNERS[$name]="$repo"
+        done < <(tail -n +2 "$map" | sort -t$'\t' -k1,1 -k4,4nr 2>/dev/null)
+    fi
+
+    log_ok "Maps loaded: ${#SKILL_WINNERS[@]} skills, ${#AGENT_WINNERS[@]} agents, ${#CMD_WINNERS[@]} commands"
+}
+
+# Fast conflict check using pre-loaded maps (no grep, no subprocess)
+fast_should_install() {
+    local component_type="$1" component_name="$2" source_repo="$3"
+    case "$component_type" in
+        skills)
+            local winner="${SKILL_WINNERS[$component_name]:-}"
+            [ -z "$winner" ] && return 0  # not in map = no conflict
+            [ "$winner" = "$source_repo" ] && return 0
+            return 1
+            ;;
+        agents)
+            local winner="${AGENT_WINNERS[$component_name]:-}"
+            [ -z "$winner" ] && return 0
+            [ "$winner" = "$source_repo" ] && return 0
+            return 1
+            ;;
+        commands)
+            local winner="${CMD_WINNERS[$component_name]:-}"
+            [ -z "$winner" ] && return 0
+            [ "$winner" = "$source_repo" ] && return 0
+            return 1
+            ;;
+    esac
+    return 0
 }
 
 # ============================================================
@@ -322,24 +387,45 @@ setup_skills() {
             [[ "$skill_name" == "__pycache__" || "$skill_name" == "node_modules" || "$skill_name" == ".git" ]] && continue
 
             current=$((current + 1))
-            # Show progress every 50 items
-            if [ $((current % 50)) -eq 0 ] || [ "$current" -eq "$total" ]; then
+            # Show progress every 25 items
+            if [ $((current % 25)) -eq 0 ] || [ "$current" -eq "$total" ]; then
                 local pct=$((current * 100 / total))
-                printf "\r  [%3d%%] %d/%d skills processed..." "$pct" "$current" "$total"
+                printf "\r  [%3d%%] %d/%d skills..." "$pct" "$current" "$total"
             fi
 
-            if ! should_install "skills" "$skill_name" "$repo"; then
-                skipped=$((skipped + 1))
-                continue
-            fi
-
-            if [ "$DRY_RUN" = false ]; then
-                local target="$SKILLS_DIR/$skill_name"
-                local src_fp=$(dir_fingerprint "$skill_dir")
-                backup_existing "$target"
-                mkdir -p "$target"
-                cp -r "$skill_dir"/* "$target/" 2>/dev/null || true
-                log_install "skill" "$skill_name" "$repo" "$src_fp" "0"
+            # FAST_MODE: in-memory lookup (no grep, no subprocess)
+            # UPDATE MODE: grep-based should_install + fingerprint comparison
+            if [ "$FAST_MODE" = true ]; then
+                if ! fast_should_install "skills" "$skill_name" "$repo"; then
+                    skipped=$((skipped + 1))
+                    continue
+                fi
+                if [ "$DRY_RUN" = false ]; then
+                    local target="$SKILLS_DIR/$skill_name"
+                    backup_existing "$target"
+                    mkdir -p "$target"
+                    cp -r "$skill_dir"/* "$target/" 2>/dev/null || true
+                    log_install "skill" "$skill_name" "$repo" "0" "0"
+                fi
+            else
+                if ! should_install "skills" "$skill_name" "$repo"; then
+                    skipped=$((skipped + 1))
+                    continue
+                fi
+                if [ "$DRY_RUN" = false ]; then
+                    local target="$SKILLS_DIR/$skill_name"
+                    local src_fp=$(dir_fingerprint "$skill_dir")
+                    local old_fp=$(get_installed_hash "skill" "$skill_name")
+                    if [ -n "$old_fp" ] && [ "$old_fp" != "0" ] && [ "$old_fp" = "$src_fp" ]; then
+                        log_install "skill" "$skill_name" "$repo" "$src_fp" "0"
+                        installed=$((installed + 1))
+                        continue
+                    fi
+                    backup_existing "$target"
+                    mkdir -p "$target"
+                    cp -r "$skill_dir"/* "$target/" 2>/dev/null || true
+                    log_install "skill" "$skill_name" "$repo" "$src_fp" "0"
+                fi
             fi
             installed=$((installed + 1))
         done
@@ -369,7 +455,7 @@ setup_agents() {
         should_install "agents" "$agent_name" "$repo" || return 0
 
         local src_hash src_size
-        src_hash=$(file_hash "$agent_file")
+        src_hash=$(file_fingerprint "$agent_file")
         src_size=$(wc -c < "$agent_file" 2>/dev/null | tr -d '[:space:]')
         local old_hash=$(get_installed_hash "agent" "$agent_name")
 
@@ -430,7 +516,7 @@ setup_commands() {
             local cmd_name=$(basename "$cmd_file" .md)
             should_install "commands" "$cmd_name" "$repo" || continue
 
-            local src_hash=$(file_hash "$cmd_file")
+            local src_hash=$(file_fingerprint "$cmd_file")
             local src_size=$(wc -c < "$cmd_file" 2>/dev/null | tr -d '[:space:]')
             local old_hash=$(get_installed_hash "command" "$cmd_name")
 
@@ -456,7 +542,7 @@ setup_commands() {
         for cmd_file in "$ROOT/commands"/*.md; do
             [ -f "$cmd_file" ] || continue
             local cmd_name=$(basename "$cmd_file" .md)
-            local src_hash=$(file_hash "$cmd_file")
+            local src_hash=$(file_fingerprint "$cmd_file")
             local src_size=$(wc -c < "$cmd_file" 2>/dev/null | tr -d '[:space:]')
             if [ "$DRY_RUN" = false ]; then
                 backup_existing "$COMMANDS_DIR/$cmd_name.md"
@@ -1094,11 +1180,12 @@ do_update() {
         log_warn "Scanner script not found, skipping scan"
     fi
 
-    # 3. Re-install everything with backup
-    log_info "[3/4] Re-installing all components (with backup)..."
+    # 3. Re-install everything with backup (smart mode — only update changed)
+    log_info "[3/4] Re-installing changed components (with backup)..."
     BACKUP=true
     INSTALL_ALL=true
     DRY_RUN=false
+    FAST_MODE=false  # Update mode: check fingerprints, only copy what changed
 
     mkdir -p "$SKILLS_DIR" "$AGENTS_DIR" "$COMMANDS_DIR" "$HOOKS_DIR" "$RULES_DIR" "$PROMPTS_DIR"
 
@@ -1267,7 +1354,7 @@ INTERACTIVE=true
 parse_args() {
     while [[ $# -gt 0 ]]; do
         case "$1" in
-            --all)       INSTALL_ALL=true; INTERACTIVE=false ;;
+            --all)       INSTALL_ALL=true; INTERACTIVE=false; FAST_MODE=true ;;
             --skills)    INSTALL_SKILLS=true; INTERACTIVE=false ;;
             --agents)    INSTALL_AGENTS=true; INTERACTIVE=false ;;
             --commands)  INSTALL_COMMANDS=true; INTERACTIVE=false ;;
@@ -1353,6 +1440,11 @@ main() {
 
     # Initialize install log
     init_install_log
+
+    # Pre-load winner maps for fast conflict resolution (in-memory)
+    if [ "$FAST_MODE" = true ]; then
+        load_winner_maps
+    fi
 
     # Create target directories
     mkdir -p "$SKILLS_DIR" "$AGENTS_DIR" "$COMMANDS_DIR" "$HOOKS_DIR" "$RULES_DIR" "$PROMPTS_DIR"
