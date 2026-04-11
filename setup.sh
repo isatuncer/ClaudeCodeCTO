@@ -244,19 +244,51 @@ backup_existing() {
 }
 
 # ============================================================
-# INSTALL LOG — Track every installed component
+# INSTALL LOG — Track every component with content hash
 # ============================================================
+# Format: type  name  source  date  hash  size
+# Hash = md5/cksum of content, used to detect upstream changes.
+# On update: if source hash differs from installed hash → re-install.
+# On conflict: if alternative source has larger size → switch.
 
 INSTALL_LOG="$CLAUDE_HOME/.cto-install.log"
 
+file_hash() {
+    # Fast content hash (works on all OS)
+    if command -v md5sum &>/dev/null; then
+        md5sum "$1" 2>/dev/null | cut -d' ' -f1
+    elif command -v md5 &>/dev/null; then
+        md5 -q "$1" 2>/dev/null
+    else
+        cksum "$1" 2>/dev/null | cut -d' ' -f1
+    fi
+}
+
+dir_hash() {
+    # Hash for a skill directory (concat all file hashes)
+    find "$1" -type f 2>/dev/null | sort | xargs cat 2>/dev/null | md5sum 2>/dev/null | cut -d' ' -f1 || echo "0"
+}
+
 log_install() {
-    # Usage: log_install <type> <name> <source>
-    echo -e "$1\t$2\t$3\t$(date +%Y-%m-%d)" >> "$INSTALL_LOG"
+    # Usage: log_install <type> <name> <source> <hash> <size>
+    local hash="${4:-0}"
+    local size="${5:-0}"
+    echo -e "$1\t$2\t$3\t$(date +%Y-%m-%d)\t$hash\t$size" >> "$INSTALL_LOG"
+}
+
+get_installed_hash() {
+    # Usage: get_installed_hash <type> <name>
+    grep "^$1	$2	" "$INSTALL_LOG" 2>/dev/null | tail -1 | cut -f5
+}
+
+get_installed_source() {
+    # Usage: get_installed_source <type> <name>
+    grep "^$1	$2	" "$INSTALL_LOG" 2>/dev/null | tail -1 | cut -f3
 }
 
 init_install_log() {
     mkdir -p "$CLAUDE_HOME"
-    echo -e "type\tname\tsource\tdate" > "$INSTALL_LOG"
+    echo -e "type\tname\tsource\tdate\thash\tsize" > "$INSTALL_LOG"
 }
 
 # ============================================================
@@ -273,8 +305,7 @@ setup_skills() {
         "rohitg00-toolkit"
     )
 
-    local installed=0
-    local skipped=0
+    local installed=0 skipped=0 updated=0
 
     mkdir -p "$SKILLS_DIR"
 
@@ -282,11 +313,10 @@ setup_skills() {
         local repo_path="$SOURCES/$repo"
         [ -d "$repo_path/skills" ] || continue
 
-        local repo_installed=0
+        local repo_new=0 repo_upd=0
         for skill_dir in "$repo_path/skills"/*/; do
             [ -d "$skill_dir" ] || continue
             local skill_name=$(basename "$skill_dir")
-
             [[ "$skill_name" == "__pycache__" || "$skill_name" == "node_modules" || "$skill_name" == ".git" ]] && continue
 
             if ! should_install "skills" "$skill_name" "$repo"; then
@@ -294,20 +324,46 @@ setup_skills() {
                 continue
             fi
 
+            # Compute source hash + size
+            local src_hash src_size
+            src_hash=$(dir_hash "$skill_dir")
+            src_size=$(du -sb "$skill_dir" 2>/dev/null | cut -f1 || echo 0)
+
+            # Check if already installed with same hash
+            local old_hash
+            old_hash=$(get_installed_hash "skill" "$skill_name")
+
             if [ "$DRY_RUN" = false ]; then
+                if [ -n "$old_hash" ] && [ "$old_hash" = "$src_hash" ]; then
+                    # Same content, just re-log
+                    log_install "skill" "$skill_name" "$repo" "$src_hash" "$src_size"
+                    continue
+                fi
+
                 local target="$SKILLS_DIR/$skill_name"
                 backup_existing "$target"
                 mkdir -p "$target"
                 cp -r "$skill_dir"/* "$target/" 2>/dev/null || true
-                log_install "skill" "$skill_name" "$repo"
+                log_install "skill" "$skill_name" "$repo" "$src_hash" "$src_size"
+
+                if [ -n "$old_hash" ]; then
+                    repo_upd=$((repo_upd + 1))
+                    updated=$((updated + 1))
+                else
+                    repo_new=$((repo_new + 1))
+                fi
             fi
             installed=$((installed + 1))
-            repo_installed=$((repo_installed + 1))
         done
-        echo -e "  ${GREEN}✓${NC}  ${BOLD}$repo${NC}: $repo_installed skills"
+
+        local detail=""
+        [ "$repo_new" -gt 0 ] && detail="${GREEN}$repo_new new${NC}"
+        [ "$repo_upd" -gt 0 ] && detail="$detail ${YELLOW}$repo_upd updated${NC}"
+        [ -z "$detail" ] && detail="${DIM}no changes${NC}"
+        echo -e "  ${GREEN}✓${NC}  ${BOLD}$repo${NC}: $((repo_new + repo_upd)) ($detail)"
     done
 
-    log_ok "Skills: ${GREEN}$installed installed${NC}, ${DIM}$skipped skipped (conflict)${NC}"
+    log_ok "Skills: ${GREEN}$installed installed${NC}, ${YELLOW}$updated updated${NC}, ${DIM}$skipped skipped${NC}"
 }
 
 setup_agents() {
@@ -320,47 +376,55 @@ setup_agents() {
         "alirezarezvani-claude-skills"
     )
 
+    local installed=0 updated=0
     mkdir -p "$AGENTS_DIR"
+
+    install_agent_file() {
+        local agent_file="$1" repo="$2"
+        local agent_name=$(basename "$agent_file" .md)
+
+        should_install "agents" "$agent_name" "$repo" || return 0
+
+        local src_hash src_size
+        src_hash=$(file_hash "$agent_file")
+        src_size=$(wc -c < "$agent_file" 2>/dev/null | tr -d '[:space:]')
+        local old_hash=$(get_installed_hash "agent" "$agent_name")
+
+        if [ "$DRY_RUN" = false ]; then
+            if [ -n "$old_hash" ] && [ "$old_hash" = "$src_hash" ]; then
+                log_install "agent" "$agent_name" "$repo" "$src_hash" "$src_size"
+                return 0
+            fi
+            backup_existing "$AGENTS_DIR/$agent_name.md"
+            cp "$agent_file" "$AGENTS_DIR/$agent_name.md" 2>/dev/null || true
+            log_install "agent" "$agent_name" "$repo" "$src_hash" "$src_size"
+        fi
+        echo "$agent_name"  # signal installed
+    }
 
     for repo in "${AGENT_SOURCES[@]}"; do
         local repo_path="$SOURCES/$repo"
-        local repo_installed=0
+        local repo_count=0
 
-        # agents/ directory
         if [ -d "$repo_path/agents" ]; then
-            while IFS= read -r agent_file; do
-                local agent_name=$(basename "$agent_file" .md)
-                if should_install "agents" "$agent_name" "$repo"; then
-                    if [ "$DRY_RUN" = false ]; then
-                        backup_existing "$AGENTS_DIR/$agent_name.md"
-                        cp "$agent_file" "$AGENTS_DIR/$agent_name.md" 2>/dev/null || true
-                        log_install "agent" "$agent_name" "$repo"
-                    fi
-                    repo_installed=$((repo_installed + 1))
-                fi
+            while IFS= read -r f; do
+                result=$(install_agent_file "$f" "$repo")
+                [ -n "$result" ] && repo_count=$((repo_count + 1))
             done < <(find "$repo_path/agents" -name "*.md" -not -name "README.md" -not -name "CLAUDE.md" -type f 2>/dev/null)
         fi
 
-        # categories/ directory (VoltAgent)
         if [ -d "$repo_path/categories" ]; then
-            while IFS= read -r agent_file; do
-                local agent_name=$(basename "$agent_file" .md)
-                if should_install "agents" "$agent_name" "$repo"; then
-                    if [ "$DRY_RUN" = false ]; then
-                        backup_existing "$AGENTS_DIR/$agent_name.md"
-                        cp "$agent_file" "$AGENTS_DIR/$agent_name.md" 2>/dev/null || true
-                        log_install "agent" "$agent_name" "$repo"
-                    fi
-                    repo_installed=$((repo_installed + 1))
-                fi
+            while IFS= read -r f; do
+                result=$(install_agent_file "$f" "$repo")
+                [ -n "$result" ] && repo_count=$((repo_count + 1))
             done < <(find "$repo_path/categories" -name "*.md" -not -name "README.md" -type f 2>/dev/null)
         fi
 
-        [ "$repo_installed" -gt 0 ] && echo -e "  ${GREEN}✓${NC}  ${BOLD}$repo${NC}: $repo_installed agents"
+        [ "$repo_count" -gt 0 ] && echo -e "  ${GREEN}✓${NC}  ${BOLD}$repo${NC}: $repo_count agents"
+        installed=$((installed + repo_count))
     done
 
-    local total=$(ls "$AGENTS_DIR"/*.md 2>/dev/null | wc -l | tr -d '[:space:]')
-    log_ok "Agents: ${GREEN}$total installed${NC}"
+    log_ok "Agents: ${GREEN}$installed installed${NC}"
 }
 
 setup_commands() {
@@ -371,47 +435,58 @@ setup_commands() {
         "rohitg00-toolkit"
     )
 
+    local installed=0
     mkdir -p "$COMMANDS_DIR"
 
-    # Source repo commands
     for repo in "${CMD_SOURCES[@]}"; do
         local repo_path="$SOURCES/$repo"
         [ -d "$repo_path/commands" ] || continue
-        local repo_installed=0
+        local repo_count=0
 
         while IFS= read -r cmd_file; do
             local cmd_name=$(basename "$cmd_file" .md)
-            if should_install "commands" "$cmd_name" "$repo"; then
-                if [ "$DRY_RUN" = false ]; then
-                    backup_existing "$COMMANDS_DIR/$cmd_name.md"
-                    cp "$cmd_file" "$COMMANDS_DIR/$cmd_name.md" 2>/dev/null || true
-                    log_install "command" "$cmd_name" "$repo"
+            should_install "commands" "$cmd_name" "$repo" || continue
+
+            local src_hash=$(file_hash "$cmd_file")
+            local src_size=$(wc -c < "$cmd_file" 2>/dev/null | tr -d '[:space:]')
+            local old_hash=$(get_installed_hash "command" "$cmd_name")
+
+            if [ "$DRY_RUN" = false ]; then
+                if [ -n "$old_hash" ] && [ "$old_hash" = "$src_hash" ]; then
+                    log_install "command" "$cmd_name" "$repo" "$src_hash" "$src_size"
+                    continue
                 fi
-                repo_installed=$((repo_installed + 1))
+                backup_existing "$COMMANDS_DIR/$cmd_name.md"
+                cp "$cmd_file" "$COMMANDS_DIR/$cmd_name.md" 2>/dev/null || true
+                log_install "command" "$cmd_name" "$repo" "$src_hash" "$src_size"
             fi
+            repo_count=$((repo_count + 1))
         done < <(find "$repo_path/commands" -name "*.md" -not -name "README.md" -type f 2>/dev/null)
 
-        [ "$repo_installed" -gt 0 ] && echo -e "  ${GREEN}✓${NC}  ${BOLD}$repo${NC}: $repo_installed commands"
+        [ "$repo_count" -gt 0 ] && echo -e "  ${GREEN}✓${NC}  ${BOLD}$repo${NC}: $repo_count commands"
+        installed=$((installed + repo_count))
     done
 
-    # ClaudeCodeCTO's own commands
+    # ClaudeCodeCTO's own commands (always latest)
     if [ -d "$ROOT/commands" ]; then
         local cto_count=0
         for cmd_file in "$ROOT/commands"/*.md; do
             [ -f "$cmd_file" ] || continue
             local cmd_name=$(basename "$cmd_file" .md)
+            local src_hash=$(file_hash "$cmd_file")
+            local src_size=$(wc -c < "$cmd_file" 2>/dev/null | tr -d '[:space:]')
             if [ "$DRY_RUN" = false ]; then
                 backup_existing "$COMMANDS_DIR/$cmd_name.md"
                 cp "$cmd_file" "$COMMANDS_DIR/$cmd_name.md" 2>/dev/null || true
-                log_install "command" "$cmd_name" "ClaudeCodeCTO"
+                log_install "command" "$cmd_name" "ClaudeCodeCTO" "$src_hash" "$src_size"
             fi
             cto_count=$((cto_count + 1))
         done
-        echo -e "  ${GREEN}✓${NC}  ${BOLD}ClaudeCodeCTO${NC}: $cto_count commands (/startCTO, /doc-create, /cto-*)"
+        echo -e "  ${GREEN}✓${NC}  ${BOLD}ClaudeCodeCTO${NC}: $cto_count commands"
+        installed=$((installed + cto_count))
     fi
 
-    local total=$(ls "$COMMANDS_DIR"/*.md 2>/dev/null | wc -l | tr -d '[:space:]')
-    log_ok "Commands: ${GREEN}$total installed${NC}"
+    log_ok "Commands: ${GREEN}$installed installed${NC}"
 }
 
 setup_hooks() {
@@ -822,6 +897,26 @@ show_status() {
     tail -n +2 "$log_file" | cut -f3 | sort | uniq -c | sort -rn | head -5 | while read -r cnt src; do
         printf "    %-35s %s components\n" "$src" "$cnt"
     done
+
+    # Check for available updates (compare installed hashes vs source)
+    if [ -d "$SOURCES" ]; then
+        local stale=0
+        # Quick check: count skills where source hash != installed hash
+        while IFS=$'\t' read -r type name source date hash size; do
+            [ "$type" = "skill" ] || continue
+            [ -z "$hash" ] || [ "$hash" = "0" ] && continue
+            local src_dir="$SOURCES/$source/skills/$name"
+            [ -d "$src_dir" ] || continue
+            local cur_hash=$(dir_hash "$src_dir")
+            [ "$cur_hash" != "$hash" ] && stale=$((stale + 1))
+        done < "$log_file"
+
+        if [ "$stale" -gt 0 ]; then
+            echo ""
+            echo -e "  ${YELLOW}$stale components have upstream changes.${NC}"
+            echo -e "  ${DIM}Run 'bash setup.sh --update' to apply.${NC}"
+        fi
+    fi
 
     echo ""
     echo -e "  ${BOLD}Source Repos:${NC} $(ls -d "$ROOT/sources"/*/ 2>/dev/null | wc -l | tr -d '[:space:]') tracked"
