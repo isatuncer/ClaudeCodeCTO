@@ -8,8 +8,15 @@ Run the daily sync process: pull latest from all 15 source repos, re-scan all co
 2. **Pulls latest** from all 15 source repos (git fetch + pull)
 3. **Re-scans** all skills, agents, commands, hooks
 4. **Diffs** previous vs current maps — reports new and removed components
-5. **Updates registry** with real counts per repo
-6. **Generates report** at `decisions/reports/sync-{timestamp}.md`
+5. **Searches GitHub** for new repos (6 queries: skills, agents, prompts, commands, mcp, awesome)
+6. **Updates registry** with real counts per repo
+7. **Generates report** at `decisions/reports/sync-{timestamp}.md`
+
+GitHub discovery filters:
+- Skips repos already tracked as submodules
+- Skips repos with < 100 stars
+- Groups by search query for context
+- Outputs candidate list at `decisions/reports/discoveries-{date}.md`
 
 ## Usage
 

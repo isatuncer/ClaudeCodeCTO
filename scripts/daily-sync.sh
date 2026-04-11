@@ -228,9 +228,156 @@ diff_maps "commands"
 diff_maps "hooks"
 
 # ============================================================
-# 5. UPDATE REPO REGISTRY WITH REAL COUNTS
+# 5. GITHUB DISCOVERY — Search for new repos
 # ============================================================
-log_step "Step 5/6 — Updating repo registry"
+log_step "Step 5/7 — Searching GitHub for new repos"
+
+DISCOVERIES="$REPORTS/discoveries-${TIMESTAMP}.md"
+KNOWN_REPOS_FILE="$PREV_DIR/known_repos.txt"
+
+# Build list of repos we already track
+git config --file "$ROOT/.gitmodules" --get-regexp 'submodule\..*\.url' 2>/dev/null | awk '{print $2}' | sed 's|.*/||;s|\.git$||' | sort -u > "$KNOWN_REPOS_FILE" 2>/dev/null || true
+
+if ! command -v gh &>/dev/null; then
+    log_warn "GitHub CLI (gh) not installed — skipping discovery"
+    echo "## GitHub Discovery" >> "$REPORT_FILE"
+    echo "Skipped: gh CLI not available." >> "$REPORT_FILE"
+    echo "" >> "$REPORT_FILE"
+else
+    SEARCH_QUERIES=(
+        "claude code skills"
+        "claude code agents"
+        "claude-code prompts"
+        "claude code slash commands"
+        "awesome claude code"
+        "claude code mcp"
+    )
+
+    CANDIDATE_COUNT=0
+
+    cat > "$DISCOVERIES" << DISC_HEADER
+# GitHub Discovery Report
+> Date: $TIMESTAMP
+> Searched: ${#SEARCH_QUERIES[@]} queries
+
+## New Repo Candidates
+
+| Repo | Stars | Description | Why Consider |
+|------|------:|-------------|-------------|
+DISC_HEADER
+
+    declare -A SEEN_REPOS 2>/dev/null || true
+
+    for query in "${SEARCH_QUERIES[@]}"; do
+        # Search GitHub, get top results sorted by stars, JSON output
+        results=$(gh search repos "$query" --sort stars --order desc --limit 15 --json fullName,stargazersCount,description,updatedAt 2>/dev/null || echo "[]")
+
+        # Skip if no results
+        [ "$results" = "[]" ] && continue
+
+        # Parse each result
+        echo "$results" | python3 -c "
+import json, sys
+try:
+    data = json.load(sys.stdin)
+    for r in data:
+        name = r.get('fullName','')
+        stars = r.get('stargazersCount',0)
+        desc = r.get('description','') or ''
+        updated = r.get('updatedAt','')[:10]
+        # Clean description for TSV
+        desc = desc.replace('|',' ').replace('\n',' ')[:100]
+        print(f'{name}\t{stars}\t{desc}\t{updated}')
+except:
+    pass
+" 2>/dev/null | while IFS=$'\t' read -r full_name stars desc updated; do
+            # Extract repo name
+            repo_short=$(echo "$full_name" | sed 's|.*/||')
+
+            # Skip if already tracked
+            if grep -qx "$repo_short" "$KNOWN_REPOS_FILE" 2>/dev/null; then
+                continue
+            fi
+
+            # Skip if already seen in this run
+            if [ -n "${SEEN_REPOS[$full_name]+x}" ] 2>/dev/null; then
+                continue
+            fi
+            SEEN_REPOS["$full_name"]=1
+
+            # Skip low-star repos
+            if [ "$stars" -lt 100 ] 2>/dev/null; then
+                continue
+            fi
+
+            echo "| [$full_name](https://github.com/$full_name) | $stars | $desc | query: \"$query\" |" >> "$DISCOVERIES"
+            log_new "CANDIDATE: $full_name ($stars stars)"
+            CANDIDATE_COUNT=$((CANDIDATE_COUNT + 1))
+        done
+    done
+
+    # If python3 not available, try without parsing
+    if ! command -v python3 &>/dev/null; then
+        log_warn "python3 not available — using basic search"
+        for query in "${SEARCH_QUERIES[@]}"; do
+            gh search repos "$query" --sort stars --order desc --limit 10 2>/dev/null | while read -r line; do
+                repo_name=$(echo "$line" | awk '{print $1}')
+                repo_short=$(echo "$repo_name" | sed 's|.*/||')
+                if ! grep -qx "$repo_short" "$KNOWN_REPOS_FILE" 2>/dev/null; then
+                    echo "| $repo_name | - | - | query: \"$query\" |" >> "$DISCOVERIES"
+                    CANDIDATE_COUNT=$((CANDIDATE_COUNT + 1))
+                fi
+            done
+        done
+    fi
+
+    if [ "$CANDIDATE_COUNT" -gt 0 ] 2>/dev/null; then
+        log_ok "Found $CANDIDATE_COUNT new repo candidates"
+
+        cat >> "$DISCOVERIES" << DISC_FOOTER
+
+---
+
+## How to Add
+
+Review the candidates above, then add promising ones:
+
+\`\`\`bash
+bash scripts/add-repo.sh owner/repo-name
+\`\`\`
+
+Or use the slash command:
+\`\`\`
+/cto-add owner/repo-name
+\`\`\`
+
+Requirements:
+- Must be in English
+- Must contain skills, agents, commands, or prompts
+- Will be validated automatically by add-repo.sh
+DISC_FOOTER
+
+        # Add to main report
+        echo "## GitHub Discovery" >> "$REPORT_FILE"
+        echo "Found **$CANDIDATE_COUNT** new repo candidates." >> "$REPORT_FILE"
+        echo "Full list: \`$DISCOVERIES\`" >> "$REPORT_FILE"
+        echo "" >> "$REPORT_FILE"
+        echo "Top candidates:" >> "$REPORT_FILE"
+        tail -n +8 "$DISCOVERIES" | head -10 >> "$REPORT_FILE"
+        echo "" >> "$REPORT_FILE"
+    else
+        log_ok "No new repos found (we already track the best ones)"
+        echo "## GitHub Discovery" >> "$REPORT_FILE"
+        echo "No new candidates found." >> "$REPORT_FILE"
+        echo "" >> "$REPORT_FILE"
+        rm -f "$DISCOVERIES"
+    fi
+fi
+
+# ============================================================
+# 6. UPDATE REPO REGISTRY WITH REAL COUNTS
+# ============================================================
+log_step "Step 6/7 — Updating repo registry"
 
 REGISTRY="$DECISIONS/repo-registry.tsv"
 REGISTRY_NEW="$DECISIONS/repo-registry.tsv.new"
@@ -276,7 +423,7 @@ fi
 # ============================================================
 # 6. SUMMARY
 # ============================================================
-log_step "Step 6/6 — Summary"
+log_step "Step 7/7 — Summary"
 
 # Read current counts
 CURR_SKILLS=$(tail -n +2 "$DECISIONS/skills-map.tsv" 2>/dev/null | cut -f1 | sort -u | wc -l | tr -d '[:space:]')
