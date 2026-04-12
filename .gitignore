@@ -73,3 +73,15 @@ docs/
 scripts/scanner.sh
 scripts/inventory.sh
 scripts/SETUP_README.md
+
+# Local-only analysis pipeline scripts (used to pre-build decisions/)
+# End users don't run these — decisions/selected.json is pre-built
+# and checked into the repo.
+scripts/extractor.py
+scripts/scorer_rubric.py
+scripts/curator.py
+scripts/orchestrator.py
+scripts/budget.py
+scripts/validate_agents.py
+scripts/merge_self_scoring.py
+scripts/prepare_self_scoring.py

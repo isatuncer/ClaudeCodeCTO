@@ -91,34 +91,47 @@ After a successful run, your `~/.claude/` will contain:
     └── lifecycle.json             8-phase project map
 ```
 
-## 9-Stage Pipeline
+## How It Works
+
+This repo ships a **pre-curated** set of Claude Code components. The curation was done on the maintainer's machine using a 9-stage analysis pipeline. End users consume the pre-built `decisions/selected.json` and never run the pipeline themselves.
+
+### What's on GitHub (for end users)
 
 ```
-┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌────────────┐
-│ DISCOVER │─▶│ EXTRACT  │─▶│  SCORE   │─▶│  CURATE  │─▶│ORCHESTRATE │
-│   (1)    │  │   (2)    │  │   (3)    │  │   (4)    │  │   (4.5)    │
-└──────────┘  └──────────┘  └──────────┘  └──────────┘  └─────┬──────┘
-                                                               │
-              ┌──────────┐  ┌──────────┐  ┌──────────────┐  ┌──┴──────┐
-              │ OPTIMIZE │◀─│ VALIDATE │◀─│   INSTALL    │◀─│ BUDGET  │
-              │   (6)    │  │  (5.5)   │  │     (5)      │  │  (4.6)  │
-              └──────────┘  └──────────┘  └──────────────┘  └─────────┘
+install.sh                  ← one-command entry point
+scripts/setup.sh            ← install orchestrator
+scripts/bootstrap.sh        ← first-time clone wrapper
+scripts/installer.sh        ← safe staged install with backup
+scripts/smoke_test.sh       ← post-install verification
+scripts/tracker.sh          ← optional usage tracking
+templates/                  ← files copied to ~/.claude/ by installer
+decisions/                  ← pre-built curation checkpoints
+    selected.json           ← the authoritative list of what to install
+    install-manifest.json
+    lifecycle-bindings.json
+    budget-profile.json
+    agent-overlap-report.json
+    agent-decision-tree.md
+    smoke-test-report.md
+sources/                    ← 15 git submodules (actual skill/agent content)
 ```
 
-| # | Stage | Script | Purpose |
-|---|-------|--------|---------|
-| 1 | **Discover** | `scanner.sh` | TSV inventory of all source repos |
-| 2 | **Extract** | `extractor.py` | Parse frontmatter + metadata → `catalog.json` |
-| 3 | **Score** | `scorer_rubric.py` + self-scoring | 100-point rubric + optional LLM scoring |
-| 4 | **Curate** | `curator.py` | Domain grouping, dedup → `selected.json` |
-| 4.5 | **Orchestrate** | `orchestrator.py` | Map lifecycle phases to components |
-| 4.6 | **Budget** | `budget.py` | Token cost profile (measurement, no cap) |
-| 4.7 | **Validate** | `validate_agents.py` | Agent overlap + decision tree |
-| 5 | **Install** | `installer.sh` | Safe staged install with backup |
-| 5.5 | **Smoke Test** | `smoke_test.sh` | Structural + syntactic verification |
-| 6 | **Optimize** | `tracker.sh` | Usage tracking + pruning suggestions |
+### What's NOT on GitHub (maintainer's local machine only)
 
-See [`docs/PLAN.md`](docs/PLAN.md) for the full architecture and [`docs/diagrams/`](docs/diagrams/) for Mermaid diagrams.
+The analysis pipeline scripts that regenerate `decisions/selected.json` from scratch:
+
+```
+scripts/extractor.py            Stage 2 — metadata extraction
+scripts/scorer_rubric.py        Stage 3a — 100-point rubric
+scripts/prepare_self_scoring.py Stage 3b — batch prep
+scripts/merge_self_scoring.py   Stage 3b — merge subagent results
+scripts/curator.py              Stage 4  — domain curation
+scripts/orchestrator.py         Stage 4.5 — lifecycle binding
+scripts/budget.py               Stage 4.6 — token cost profile
+scripts/validate_agents.py      Stage 4.7 — agent overlap detection
+```
+
+When the maintainer wants to update the curation (e.g., after submodules change), they run the pipeline locally, get a new `decisions/`, and push. End users just clone and run `install.sh`.
 
 ## The 8-Phase Project Lifecycle
 
@@ -152,18 +165,20 @@ Each phase has preferred agents and skills. Progress is tracked in `decisions/pr
 
 Full list in [`.gitmodules`](.gitmodules).
 
-## Updating
+## Updating (Re-install)
 
 ```bash
-# Check for submodule updates without pulling
+# Check current state
 bash scripts/setup.sh --check
 
-# Pull updates + re-run pipeline + install (interactive)
+# Re-run install with latest pre-built decisions/ (interactive)
 bash scripts/setup.sh
 
-# Non-interactive (for cron)
+# Non-interactive
 bash scripts/setup.sh --auto
 ```
+
+To get newer curations, run `git pull` first — this fetches the latest `decisions/selected.json` that the maintainer has pushed.
 
 ## Project Structure
 
@@ -174,20 +189,12 @@ CloaudeCodeCTO/
 ├── .gitmodules                 16 source repos
 ├── .gitignore                  excludes generated artifacts
 ├── sources/                    SUBMODULES (init with --recursive)
-├── scripts/                    pipeline implementation
+├── scripts/                    install infrastructure (end-user facing)
 │   ├── setup.sh                ★ main entry point
 │   ├── bootstrap.sh            first-time clone wrapper
-│   ├── extractor.py            Stage 2
-│   ├── scorer_rubric.py        Stage 3a
-│   ├── prepare_self_scoring.py Stage 3b (manual)
-│   ├── merge_self_scoring.py   Stage 3b merge
-│   ├── curator.py              Stage 4
-│   ├── orchestrator.py         Stage 4.5
-│   ├── budget.py               Stage 4.6
-│   ├── validate_agents.py      Stage 4.7
-│   ├── installer.sh            Stage 5
-│   ├── smoke_test.sh           Stage 5.5
-│   └── tracker.sh              Stage 6
+│   ├── installer.sh            staged install with backup
+│   ├── smoke_test.sh           post-install verification
+│   └── tracker.sh              optional usage tracking
 ├── decisions/                  pipeline outputs (most are .gitignored)
 │   ├── selected.json           curated component list
 │   ├── install-manifest.json   last install checkpoint
