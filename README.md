@@ -13,23 +13,65 @@ The end result is a Claude Code installation that can guide you **baştan sona**
 
 **Zero external cost.** No Anthropic API charges, no third-party services. Uses your existing Claude Code session for optional semantic self-scoring.
 
-## Quick Start
+## Quick Start — One-Liner
+
+The fastest way — clones the repo, initializes all submodules, and runs the setup pipeline with a single command:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh | bash
+```
+
+Or with `wget`:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh | bash
+```
+
+Target directory defaults to `$HOME/CloaudeCodeCTO`. Override with:
+
+```bash
+CCCTO_DIR=/custom/path bash <(curl -fsSL https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh)
+```
+
+### Manual Quick Start
 
 ```bash
 # 1. Clone the repo
 git clone https://github.com/isatuncer/ClaudeCodeCTO.git
 cd ClaudeCodeCTO
 
-# 2. Initialize submodules (16 source repos)
-git submodule update --init --recursive
+# 2. Run the bootstrap (inits submodules + launches setup)
+bash scripts/bootstrap.sh
 
-# 3. Run the full setup pipeline (interactive)
+# Or skip bootstrap and go directly
+git submodule update --init --recursive
 bash scripts/setup.sh
 ```
 
 The setup script walks you through all 12 phases, asking for confirmation at each critical step (submodule pull, install, git commit, git push).
 
 For details, see [`scripts/SETUP_README.md`](scripts/SETUP_README.md).
+
+### Install Script Options (env vars)
+
+The one-liner install script supports env var customization:
+
+```bash
+# Non-interactive mode (for CI/automation)
+CCCTO_AUTO=1 bash <(curl -fsSL ...install.sh)
+
+# Skip ~/.claude/ install (only clone + pipeline)
+CCCTO_NO_INSTALL=1 bash <(curl -fsSL ...install.sh)
+
+# Clone but don't run setup.sh yet
+CCCTO_NO_SETUP=1 bash <(curl -fsSL ...install.sh)
+
+# Use a specific branch
+CCCTO_BRANCH=develop bash <(curl -fsSL ...install.sh)
+
+# Custom target directory
+CCCTO_DIR=~/tools/ccc bash <(curl -fsSL ...install.sh)
+```
 
 ## What Gets Installed
 
