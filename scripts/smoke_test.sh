@@ -104,7 +104,7 @@ echo ""
 
 # --- Test 6: SKILL.md frontmatter (Python, fast) ---
 echo -e "${CYAN}[6/8] Frontmatter sanity${NC}"
-read total_skills missing_fm <<< $(python - << PYEOF
+read -r total_skills missing_fm <<< "$(python - << PYEOF
 from pathlib import Path
 skills_dir = Path(r"$(cygpath -w $CLAUDE_HOME)/skills")
 total = 0
@@ -125,7 +125,7 @@ for d in skills_dir.iterdir():
         missing += 1
 print(total, missing)
 PYEOF
-)
+)"
 if [ "${missing_fm:-0}" -eq 0 ]; then
     pass "All $total_skills skills have frontmatter"
 elif [ "${missing_fm:-0}" -lt $((total_skills / 20)) ]; then

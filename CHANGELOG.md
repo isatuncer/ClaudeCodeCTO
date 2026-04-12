@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Installer temp dir is now platform-aware** — previously hardcoded `/c/tmp/` (Windows-only), now falls back to `$TMPDIR` on macOS/Linux. Override with `CCCTO_TMP` env var. Fixes CI failures on Ubuntu and macOS runners.
+- **smoke_test.sh:107** — quoted Python subshell invocation to silence shellcheck SC2046
+
 ### Removed
 - `sources/enterprise-software-house` submodule — contributed 0 components to curation; reduced source repo count from 15 to 14
 

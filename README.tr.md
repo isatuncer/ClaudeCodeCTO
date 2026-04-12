@@ -78,7 +78,7 @@ Son kullanıcılar sadece **tek bir komut** çalıştırır ve küratörlenmiş 
 - **8 fazlı yaşam döngüsü** — Discovery → Planning → Design → Build → Test → Document → Ship → Maintain
 - **Sıfır harici maliyet** — Anthropic API çağrısı yok, ücretli servis yok, telemetri yok
 - **Factory-reset uyumlu** — temiz bir `~/.claude/`'da çalışır, `.credentials.json`'u korur
-- **Atomic kurulum + backup** — her şey önce `/c/tmp/`'de hazırlanır, sonra commit edilir
+- **Atomic kurulum + backup** — her şey önce geçici bir dizinde hazırlanır, sonra commit edilir (Windows: `/c/tmp/`, Unix: `$TMPDIR`)
 - **Varsayılan interaktif** — her yıkıcı aksiyonu onaylatır; CI için `--auto`
 - **Resume edilebilir** — pipeline aşamaları `decisions/`'a yazar, herhangi bir checkpoint'ten yeniden başlar
 - **Tek gerçek kaynak** — sadece `decisions/` otoritelidir; gizli config yok
@@ -173,7 +173,7 @@ Başarılı bir kurulumdan sonra `~/.claude/` şunları içerir:
 | architecture | 81 | C4 diyagramlar, ADR'ler, sistem tasarımı |
 | other | 79 | çeşitli |
 
-Herhangi bir değişiklik yapılmadan önce önceki `~/.claude/`'un yedeği otomatik olarak `/c/tmp/claude-install-backup-<timestamp>/` konumuna kaydedilir.
+Herhangi bir değişiklik yapılmadan önce önceki `~/.claude/`'un yedeği otomatik olarak `$TMP_BASE/claude-install-backup-<timestamp>/` konumuna kaydedilir. `$TMP_BASE` Windows git-bash'te `/c/tmp/`, macOS/Linux'ta `$TMPDIR` (genelde `/tmp/`) veya `CCCTO_TMP` ortam değişkeni ile override edilebilir.
 
 ---
 
@@ -581,11 +581,16 @@ git submodule update --init sources/<isim>
 
 ### Kurulum yarıda kalıyor
 
-Yedek `/c/tmp/claude-install-backup-<timestamp>/` konumunda. Geri yükleme:
+Yedek `$TMP_BASE/claude-install-backup-<timestamp>/` konumunda — Windows git-bash'te `/c/tmp/`, macOS/Linux'ta `$TMPDIR` (genelde `/tmp/`). Geri yükleme:
 
 ```bash
+# Windows (git-bash)
 rm -rf ~/.claude/skills ~/.claude/agents ~/.claude/commands ~/.claude/hooks
 cp -r /c/tmp/claude-install-backup-<timestamp>/. ~/.claude/
+
+# macOS / Linux
+rm -rf ~/.claude/skills ~/.claude/agents ~/.claude/commands ~/.claude/hooks
+cp -r /tmp/claude-install-backup-<timestamp>/. ~/.claude/
 ```
 
 ### Claude Code yeni skill'leri görmüyor
@@ -602,12 +607,18 @@ Bazı submodule'lerde bozuk YAML var. Belirli dosya için `decisions/smoke-test-
 - Submodule içindeki frontmatter'ı düzeltin
 - Veya bileşeni `decisions/selected.json`'dan çıkarıp yeniden kurun
 
-### `/c/tmp/`'da permission denied
+### Temp dizininde permission denied
 
 Windows git-bash `/c/tmp/`'e yazar (= `C:\tmp\`). Manuel oluştur:
 
 ```bash
 mkdir -p /c/tmp
+```
+
+macOS/Linux'ta installer otomatik olarak `$TMPDIR`'i (genelde `/tmp/`) kullanır. Herhangi bir platformda temp base'i override etmek için:
+
+```bash
+CCCTO_TMP=/benim/ozel/yolum bash scripts/installer.sh
 ```
 
 ---
@@ -618,7 +629,7 @@ mkdir -p /c/tmp
 Evet — Claude Code zaten ödediğiniz oturumu kullanıyor. "Sıfır maliyet" olan şey bu pipeline: ayrı Anthropic API key yok, üçüncü parti servis yok, ücretli puanlama yok. Opsiyonel semantik puanlama adımı Claude Code'un kendi Task tool'unu (subagent'lar) kullanır ve oturumunuzda çalışır.
 
 **S: Bu mevcut `~/.claude/`'umun üzerine yazar mı?**
-Installer önce her şeyi `/c/tmp/claude-install-backup-<timestamp>/` konumuna yedekler, sonra yeni kurulumu `/c/tmp/claude-install-stage-<timestamp>/`'de hazırlar, sonra dosyaları kopyalar. Bir şey ters giderse yedek dizinden geri yükleyebilirsiniz.
+Installer önce her şeyi `$TMP_BASE/claude-install-backup-<timestamp>/` konumuna yedekler, sonra yeni kurulumu `$TMP_BASE/claude-install-stage-<timestamp>/`'de hazırlar, sonra dosyaları kopyalar. `$TMP_BASE` Windows git-bash'te `/c/tmp/`, Unix'te `/tmp/`. Bir şey ters giderse yedek dizinden geri yükleyebilirsiniz.
 
 **S: Hangi bileşenleri kuracağımı seçebilir miyim?**
 Evet — `setup.sh`'ı çalıştırmadan önce `decisions/selected.json`'ı düzenleyin. Veya [Yapılandırma](#yapılandırma)'daki Python one-liner ile tüm domain'leri hariç tutun.
@@ -658,7 +669,7 @@ Evet — `CCCTO_AUTO=1 bash install.sh`. Installer no-TTY tespit edip varsayıla
 
 ## Güvenlik
 
-- **Kurulumdan önce backup:** `~/.claude/`'a dokunmadan önce `/c/tmp/claude-install-backup-<timestamp>/` konumuna otomatik backup
+- **Kurulumdan önce backup:** `~/.claude/`'a dokunmadan önce `$TMP_BASE/claude-install-backup-<timestamp>/` konumuna otomatik backup (platform-aware: Windows'ta `/c/tmp/`, Unix'te `/tmp/`)
 - **Yıkıcı git yok:** script'ler asla force-push, asla published commit amend, asla hook bypass yapmaz
 - **Açık onay:** install, commit ve push her biri ayrı onay gerektirir (`--auto` olmadıkça)
 - **Rollback:** kurulum başarısız olursa yedek dizinden geri yükleyin ([Sorun Giderme](#sorun-giderme))

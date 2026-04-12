@@ -78,7 +78,7 @@ End users just run **one command** and get the curated set installed.
 - **8-phase lifecycle** — Discovery → Planning → Design → Build → Test → Document → Ship → Maintain
 - **Zero external cost** — no Anthropic API calls, no paid services, no telemetry
 - **Factory-reset aware** — works on a clean `~/.claude/`, preserves `.credentials.json`
-- **Atomic install with backup** — everything staged in `/c/tmp/` first, then committed
+- **Atomic install with backup** — everything staged in a temp directory first, then committed (Windows: `/c/tmp/`, Unix: `$TMPDIR`)
 - **Interactive by default** — confirms every destructive action; `--auto` for CI
 - **Resumable** — pipeline stages write to `decisions/`, can restart from any checkpoint
 - **Single source of truth** — only `decisions/` is the authoritative state; no hidden config
@@ -173,7 +173,7 @@ After a successful run, your `~/.claude/` contains:
 | architecture | 81 | C4 diagrams, ADRs, system design |
 | other | 79 | miscellaneous |
 
-A backup of the previous `~/.claude/` is automatically saved to `/c/tmp/claude-install-backup-<timestamp>/` before any changes are made.
+A backup of the previous `~/.claude/` is automatically saved to `$TMP_BASE/claude-install-backup-<timestamp>/` before any changes are made. `$TMP_BASE` is `/c/tmp/` on Windows git-bash, `$TMPDIR` (usually `/tmp/`) on macOS/Linux, or whatever `CCCTO_TMP` env var is set to.
 
 ---
 
@@ -581,11 +581,16 @@ git submodule update --init sources/<name>
 
 ### Install fails partway through
 
-Backup is at `/c/tmp/claude-install-backup-<timestamp>/`. Restore with:
+Backup is at `$TMP_BASE/claude-install-backup-<timestamp>/` where `$TMP_BASE` is `/c/tmp/` on Windows git-bash or `$TMPDIR` (typically `/tmp/`) on macOS/Linux. Restore with:
 
 ```bash
+# Windows (git-bash)
 rm -rf ~/.claude/skills ~/.claude/agents ~/.claude/commands ~/.claude/hooks
 cp -r /c/tmp/claude-install-backup-<timestamp>/. ~/.claude/
+
+# macOS / Linux
+rm -rf ~/.claude/skills ~/.claude/agents ~/.claude/commands ~/.claude/hooks
+cp -r /tmp/claude-install-backup-<timestamp>/. ~/.claude/
 ```
 
 ### Claude Code doesn't see new skills
@@ -602,12 +607,18 @@ Some submodules have malformed YAML. Check `decisions/smoke-test-report.md` for 
 - Fix the frontmatter in the submodule
 - Remove that component from `decisions/selected.json` and re-install
 
-### Permission denied on `/c/tmp/`
+### Permission denied on temp directory
 
-Windows git-bash writes to `/c/tmp/` (= `C:\tmp\`). Create it manually:
+Windows git-bash writes to `/c/tmp/` (= `C:\tmp\`) by default. Create it manually:
 
 ```bash
 mkdir -p /c/tmp
+```
+
+On macOS/Linux the installer uses `$TMPDIR` (usually `/tmp/`) automatically. To override the temp base on any platform:
+
+```bash
+CCCTO_TMP=/my/custom/path bash scripts/installer.sh
 ```
 
 ---
@@ -618,7 +629,7 @@ mkdir -p /c/tmp
 Yes — Claude Code uses your existing session, which is already paying for itself. What's "zero cost" is this pipeline: no separate Anthropic API keys, no third-party services, no paid scoring. The optional semantic scoring step uses Claude Code's own Task tool (subagents) which run in your session.
 
 **Q: Will this overwrite my existing `~/.claude/`?**
-The installer backs up everything first to `/c/tmp/claude-install-backup-<timestamp>/`, then stages the new install in `/c/tmp/claude-install-stage-<timestamp>/`, then copies files in. If anything goes wrong, you can restore from the backup directory.
+The installer backs up everything first to `$TMP_BASE/claude-install-backup-<timestamp>/`, then stages the new install in `$TMP_BASE/claude-install-stage-<timestamp>/`, then copies files in. `$TMP_BASE` is `/c/tmp/` on Windows git-bash or `/tmp/` on Unix. If anything goes wrong, you can restore from the backup directory.
 
 **Q: Can I pick and choose which components to install?**
 Yes — edit `decisions/selected.json` before running `setup.sh`. Or exclude whole domains using the Python one-liner in [Configuration](#configuration).
@@ -658,7 +669,7 @@ Yes — `CCCTO_AUTO=1 bash install.sh`. The installer has a `/dev/tty` fallback 
 
 ## Safety
 
-- **Backup before install:** automatic backup to `/c/tmp/claude-install-backup-<timestamp>/` before touching `~/.claude/`
+- **Backup before install:** automatic backup to `$TMP_BASE/claude-install-backup-<timestamp>/` (platform-aware: `/c/tmp/` on Windows, `/tmp/` on Unix) before touching `~/.claude/`
 - **No destructive git:** scripts never force-push, never amend published commits, never bypass hooks
 - **Explicit approval:** install, commit, and push each require separate confirmation (unless `--auto`)
 - **Rollback:** if install fails, restore from the backup directory (see [Troubleshooting](#troubleshooting))

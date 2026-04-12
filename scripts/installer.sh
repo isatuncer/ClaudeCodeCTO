@@ -28,9 +28,22 @@ MANIFEST="$(cygpath -w "$MANIFEST_BASH" 2>/dev/null || echo "$MANIFEST_BASH")"
 CLAUDE_HOME_BASH="${CLAUDE_HOME:-$HOME/.claude}"
 CLAUDE_HOME="$(cygpath -w "$CLAUDE_HOME_BASH" 2>/dev/null || echo "$CLAUDE_HOME_BASH")"
 TS=$(date +%Y%m%d-%H%M%S)
-STAGE_DIR_BASH="/c/tmp/claude-install-stage-$TS"
+
+# Portable temp base directory:
+#   - Windows git-bash: prefer /c/tmp/ if writable (user expectation, short paths)
+#   - macOS/Linux: use ${TMPDIR:-/tmp}
+#   - Override: set CCCTO_TMP=/custom/path
+if [ -n "${CCCTO_TMP:-}" ]; then
+    TMP_BASE="$CCCTO_TMP"
+elif [ -w /c/tmp ] 2>/dev/null || { mkdir -p /c/tmp 2>/dev/null && [ -w /c/tmp ]; }; then
+    TMP_BASE="/c/tmp"
+else
+    TMP_BASE="${TMPDIR:-/tmp}"
+fi
+
+STAGE_DIR_BASH="$TMP_BASE/claude-install-stage-$TS"
 STAGE_DIR="$(cygpath -w "$STAGE_DIR_BASH" 2>/dev/null || echo "$STAGE_DIR_BASH")"
-BACKUP_DIR_BASH="/c/tmp/claude-install-backup-$TS"
+BACKUP_DIR_BASH="$TMP_BASE/claude-install-backup-$TS"
 BACKUP_DIR="$(cygpath -w "$BACKUP_DIR_BASH" 2>/dev/null || echo "$BACKUP_DIR_BASH")"
 
 if [ -t 1 ]; then
