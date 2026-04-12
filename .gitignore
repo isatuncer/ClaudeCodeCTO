@@ -1,3 +1,7 @@
+# ============================================================
+# CloaudeCodeCTO .gitignore
+# ============================================================
+
 # OS
 .DS_Store
 Thumbs.db
@@ -19,13 +23,13 @@ desktop.ini
 project-docs/*
 !project-docs/README.md
 
-# Don't ignore submodules
+# Don't ignore submodules (structure is defined in .gitmodules)
 !sources/
 
 # Node (if any tooling is added)
 node_modules/
 
-# Python (if any tooling is added)
+# Python
 __pycache__/
 *.pyc
 .venv/
@@ -35,3 +39,28 @@ __pycache__/
 *.dll
 *.so
 *.dylib
+
+# ============================================================
+# CloaudeCodeCTO pipeline artifacts
+# These are regenerable via `bash scripts/setup.sh`
+# ============================================================
+
+# Large generated catalogs (Stage 2-3)
+decisions/catalog.json
+decisions/scored-catalog.json
+
+# Self-scoring batches and results (Stage 3b)
+decisions/self-scoring/
+
+# Pipeline run log
+decisions/setup.log
+
+# Legacy scanner TSV outputs
+decisions/*-map.tsv
+
+# Conflict reports (dated)
+decisions/conflicts-*.md
+
+# Install stage leftovers (should always be under /c/tmp/ anyway)
+claude-install-stage-*
+claude-install-backup-*

@@ -1,0 +1,536 @@
+{
+  "totals_by_type": {
+    "command": {
+      "count": 236,
+      "id_tokens": 632,
+      "desc_tokens": 1542,
+      "total_tokens": 2174
+    },
+    "skill": {
+      "count": 1845,
+      "id_tokens": 8276,
+      "desc_tokens": 71598,
+      "total_tokens": 79874
+    },
+    "agent": {
+      "count": 307,
+      "id_tokens": 1196,
+      "desc_tokens": 12211,
+      "total_tokens": 13407
+    }
+  },
+  "totals_by_domain": {
+    "project-mgmt": {
+      "count": 349,
+      "desc_tokens": 13018
+    },
+    "coding": {
+      "count": 287,
+      "desc_tokens": 8893
+    },
+    "testing": {
+      "count": 140,
+      "desc_tokens": 4373
+    },
+    "frontend": {
+      "count": 333,
+      "desc_tokens": 12639
+    },
+    "devops": {
+      "count": 541,
+      "desc_tokens": 18952
+    },
+    "security": {
+      "count": 143,
+      "desc_tokens": 5968
+    },
+    "backend": {
+      "count": 183,
+      "desc_tokens": 6429
+    },
+    "docs": {
+      "count": 120,
+      "desc_tokens": 4044
+    },
+    "data-ai": {
+      "count": 132,
+      "desc_tokens": 4983
+    },
+    "architecture": {
+      "count": 81,
+      "desc_tokens": 3188
+    },
+    "other": {
+      "count": 79,
+      "desc_tokens": 2864
+    }
+  },
+  "startup_budget": {
+    "system_prompt": 2000,
+    "rules": 5000,
+    "components_total": 95455,
+    "buffer": 3000,
+    "estimated_total": 105455
+  },
+  "long_descriptions_count": 534,
+  "long_descriptions_top50": [
+    {
+      "id": "ab-test-setup",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "When the user wants to plan, design, or implement an A/B test or experiment. Also use when the user mentions \"A/B test,\"..."
+    },
+    {
+      "id": "click-path-audit",
+      "type": "skill",
+      "source_repo": "everything-claude-code",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Trace every user-facing button/touchpoint through its full state change sequence to find bugs where functions individual..."
+    },
+    {
+      "id": "lead-intelligence",
+      "type": "skill",
+      "source_repo": "everything-claude-code",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "AI-native lead intelligence and outreach pipeline. Replaces Apollo, Clay, and ZoomInfo with agent-powered signal scoring..."
+    },
+    {
+      "id": "adversarial-reviewer",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Adversarial code review that breaks the self-review monoculture. Use when you want a genuinely critical review of recent..."
+    },
+    {
+      "id": "tdd-guide",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Test-driven development skill for writing unit tests, generating test fixtures and mocks, analyzing coverage gaps, and g..."
+    },
+    {
+      "id": "doc-coauthoring",
+      "type": "skill",
+      "source_repo": "anthropics-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Guide users through a structured workflow for co-authoring documentation. Use when user wants to write documentation, pr..."
+    },
+    {
+      "id": "senior-architect",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "This skill should be used when the user asks to \"design system architecture\", \"evaluate microservices vs monolith\", \"cre..."
+    },
+    {
+      "id": "senior-fullstack",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Fullstack development toolkit with project scaffolding for Next.js, FastAPI, MERN, and Django stacks, code quality analy..."
+    },
+    {
+      "id": "site-architecture",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "When the user wants to audit, redesign, or plan their website's structure, URL hierarchy, navigation design, or internal..."
+    },
+    {
+      "id": "docker-development",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Docker and container development agent skill and plugin for Dockerfile optimization, docker-compose orchestration, multi..."
+    },
+    {
+      "id": "a11y-audit",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Accessibility audit skill for scanning, fixing, and verifying WCAG 2.2 Level A and AA compliance across React, Next.js, ..."
+    },
+    {
+      "id": "agile-product-owner",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Agile product ownership for backlog management and sprint execution. Covers user story writing, acceptance criteria, spr..."
+    },
+    {
+      "id": "ceo-advisor",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Executive leadership guidance for strategic decision-making, organizational development, and stakeholder management. Use..."
+    },
+    {
+      "id": "cfo-advisor",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Financial leadership for startups and scaling companies. Financial modeling, unit economics, fundraising strategy, cash ..."
+    },
+    {
+      "id": "ciso-advisor",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Security leadership for growth-stage companies. Risk quantification in dollars, compliance roadmap (SOC 2/ISO 27001/HIPA..."
+    },
+    {
+      "id": "coo-advisor",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Operations leadership for scaling companies. Process design, OKR execution, operational cadence, and scaling playbooks. ..."
+    },
+    {
+      "id": "cro-advisor",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Revenue leadership for B2B SaaS companies. Revenue forecasting, sales model design, pricing strategy, net revenue retent..."
+    },
+    {
+      "id": "cto-advisor",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Technical leadership guidance for engineering teams, architecture decisions, and technology strategy. Use when assessing..."
+    },
+    {
+      "id": "helm-chart-builder",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Helm chart development agent skill and plugin for Claude Code, Codex, Gemini CLI, Cursor, OpenClaw — chart scaffolding, ..."
+    },
+    {
+      "id": "information-security-manager-iso27001",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "ISO 27001 ISMS implementation and cybersecurity governance for HealthTech and MedTech companies. Use for ISMS design, se..."
+    },
+    {
+      "id": "marketing-demand-acquisition",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Creates demand generation campaigns, optimizes paid ad spend across LinkedIn, Google, and Meta, develops SEO strategies,..."
+    },
+    {
+      "id": "playwright-pro",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Production-grade Playwright testing toolkit. Use when the user mentions Playwright tests, end-to-end testing, browser au..."
+    },
+    {
+      "id": "product-strategist",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Strategic product leadership toolkit for Head of Product covering OKR cascade generation, quarterly planning, competitiv..."
+    },
+    {
+      "id": "prompt-governance",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Use when managing prompts in production at scale: versioning prompts, running A/B tests on prompts, building prompt regi..."
+    },
+    {
+      "id": "senior-data-engineer",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Data engineering skill for building scalable data pipelines, ETL/ELT systems, and data infrastructure. Expertise in Pyth..."
+    },
+    {
+      "id": "senior-ml-engineer",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "ML engineering skill for productionizing models, building MLOps pipelines, and integrating LLMs. Covers model deployment..."
+    },
+    {
+      "id": "senior-prompt-engineer",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "This skill should be used when the user asks to \"optimize prompts\", \"design prompt templates\", \"evaluate LLM outputs\", \"..."
+    },
+    {
+      "id": "social-media-manager",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "When the user wants to develop social media strategy, plan content calendars, manage community engagement, or grow their..."
+    },
+    {
+      "id": "terraform-patterns",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Terraform infrastructure-as-code agent skill and plugin for Claude Code, Codex, Gemini CLI, Cursor, OpenClaw. Covers mod..."
+    },
+    {
+      "id": "x-twitter-growth",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "X/Twitter growth engine for building audience, crafting viral content, and analyzing engagement. Use when the user wants..."
+    },
+    {
+      "id": "skill-security-auditor",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Security audit and vulnerability scanner for AI agent skills before installation. Use when: (1) evaluating a skill from ..."
+    },
+    {
+      "id": "mlops-engineer",
+      "type": "agent",
+      "source_repo": "voltagent-subagents",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Use this agent when you need to design and implement ML infrastructure, set up CI/CD for machine learning models, establ..."
+    },
+    {
+      "id": "nextjs-developer",
+      "type": "agent",
+      "source_repo": "voltagent-subagents",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Use this agent when building production Next.js 14+ applications that require full-stack development with App Router, se..."
+    },
+    {
+      "id": "security-engineer",
+      "type": "agent",
+      "source_repo": "voltagent-subagents",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Use this agent when implementing comprehensive security solutions across infrastructure, building automated security con..."
+    },
+    {
+      "id": "prompt-optimizer",
+      "type": "skill",
+      "source_repo": "everything-claude-code",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "分析原始提示，识别意图和差距，匹配ECC组件（技能/命令/代理/钩子），并输出一个可直接粘贴的优化提示。仅提供咨询角色——绝不自行执行任务。触发时机：当用户说“优化提示”、“改进我的提示”、“如何编写提示”、“帮我优化这个指令”或明确要求提..."
+    },
+    {
+      "id": "token-budget-advisor",
+      "type": "skill",
+      "source_repo": "everything-claude-code",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Offers the user an informed choice about how much response depth to consume before answering. Use this skill when the us..."
+    },
+    {
+      "id": "investor-materials",
+      "type": "skill",
+      "source_repo": "everything-claude-code",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Create and update pitch decks, one-pagers, investor memos, accelerator applications, financial models, and fundraising m..."
+    },
+    {
+      "id": "marketing-psychology",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "When the user wants to apply psychological principles, mental models, or behavioral science to marketing. Also use when ..."
+    },
+    {
+      "id": "pptx",
+      "type": "skill",
+      "source_repo": "anthropics-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Use this skill any time a .pptx file is involved in any way — as input, output, or both. This includes: creating slide d..."
+    },
+    {
+      "id": "pricing-strategy",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Design, optimize, and communicate SaaS pricing — tier structure, value metrics, pricing pages, and price increase strate..."
+    },
+    {
+      "id": "competitive-teardown",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Analyzes competitor products and companies by synthesizing data from pricing pages, app store reviews, job postings, SEO..."
+    },
+    {
+      "id": "senior-backend",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Designs and implements backend systems including REST APIs, microservices, database architectures, authentication flows,..."
+    },
+    {
+      "id": "senior-devops",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Comprehensive DevOps skill for CI/CD, infrastructure automation, containerization, and cloud platforms (AWS, GCP, Azure)..."
+    },
+    {
+      "id": "cs-financial-analyst",
+      "type": "agent",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Financial Analyst agent for DCF valuation, financial modeling, budgeting, forecasting, and SaaS metrics (ARR, MRR, churn..."
+    },
+    {
+      "id": "postgres-pro",
+      "type": "agent",
+      "source_repo": "voltagent-subagents",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Use when you need to optimize PostgreSQL performance, design high-availability replication, or troubleshoot database iss..."
+    },
+    {
+      "id": "aws-solution-architect",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Design AWS architectures for startups using serverless patterns and IaC templates. Use when asked to design serverless a..."
+    },
+    {
+      "id": "board-meeting",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Multi-agent board meeting protocol for strategic decisions. Runs a structured 6-phase deliberation: context loading, ind..."
+    },
+    {
+      "id": "chro-advisor",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "People leadership for scaling companies. Hiring strategy, compensation design, org structure, culture, and retention. Us..."
+    },
+    {
+      "id": "decision-logger",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Two-layer memory architecture for board meeting decisions. Manages raw transcripts (Layer 1) and approved decisions (Lay..."
+    },
+    {
+      "id": "financial-analyst",
+      "type": "skill",
+      "source_repo": "alirezarezvani-claude-skills",
+      "chars": 300,
+      "tokens": 75,
+      "excerpt": "Performs financial ratio analysis, DCF valuation, budget variance analysis, and rolling forecast construction for strate..."
+    }
+  ],
+  "missing_descriptions_count": 192,
+  "missing_descriptions": [
+    "command:security-scan",
+    "command:build-fix",
+    "command:adr",
+    "command:aria-fix",
+    "command:debug-pod",
+    "command:integration-test",
+    "command:load-test",
+    "command:profile-api",
+    "command:create-chart",
+    "command:design-api",
+    "command:run-audit",
+    "command:annotate",
+    "command:generate-manifest",
+    "skill:prompt-engineer",
+    "skill:stitch-ui-design",
+    "command:check-contrast",
+    "command:generate-openapi",
+    "command:write-adr",
+    "command:review",
+    "command:multi-plan",
+    "command:optimize-dockerfile",
+    "command:pr-review",
+    "command:secrets-scan",
+    "command:analyze-ci-failure",
+    "command:hardening",
+    "command:improve-prompt",
+    "command:profile",
+    "command:refactor-clean",
+    "command:build-image",
+    "command:dockerfile",
+    "command:generate-changelog",
+    "command:test-endpoint",
+    "skill:angular",
+    "skill:cso",
+    "command:unit-test",
+    "command:changelog",
+    "command:financial-health",
+    "command:okr",
+    "command:pipeline",
+    "command:project-health",
+    "command:sprint-health",
+    "command:test-coverage",
+    "command:design-review",
+    "command:fix-issue",
+    "command:create-migration",
+    "command:explain-plan",
+    "command:find-unused-css",
+    "command:generate-api-ref",
+    "command:generate-embeddings",
+    "command:run-load-test"
+  ],
+  "shortening_suggestion": {
+    "threshold_chars": 200,
+    "candidates": 534,
+    "potential_savings_tokens": 14400
+  }
+}

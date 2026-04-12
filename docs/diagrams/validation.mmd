@@ -1,0 +1,67 @@
+%% Agent Selection Validation — Stage 4.7
+%% Agent description'larının ayırt edilebilir olduğunu garanti et
+
+flowchart TD
+    START([Curated agents<br/>~100 agent]) --> VECTOR[TF-IDF vektörleştir<br/>her agent description için]
+
+    VECTOR --> COSINE[Cosine similarity<br/>tüm çiftler için]
+
+    COSINE --> OVERLAP{Similarity > 0.7?}
+    OVERLAP -->|Hayır| UNIQUE[✅ Ayırt edilebilir]
+    OVERLAP -->|Evet| CONFLICT[⚠️ Overlap tespit edildi]
+
+    CONFLICT --> LIST[agent-overlap-report.json<br/>çakışan çiftleri listele]
+
+    LIST --> SCENARIOS[20 örnek istek hazırla:<br/>- 'kodu review et'<br/>- 'type hata bul'<br/>- 'mimari karar'<br/>- 'SQL optimize'<br/>- ...]
+
+    SCENARIOS --> LOOP[Her istek için döngü]
+
+    LOOP --> SUBAGENT
+
+    subgraph SUB["🤖 Self-Scoring Disambiguation"]
+        SUBAGENT[Task tool subagent spawn]
+        SUBAGENT --> PROMPT["Prompt:<br/>'Bu istek için hangi agent?<br/>Tereddüt ediyor musun?'"]
+        PROMPT --> PICK[Subagent cevabı]
+    end
+
+    PICK --> VERDICT{Cevap net mi?}
+
+    VERDICT -->|Evet, tek agent| PASS[✅ Bu istek için OK]
+    VERDICT -->|Hayır, 2+ agent| AMBIG[⚠️ Ambiguous]
+
+    AMBIG --> REWRITE[Description rewrite<br/>gerekli]
+    REWRITE --> REASON[Hangi agent hangi<br/>durumda tercih edilir?]
+    REASON --> UPDATE[Agent .md dosyalarını<br/>güncelle:<br/>- 'Use when X'<br/>- 'Not when Y']
+
+    UPDATE --> RETEST{Yeniden test}
+    RETEST -->|Hala ambigu| MERGE[🔀 İki agent'ı birleştir<br/>veya birini kaldır]
+    RETEST -->|Net| PASS
+
+    PASS --> ALLDONE{Tüm 20 senaryo<br/>bitti mi?}
+    ALLDONE -->|Hayır| LOOP
+    ALLDONE -->|Evet| TREE
+
+    UNIQUE --> TREE[Decision tree oluştur<br/>agent-decision-tree.md]
+    MERGE --> TREE
+
+    TREE --> INSTALL[~/.claude/rules/<br/>altına kopyala]
+
+    INSTALL --> DONE([✅ Validated ~100 agent<br/>+ decision tree])
+
+    classDef start fill:#e3f2fd,stroke:#1976d2,stroke-width:3px
+    classDef process fill:#fff3e0,stroke:#f57c00
+    classDef decision fill:#fce4ec,stroke:#c2185b
+    classDef warn fill:#fff9c4,stroke:#f9a825
+    classDef accept fill:#e8f5e9,stroke:#388e3c
+    classDef reject fill:#ffebee,stroke:#c62828
+    classDef llm fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef done fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
+
+    class START,VECTOR,COSINE,SCENARIOS,LOOP start
+    class LIST,REWRITE,REASON,UPDATE,TREE,INSTALL process
+    class OVERLAP,VERDICT,ALLDONE,RETEST decision
+    class CONFLICT,AMBIG warn
+    class UNIQUE,PASS accept
+    class MERGE reject
+    class SUB,SUBAGENT,PROMPT,PICK llm
+    class DONE done

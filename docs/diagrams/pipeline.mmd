@@ -1,0 +1,134 @@
+%% CloaudeCodeCTO — 9-Stage Pipeline (Updated)
+%% Orchestration + Budget + Validation + Smoke Test eklendi
+
+flowchart TB
+    subgraph SOURCES["📦 sources/ — 16 submodule repo"]
+        R1[anthropics-skills]
+        R2[everything-claude-code]
+        R3[continuous-claude-v3]
+        R4[alirezarezvani-claude-skills]
+        R5[antigravity-awesome-skills]
+        R6[voltagent-subagents]
+        R7[... +9 repo]
+    end
+
+    SOURCES --> S1
+
+    subgraph S1["1️⃣ DISCOVER (scanner.sh)"]
+        direction LR
+        D1[Dosya taraması] --> D2[Çakışma tespiti] --> D3[TSV çıkarma]
+    end
+
+    S1 --> OUT1[(decisions/*-map.tsv)]
+    OUT1 --> S2
+
+    subgraph S2["2️⃣ EXTRACT (extractor.py)"]
+        direction LR
+        E1[Frontmatter parse] --> E2[İçerik metrikleri] --> E3[Zenginleştirme]
+    end
+
+    S2 --> OUT2[(catalog.json)]
+    OUT2 --> S3
+
+    subgraph S3["3️⃣ SCORE (rubric + self-scoring)"]
+        direction TB
+        SC1[Rubric 100-puan<br/>1500 → 600]
+        SC1 --> SC2[Self-scoring<br/>borderline'lar]
+        SC2 --> SC3[scored-catalog.json]
+    end
+
+    S3 --> OUT3[(scored-catalog.json)]
+    OUT3 --> S4
+
+    subgraph S4["4️⃣ CURATE (curator.py)"]
+        direction LR
+        C1[Domain grupla] --> C2[Top-N seç] --> C3[Bundle]
+    end
+
+    S4 --> OUT4[(selected.json)]
+    OUT4 --> S45
+
+    subgraph S45["4️⃣.5️⃣ 🆕 ORCHESTRATE"]
+        direction TB
+        O1[8 faz lifecycle map] --> O2[/start-project meta-command/]
+        O2 --> O3[lifecycle.json üret]
+        O3 --> O4[project-state.json şablonu]
+    end
+
+    S45 --> OUT45[(lifecycle.json<br/>start-project.md)]
+    OUT45 --> S46
+
+    subgraph S46["4️⃣.6️⃣ 🆕 BUDGET"]
+        direction TB
+        B1[Token maliyet hesabı] --> B2[25k startup budget]
+        B2 --> B3{Sığıyor mu?}
+        B3 -->|Hayır| B4[Description kısalt<br/>düşük skorluları at]
+        B4 --> B1
+        B3 -->|Evet| B5[budget-profile.json]
+    end
+
+    S46 --> OUT46[(budget-profile.json<br/>selected-optimized.json)]
+    OUT46 --> S47
+
+    subgraph S47["4️⃣.7️⃣ 🆕 VALIDATE-AGENTS"]
+        direction TB
+        V1[TF-IDF overlap detection] --> V2[Disambiguation test<br/>20 senaryo]
+        V2 --> V3[Rewrite ambiguous descs]
+        V3 --> V4[agent-decision-tree.md]
+    end
+
+    S47 --> OUT47[(agent-overlap-report.json<br/>agent-decision-tree.md)]
+    OUT47 --> S5
+
+    subgraph S5["5️⃣ INSTALL (fabrika reset sonrası)"]
+        direction TB
+        I1[Pre-check: ~/.claude/ temiz] --> I2[Structure: dizinler]
+        I2 --> I3[Copy core files]
+        I3 --> I4[Hooks + settings.json]
+        I4 --> I5[CLAUDE.md + rules]
+        I5 --> I6[Memory setup]
+        I6 --> I7[Manifest + checksum]
+    end
+
+    S5 --> TARGET[("~/.claude/<br/>skills/ agents/ commands/<br/>hooks/ rules/ projects/")]
+    S5 --> OUT5[(install-manifest.json)]
+
+    TARGET --> S55
+
+    subgraph S55["5️⃣.5️⃣ 🆕 SMOKE TEST"]
+        direction TB
+        ST1[Budget verify ~25k] --> ST2[Agent selection test<br/>20 senaryo]
+        ST2 --> ST3[Lifecycle e2e test]
+        ST3 --> ST4[Skill auto-trigger test]
+        ST4 --> ST5[Hook execution test]
+        ST5 --> ST6[Memory persistence test]
+    end
+
+    S55 --> OUT55[(smoke-test-report.md)]
+    OUT55 --> GATE{6/6 geçti mi?}
+
+    GATE -->|Hayır| FIX[❌ İlgili aşamaya dön<br/>düzelt, tekrar test]
+    FIX -.->|fix| S5
+    GATE -->|Evet| S6
+
+    subgraph S6["6️⃣ OPTIMIZE (tracker.sh)"]
+        direction LR
+        OP1[Log parse] --> OP2[Usage metrics] --> OP3[Budama önerisi]
+    end
+
+    S6 --> OUT6[(usage-report.json)]
+    OUT6 -.->|feedback| S4
+
+    classDef source fill:#e1f5ff,stroke:#0288d1,stroke-width:2px
+    classDef stage fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef newstage fill:#ffe0b2,stroke:#e65100,stroke-width:3px
+    classDef output fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    classDef target fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px
+    classDef gate fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+
+    class SOURCES,R1,R2,R3,R4,R5,R6,R7 source
+    class S1,S2,S3,S4,S5,S6 stage
+    class S45,S46,S47,S55 newstage
+    class OUT1,OUT2,OUT3,OUT4,OUT45,OUT46,OUT47,OUT5,OUT55,OUT6 output
+    class TARGET target
+    class GATE,FIX gate

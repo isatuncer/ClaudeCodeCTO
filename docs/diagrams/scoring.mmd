@@ -1,0 +1,77 @@
+%% Skorlama Karar Ağacı — SIFIR MALİYET VERSİYONU
+%% Harici API yok. Rubric + Mevcut Claude Code oturumu.
+
+flowchart TD
+    START([Skill/Agent/Command]) --> EXTRACT[Frontmatter + içerik çıkar]
+
+    EXTRACT --> RUBRIC[Güçlendirilmiş Rubric Skorlama<br/>Max: 100 puan]
+
+    subgraph RUB["Rubric katmanları"]
+        direction TB
+        A[A. Yapısal puan<br/>frontmatter, description,<br/>trigger, examples<br/>max 30]
+        B[B. İçerik kalite puan<br/>başlık hiyerarşisi,<br/>kod blokları, TODO yok<br/>max 30]
+        C[C. Çapraz-repo sinyal<br/>popülerlik, zenginlik,<br/>unique pattern<br/>max 20]
+        D[D. Domain match<br/>keyword yoğunluğu<br/>max 20]
+    end
+
+    RUBRIC --> RUB
+    RUB --> SUM[Toplam skor hesapla<br/>0-100]
+
+    SUM --> GATE{Skor eşikleri}
+
+    GATE -->|0-30| REJECT[❌ ELİMİNE<br/>Çöp, eksik, TODO<br/>~900 skill]
+    GATE -->|30-50| BORDER[⚠️ BORDERLINE<br/>~300 skill<br/>Self-scoring'e git]
+    GATE -->|50-75| CANDIDATE[✅ CANDIDATE<br/>~250 skill<br/>Doğrudan aday]
+    GATE -->|75-100| AUTO[⭐ AUTO-KEEP<br/>~50 skill<br/>Otomatik kabul]
+
+    BORDER --> BATCH[Batch oluştur<br/>30 skill/batch<br/>~10 batch]
+
+    BATCH --> SUBAGENT
+
+    subgraph SUB["Claude Code Self-Scoring (BEDAVA)"]
+        direction TB
+        SUBAGENT[Task/Agent tool<br/>subagent spawn]
+        SUBAGENT --> READ[Batch'teki skill'leri oku]
+        READ --> EVAL[LLM değerlendirme<br/>mevcut oturumda]
+        EVAL --> JSON[Structured JSON döndür]
+    end
+
+    JSON --> VERDICT{Verdict}
+
+    VERDICT -->|keep + score >= 7| ACCEPT_SELF[✅ Kabul<br/>Self-scoring ile]
+    VERDICT -->|maybe| REVIEW[👤 İnsan review<br/>manuel karar]
+    VERDICT -->|skip| REJECT2[❌ Reddet]
+
+    AUTO --> DOMAIN[Domain etiketle]
+    CANDIDATE --> DOMAIN
+    ACCEPT_SELF --> DOMAIN
+    REVIEW --> DOMAIN
+
+    DOMAIN --> OUTPUT([scored-catalog.json])
+    REJECT --> END_NO([Eleme listesi])
+    REJECT2 --> END_NO
+
+    subgraph COST["💰 Maliyet Özeti"]
+        direction LR
+        CX1[Anthropic API: $0]
+        CX2[3rd party: $0]
+        CX3[Mevcut oturum kullanılıyor]
+    end
+
+    SUB -.-> COST
+
+    classDef start fill:#e3f2fd,stroke:#1976d2,stroke-width:3px
+    classDef rubric fill:#fff3e0,stroke:#f57c00
+    classDef decision fill:#fce4ec,stroke:#c2185b
+    classDef accept fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    classDef reject fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef self fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef cost fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
+
+    class START,EXTRACT start
+    class RUBRIC,RUB,A,B,C,D,SUM,BATCH,DOMAIN rubric
+    class GATE,VERDICT decision
+    class AUTO,CANDIDATE,ACCEPT_SELF,OUTPUT accept
+    class REJECT,REJECT2,END_NO reject
+    class BORDER,SUB,SUBAGENT,READ,EVAL,JSON,REVIEW self
+    class COST,CX1,CX2,CX3 cost

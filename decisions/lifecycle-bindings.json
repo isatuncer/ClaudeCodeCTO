@@ -1,0 +1,658 @@
+{
+  "version": "1.0",
+  "phases": [
+    {
+      "id": "discovery",
+      "order": 1,
+      "name": "Discovery",
+      "tagline": "Ne yapıyoruz ve neden?",
+      "entry_criteria": "Project type identified",
+      "exit_criteria": "PRD and user stories written",
+      "outputs": [
+        "docs/PRD.md",
+        "docs/user-stories.md",
+        "docs/personas.md"
+      ],
+      "typical_duration": "1-3 sessions",
+      "questions_to_user": [
+        "Bu proje hangi problemi çözüyor?",
+        "Hedef kullanıcı kim?",
+        "Başarı nasıl ölçülecek?",
+        "Rakipler/alternatifler neler?"
+      ],
+      "agents": [
+        {
+          "name": "business-analyst",
+          "id": "business-analyst",
+          "source": "voltagent-subagents",
+          "score": 79.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "market-researcher",
+          "id": "market-researcher",
+          "source": "voltagent-subagents",
+          "score": 71.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "ux-researcher",
+          "id": "ux-researcher",
+          "source": "rohitg00-toolkit",
+          "score": 66.2,
+          "resolved": "exact"
+        },
+        {
+          "name": "product-manager",
+          "id": "product-manager",
+          "source": "voltagent-subagents",
+          "score": 75.0,
+          "resolved": "exact"
+        }
+      ],
+      "skills": [
+        {
+          "name": "brainstorming",
+          "id": "brainstorming",
+          "source": "antigravity-awesome-skills",
+          "score": 71.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "jobs-to-be-done",
+          "id": "circleci-automation",
+          "source": "antigravity-awesome-skills",
+          "score": 88.0,
+          "resolved": "alternative"
+        },
+        {
+          "name": "user-personas",
+          "id": "c4-context",
+          "source": "antigravity-awesome-skills",
+          "score": 88.0,
+          "resolved": "alternative"
+        },
+        {
+          "name": "market-research",
+          "id": "market-research",
+          "source": "everything-claude-code",
+          "score": 78.0,
+          "resolved": "exact"
+        }
+      ],
+      "unresolved": []
+    },
+    {
+      "id": "planning",
+      "order": 2,
+      "name": "Planning",
+      "tagline": "Nasıl yapacağız?",
+      "entry_criteria": "Discovery phase complete",
+      "exit_criteria": "Technical plan, milestones, risk register",
+      "outputs": [
+        "docs/PLAN.md",
+        "docs/ROADMAP.md",
+        "docs/risks.md"
+      ],
+      "typical_duration": "1-2 sessions",
+      "questions_to_user": [
+        "Hangi teknoloji stack'ini kullanacağız?",
+        "Zaman çizelgesi ne olacak?",
+        "Ekip boyutu nedir?",
+        "Kritik bağımlılıklar neler?"
+      ],
+      "agents": [
+        {
+          "name": "planner",
+          "id": "planner",
+          "source": "everything-claude-code",
+          "score": 87.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "architect",
+          "id": "architect",
+          "source": "continuous-claude-v3",
+          "score": 92.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "product-manager",
+          "id": "product-manager",
+          "source": "voltagent-subagents",
+          "score": 75.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "cs-project-manager",
+          "id": "cs-project-manager",
+          "source": "alirezarezvani-claude-skills",
+          "score": 93.0,
+          "resolved": "exact"
+        }
+      ],
+      "skills": [
+        {
+          "name": "project-planning",
+          "id": "jira-expert",
+          "source": "alirezarezvani-claude-skills",
+          "score": 89.0,
+          "resolved": "alternative"
+        },
+        {
+          "name": "risk-analysis",
+          "id": "audit-skills",
+          "source": "antigravity-awesome-skills",
+          "score": 88.0,
+          "resolved": "alternative"
+        },
+        {
+          "name": "roadmap",
+          "id": "product-capability",
+          "source": "everything-claude-code",
+          "score": 91.0,
+          "resolved": "alternative"
+        },
+        {
+          "name": "milestone-tracking",
+          "id": "social-media-analyzer",
+          "source": "alirezarezvani-claude-skills",
+          "score": 93.0,
+          "resolved": "alternative"
+        }
+      ],
+      "unresolved": []
+    },
+    {
+      "id": "design",
+      "order": 3,
+      "name": "Design",
+      "tagline": "Neye benzeyecek?",
+      "entry_criteria": "Planning phase complete",
+      "exit_criteria": "Wireframes, API spec, DB schema",
+      "outputs": [
+        "docs/architecture.md",
+        "docs/api-spec.md",
+        "docs/db-schema.md"
+      ],
+      "typical_duration": "2-3 sessions",
+      "questions_to_user": [
+        "Kullanıcı akışları nasıl olacak?",
+        "Hangi API endpoint'leri gerekli?",
+        "Veri modeli nasıl şekillenecek?"
+      ],
+      "agents": [
+        {
+          "name": "ui-designer",
+          "id": "ui-designer",
+          "source": "voltagent-subagents",
+          "score": 87.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "api-designer",
+          "id": "api-designer",
+          "source": "voltagent-subagents",
+          "score": 87.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "database-architect",
+          "id": "database-administrator",
+          "source": "voltagent-subagents",
+          "score": 85.0,
+          "resolved": "alternative"
+        },
+        {
+          "name": "architect",
+          "id": "architect",
+          "source": "continuous-claude-v3",
+          "score": 92.0,
+          "resolved": "exact"
+        }
+      ],
+      "skills": [
+        {
+          "name": "design-system",
+          "id": "design-system",
+          "source": "everything-claude-code",
+          "score": 83.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "api-design",
+          "id": "api-design",
+          "source": "everything-claude-code",
+          "score": 91.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "schema-design",
+          "id": "postgresql",
+          "source": "antigravity-awesome-skills",
+          "score": 92.0,
+          "resolved": "alternative"
+        },
+        {
+          "name": "c4-architecture",
+          "id": "c4-architecture-c4-architecture",
+          "source": "antigravity-awesome-skills",
+          "score": 83.0,
+          "resolved": "alternative"
+        }
+      ],
+      "unresolved": []
+    },
+    {
+      "id": "build",
+      "order": 4,
+      "name": "Build",
+      "tagline": "Kod yazma",
+      "entry_criteria": "Design phase complete, tasks broken down",
+      "exit_criteria": "Features implemented and working",
+      "outputs": [
+        "src/**",
+        "tests/**"
+      ],
+      "typical_duration": "Multiple sessions",
+      "questions_to_user": [
+        "Hangi özellikten başlayalım?",
+        "TDD mi direkt implementation mı?"
+      ],
+      "agents": [
+        {
+          "name": "fullstack-developer",
+          "id": "fullstack-developer",
+          "source": "voltagent-subagents",
+          "score": 77.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "frontend-developer",
+          "id": "frontend-developer",
+          "source": "voltagent-subagents",
+          "score": 85.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "backend-developer",
+          "id": "backend-developer",
+          "source": "voltagent-subagents",
+          "score": 79.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "tdd-guide",
+          "id": "tdd-guide",
+          "source": "everything-claude-code",
+          "score": 87.0,
+          "resolved": "exact"
+        }
+      ],
+      "skills": [
+        {
+          "name": "tdd",
+          "id": "tdd",
+          "source": "continuous-claude-v3",
+          "score": 94.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "coding-standards",
+          "id": "coding-standards",
+          "source": "everything-claude-code",
+          "score": 87.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "clean-code",
+          "id": "clean-code",
+          "source": "antigravity-awesome-skills",
+          "score": 70.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "refactor",
+          "id": "refactor",
+          "source": "continuous-claude-v3",
+          "score": 94.0,
+          "resolved": "exact"
+        }
+      ],
+      "unresolved": []
+    },
+    {
+      "id": "test",
+      "order": 5,
+      "name": "Test",
+      "tagline": "Doğru mu çalışıyor?",
+      "entry_criteria": "Build phase complete or feature-ready",
+      "exit_criteria": "Test suite passing, coverage >= 80%",
+      "outputs": [
+        "tests/**",
+        "docs/test-report.md"
+      ],
+      "typical_duration": "1-2 sessions per feature",
+      "questions_to_user": [],
+      "agents": [
+        {
+          "name": "test-automator",
+          "id": "test-automator",
+          "source": "voltagent-subagents",
+          "score": 85.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "qa-expert",
+          "id": "qa-expert",
+          "source": "voltagent-subagents",
+          "score": 85.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "e2e-runner",
+          "id": "e2e-runner",
+          "source": "everything-claude-code",
+          "score": 81.2,
+          "resolved": "exact"
+        },
+        {
+          "name": "tdd-guide",
+          "id": "tdd-guide",
+          "source": "everything-claude-code",
+          "score": 87.0,
+          "resolved": "exact"
+        }
+      ],
+      "skills": [
+        {
+          "name": "unit-testing",
+          "id": "test",
+          "source": "continuous-claude-v3",
+          "score": 94.0,
+          "resolved": "alternative"
+        },
+        {
+          "name": "e2e-testing",
+          "id": "e2e-testing",
+          "source": "everything-claude-code",
+          "score": 83.4,
+          "resolved": "exact"
+        },
+        {
+          "name": "test-coverage",
+          "id": "tdd-guide",
+          "source": "alirezarezvani-claude-skills",
+          "score": 93.0,
+          "resolved": "alternative"
+        },
+        {
+          "name": "mutation-testing",
+          "id": "testing-strategies",
+          "source": "rohitg00-toolkit",
+          "score": 84.0,
+          "resolved": "alternative"
+        }
+      ],
+      "unresolved": []
+    },
+    {
+      "id": "document",
+      "order": 6,
+      "name": "Document",
+      "tagline": "Nasıl kullanılır?",
+      "entry_criteria": "Features tested",
+      "exit_criteria": "README, API docs, user guides written",
+      "outputs": [
+        "README.md",
+        "docs/api.md",
+        "docs/guide.md",
+        "CHANGELOG.md"
+      ],
+      "typical_duration": "",
+      "questions_to_user": [],
+      "agents": [
+        {
+          "name": "technical-writer",
+          "id": "technical-writer",
+          "source": "voltagent-subagents",
+          "score": 87.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "api-documenter",
+          "id": "api-documenter",
+          "source": "voltagent-subagents",
+          "score": 77.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "doc-updater",
+          "id": "doc-updater",
+          "source": "everything-claude-code",
+          "score": 87.0,
+          "resolved": "exact"
+        }
+      ],
+      "skills": [
+        {
+          "name": "readme",
+          "id": "readme",
+          "source": "antigravity-awesome-skills",
+          "score": 88.8,
+          "resolved": "exact"
+        },
+        {
+          "name": "api-documentation",
+          "id": "api-documentation",
+          "source": "antigravity-awesome-skills",
+          "score": 88.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "tutorials",
+          "id": "article-writing",
+          "source": "everything-claude-code",
+          "score": 82.0,
+          "resolved": "alternative"
+        },
+        {
+          "name": "changelog",
+          "id": "codex-review",
+          "source": "antigravity-awesome-skills",
+          "score": 92.0,
+          "resolved": "alternative"
+        }
+      ],
+      "unresolved": []
+    },
+    {
+      "id": "ship",
+      "order": 7,
+      "name": "Ship",
+      "tagline": "Canlıya nasıl çıkar?",
+      "entry_criteria": "Docs complete",
+      "exit_criteria": "Production deployment active, monitoring in place",
+      "outputs": [
+        ".github/workflows/**",
+        "Dockerfile",
+        "docs/deployment.md"
+      ],
+      "typical_duration": "",
+      "questions_to_user": [],
+      "agents": [
+        {
+          "name": "deployment-engineer",
+          "id": "deployment-engineer",
+          "source": "voltagent-subagents",
+          "score": 91.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "devops-engineer",
+          "id": "devops-engineer",
+          "source": "voltagent-subagents",
+          "score": 91.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "sre-engineer",
+          "id": "sre-engineer",
+          "source": "voltagent-subagents",
+          "score": 84.2,
+          "resolved": "exact"
+        },
+        {
+          "name": "docker-expert",
+          "id": "docker-expert",
+          "source": "voltagent-subagents",
+          "score": 85.0,
+          "resolved": "exact"
+        }
+      ],
+      "skills": [
+        {
+          "name": "docker",
+          "id": "odoo-docker-deployment",
+          "source": "antigravity-awesome-skills",
+          "score": 92.0,
+          "resolved": "alternative"
+        },
+        {
+          "name": "ci-cd",
+          "id": "healthcare-cdss-patterns",
+          "source": "everything-claude-code",
+          "score": 95.0,
+          "resolved": "alternative"
+        },
+        {
+          "name": "deployment-patterns",
+          "id": "deployment-patterns",
+          "source": "everything-claude-code",
+          "score": 91.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "kubernetes",
+          "id": "cloud-devops",
+          "source": "antigravity-awesome-skills",
+          "score": 88.0,
+          "resolved": "alternative"
+        }
+      ],
+      "unresolved": []
+    },
+    {
+      "id": "maintain",
+      "order": 8,
+      "name": "Maintain",
+      "tagline": "Nasıl sağlıklı kalır?",
+      "entry_criteria": "Production deployed",
+      "exit_criteria": "Ongoing monitoring, dep updates, bug fixes",
+      "outputs": [
+        "docs/runbook.md",
+        "docs/post-mortems/**"
+      ],
+      "typical_duration": "",
+      "questions_to_user": [],
+      "agents": [
+        {
+          "name": "performance-engineer",
+          "id": "performance-engineer",
+          "source": "voltagent-subagents",
+          "score": 75.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "security-engineer",
+          "id": "security-engineer",
+          "source": "voltagent-subagents",
+          "score": 87.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "refactor-cleaner",
+          "id": "refactor-cleaner",
+          "source": "everything-claude-code",
+          "score": 87.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "database-optimizer",
+          "id": "database-optimizer",
+          "source": "voltagent-subagents",
+          "score": 87.0,
+          "resolved": "exact"
+        }
+      ],
+      "skills": [
+        {
+          "name": "monitoring",
+          "id": "multi-agent-task-orchestrator",
+          "source": "antigravity-awesome-skills",
+          "score": 92.0,
+          "resolved": "alternative"
+        },
+        {
+          "name": "performance-profiling",
+          "id": "performance-profiling",
+          "source": "antigravity-awesome-skills",
+          "score": 72.0,
+          "resolved": "exact"
+        },
+        {
+          "name": "dep-audit",
+          "id": "security-pen-testing",
+          "source": "alirezarezvani-claude-skills",
+          "score": 85.0,
+          "resolved": "alternative"
+        },
+        {
+          "name": "security-audit",
+          "id": "security-audit",
+          "source": "antigravity-awesome-skills",
+          "score": 88.0,
+          "resolved": "exact"
+        }
+      ],
+      "unresolved": []
+    }
+  ],
+  "handoffs": [
+    {
+      "from": "discovery",
+      "to": "planning",
+      "payload": "PRD + user stories + personas"
+    },
+    {
+      "from": "planning",
+      "to": "design",
+      "payload": "Plan + tech stack + risks"
+    },
+    {
+      "from": "design",
+      "to": "build",
+      "payload": "Architecture + API spec + DB schema"
+    },
+    {
+      "from": "build",
+      "to": "test",
+      "payload": "Feature-complete code"
+    },
+    {
+      "from": "test",
+      "to": "document",
+      "payload": "Passing test suite + coverage report"
+    },
+    {
+      "from": "document",
+      "to": "ship",
+      "payload": "Docs + deployment checklist"
+    },
+    {
+      "from": "ship",
+      "to": "maintain",
+      "payload": "Production URLs + monitoring dashboards"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "installed_at": "2026-04-12T19:02:03",
+  "target": "C:\\Users\\Dell\\.claude",
+  "backup": "C:\\tmp\\claude-install-backup-20260412-190110",
+  "stage": "C:\\tmp\\claude-install-stage-20260412-190110",
+  "total": 2388,
+  "by_type": {
+    "command": 236,
+    "skill": 1845,
+    "agent": 307
+  },
+  "by_domain": {
+    "project-mgmt": 349,
+    "testing": 140,
+    "coding": 287,
+    "devops": 541,
+    "security": 143,
+    "frontend": 333,
+    "backend": 183,
+    "docs": 120,
+    "data-ai": 132,
+    "architecture": 81,
+    "other": 79
+  },
+  "orchestrator": {
+    "lifecycle_skill": "skills/project-lifecycle/SKILL.md",
+    "meta_command": "commands/start-project.md",
+    "config": "config/lifecycle.json"
+  },
+  "rules": [
+    "rules/agent-decision-tree.md"
+  ],
+  "generated": [
+    "CLAUDE.md",
+    "settings.json"
+  ]
+}

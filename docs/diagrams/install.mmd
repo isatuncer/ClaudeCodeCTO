@@ -1,0 +1,72 @@
+%% Güvenli Kurulum Akışı — Atomic + Rollback
+
+flowchart TD
+    START([selected.json]) --> CHECK[install-manifest.json<br/>önceki kurulum var mı?]
+
+    CHECK --> BACKUP[1️⃣ BACKUP<br/>~/.claude/ → backups/YYYY-MM-DD-HHMMSS/]
+
+    BACKUP --> BACKUP_OK{Backup başarılı?}
+    BACKUP_OK -->|Hayır| ABORT1[⛔ ABORT<br/>Hiçbir şey değiştirme]
+    BACKUP_OK -->|Evet| DRYRUN[2️⃣ DRY-RUN<br/>Neler değişecek göster]
+
+    DRYRUN --> PREVIEW[Önizleme tablosu:<br/>+ eklenecekler<br/>- silinecekler<br/>~ güncellenecekler]
+
+    PREVIEW --> CONFIRM{3️⃣ Kullanıcı onayı}
+    CONFIRM -->|Hayır| CANCEL[🚫 İptal<br/>Backup tut, değişiklik yok]
+    CONFIRM -->|Evet| STAGE[4️⃣ STAGE<br/>/tmp/claude-stage/ altına yaz]
+
+    STAGE --> VALIDATE[5️⃣ VALIDATE]
+
+    subgraph VAL["Doğrulama kontrolleri"]
+        V1[Frontmatter YAML parse]
+        V2[Gerekli alanlar var mı]
+        V3[Çakışma matrisi]
+        V4[Dosya boyutu makul mu]
+        V5[Zararlı pattern var mı]
+    end
+
+    VALIDATE --> VAL
+    VAL --> VAL_OK{Hepsi geçti mi?}
+
+    VAL_OK -->|Hayır| ROLLBACK1[🔄 ROLLBACK<br/>stage temizle<br/>backup'tan geri yükle]
+    VAL_OK -->|Evet| COMMIT[6️⃣ COMMIT<br/>rsync --atomic<br/>stage → ~/.claude/]
+
+    COMMIT --> COMMIT_OK{Kopyalama tam mı?}
+    COMMIT_OK -->|Hayır| ROLLBACK2[🔄 ROLLBACK<br/>backup'tan tam geri yükle]
+    COMMIT_OK -->|Evet| VERIFY[7️⃣ VERIFY]
+
+    subgraph VER["Post-install doğrulama"]
+        VE1[Kopyalanan dosya sayısı eşleşiyor mu]
+        VE2[Checksum kontrol]
+        VE3[Claude Code'un görebileceği format mı]
+    end
+
+    VERIFY --> VER
+    VER --> VER_OK{Her şey çalışıyor mu?}
+
+    VER_OK -->|Hayır| ROLLBACK3[🔄 ROLLBACK<br/>acil geri yükleme]
+    VER_OK -->|Evet| MANIFEST[8️⃣ MANIFEST<br/>install-manifest.json'a yaz:<br/>- sürüm<br/>- kaynak repo<br/>- skor<br/>- tarih]
+
+    MANIFEST --> CLEANUP[9️⃣ CLEANUP<br/>stage dizinini temizle<br/>eski backup'ları döndür]
+
+    CLEANUP --> DONE([✅ KURULUM TAMAM])
+
+    ROLLBACK1 --> DONE_FAIL([⚠️ Kurulum iptal<br/>sistem eski halinde])
+    ROLLBACK2 --> DONE_FAIL
+    ROLLBACK3 --> DONE_FAIL
+    CANCEL --> DONE_CANCEL([ℹ️ Kullanıcı iptali])
+    ABORT1 --> DONE_ABORT([⛔ Kurulum başlamadı])
+
+    classDef start fill:#e3f2fd,stroke:#1976d2,stroke-width:3px
+    classDef safe fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    classDef danger fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef warn fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef rollback fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef success fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
+
+    class START,CHECK start
+    class BACKUP,STAGE,VALIDATE,COMMIT,VERIFY,MANIFEST,CLEANUP safe
+    class DRYRUN,PREVIEW,CONFIRM warn
+    class ABORT1,CANCEL,DONE_FAIL,DONE_CANCEL,DONE_ABORT danger
+    class ROLLBACK1,ROLLBACK2,ROLLBACK3 rollback
+    class DONE success

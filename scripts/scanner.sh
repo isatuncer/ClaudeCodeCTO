@@ -78,9 +78,17 @@ for repo_name in "${SKILL_REPOS[@]}"; do
     [ -d "$repo_path/skills" ] || continue
 
     repo_count=0
+    declare -A _seen_skills 2>/dev/null || true
     for skill_dir in "$repo_path/skills"/*/; do
         [ -d "$skill_dir" ] || continue
         skill_name=$(basename "$skill_dir")
+
+        # Dedup: skip if we already recorded this skill_name for this repo
+        if [ -n "${_seen_skills[$skill_name]+x}" ] 2>/dev/null; then
+            continue
+        fi
+        _seen_skills[$skill_name]=1
+
         skill_file=""
 
         if [ -f "$skill_dir/SKILL.md" ]; then
@@ -98,6 +106,7 @@ for repo_name in "${SKILL_REPOS[@]}"; do
             repo_count=$((repo_count + 1))
         fi
     done
+    unset _seen_skills 2>/dev/null || true
     echo -e "  ${GREEN}✓${NC}  ${BOLD}$repo_name${NC}: $repo_count skills"
 done
 

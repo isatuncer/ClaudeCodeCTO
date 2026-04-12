@@ -1,0 +1,832 @@
+{
+  "total_agents": 307,
+  "overlap_threshold": 0.4,
+  "overlap_count": 22,
+  "overlaps_top50": [
+    {
+      "a": "kotlin-build-resolver",
+      "b": "java-build-resolver",
+      "similarity": 0.667,
+      "a_source": "everything-claude-code",
+      "b_source": "everything-claude-code",
+      "a_domain": "coding",
+      "b_domain": "frontend"
+    },
+    {
+      "a": "braintrust-analyst",
+      "b": "session-analyst",
+      "similarity": 0.667,
+      "a_source": "continuous-claude-v3",
+      "b_source": "continuous-claude-v3",
+      "a_domain": "devops",
+      "b_domain": "project-mgmt"
+    },
+    {
+      "a": "cpp-build-resolver",
+      "b": "go-build-resolver",
+      "similarity": 0.579,
+      "a_source": "everything-claude-code",
+      "b_source": "everything-claude-code",
+      "a_domain": "frontend",
+      "b_domain": "frontend"
+    },
+    {
+      "a": "Solo Founder",
+      "b": "solo-founder",
+      "similarity": 0.56,
+      "a_source": "alirezarezvani-claude-skills",
+      "b_source": "alirezarezvani-claude-skills",
+      "a_domain": "devops",
+      "b_domain": "docs"
+    },
+    {
+      "a": "kotlin-build-resolver",
+      "b": "cpp-build-resolver",
+      "similarity": 0.55,
+      "a_source": "everything-claude-code",
+      "b_source": "everything-claude-code",
+      "a_domain": "coding",
+      "b_domain": "frontend"
+    },
+    {
+      "a": "kotlin-build-resolver",
+      "b": "go-build-resolver",
+      "similarity": 0.55,
+      "a_source": "everything-claude-code",
+      "b_source": "everything-claude-code",
+      "a_domain": "coding",
+      "b_domain": "frontend"
+    },
+    {
+      "a": "kotlin-build-resolver",
+      "b": "rust-build-resolver",
+      "similarity": 0.522,
+      "a_source": "everything-claude-code",
+      "b_source": "everything-claude-code",
+      "a_domain": "coding",
+      "b_domain": "frontend"
+    },
+    {
+      "a": "Growth Marketer",
+      "b": "growth-marketer",
+      "similarity": 0.517,
+      "a_source": "alirezarezvani-claude-skills",
+      "b_source": "alirezarezvani-claude-skills",
+      "a_domain": "frontend",
+      "b_domain": "docs"
+    },
+    {
+      "a": "Finance Lead",
+      "b": "finance-lead",
+      "similarity": 0.515,
+      "a_source": "alirezarezvani-claude-skills",
+      "b_source": "alirezarezvani-claude-skills",
+      "a_domain": "frontend",
+      "b_domain": "docs"
+    },
+    {
+      "a": "cpp-build-resolver",
+      "b": "java-build-resolver",
+      "similarity": 0.478,
+      "a_source": "everything-claude-code",
+      "b_source": "everything-claude-code",
+      "a_domain": "frontend",
+      "b_domain": "frontend"
+    },
+    {
+      "a": "cpp-build-resolver",
+      "b": "rust-build-resolver",
+      "similarity": 0.478,
+      "a_source": "everything-claude-code",
+      "b_source": "everything-claude-code",
+      "a_domain": "frontend",
+      "b_domain": "frontend"
+    },
+    {
+      "a": "go-build-resolver",
+      "b": "java-build-resolver",
+      "similarity": 0.478,
+      "a_source": "everything-claude-code",
+      "b_source": "everything-claude-code",
+      "a_domain": "frontend",
+      "b_domain": "frontend"
+    },
+    {
+      "a": "go-build-resolver",
+      "b": "rust-build-resolver",
+      "similarity": 0.478,
+      "a_source": "everything-claude-code",
+      "b_source": "everything-claude-code",
+      "a_domain": "frontend",
+      "b_domain": "frontend"
+    },
+    {
+      "a": "go-reviewer",
+      "b": "rust-reviewer",
+      "similarity": 0.471,
+      "a_source": "everything-claude-code",
+      "b_source": "everything-claude-code",
+      "a_domain": "coding",
+      "b_domain": "coding"
+    },
+    {
+      "a": "dart-build-resolver",
+      "b": "kotlin-build-resolver",
+      "similarity": 0.462,
+      "a_source": "everything-claude-code",
+      "b_source": "everything-claude-code",
+      "a_domain": "frontend",
+      "b_domain": "coding"
+    },
+    {
+      "a": "java-build-resolver",
+      "b": "rust-build-resolver",
+      "similarity": 0.462,
+      "a_source": "everything-claude-code",
+      "b_source": "everything-claude-code",
+      "a_domain": "frontend",
+      "b_domain": "frontend"
+    },
+    {
+      "a": "laravel-specialist",
+      "b": "symfony-specialist",
+      "similarity": 0.44,
+      "a_source": "voltagent-subagents",
+      "b_source": "voltagent-subagents",
+      "a_domain": "devops",
+      "b_domain": "frontend"
+    },
+    {
+      "a": "Startup CTO",
+      "b": "startup-cto",
+      "similarity": 0.438,
+      "a_source": "alirezarezvani-claude-skills",
+      "b_source": "alirezarezvani-claude-skills",
+      "a_domain": "architecture",
+      "b_domain": "docs"
+    },
+    {
+      "a": "dart-build-resolver",
+      "b": "cpp-build-resolver",
+      "similarity": 0.423,
+      "a_source": "everything-claude-code",
+      "b_source": "everything-claude-code",
+      "a_domain": "frontend",
+      "b_domain": "frontend"
+    },
+    {
+      "a": "dart-build-resolver",
+      "b": "go-build-resolver",
+      "similarity": 0.423,
+      "a_source": "everything-claude-code",
+      "b_source": "everything-claude-code",
+      "a_domain": "frontend",
+      "b_domain": "frontend"
+    },
+    {
+      "a": "dart-build-resolver",
+      "b": "java-build-resolver",
+      "similarity": 0.414,
+      "a_source": "everything-claude-code",
+      "b_source": "everything-claude-code",
+      "a_domain": "frontend",
+      "b_domain": "frontend"
+    },
+    {
+      "a": "dart-build-resolver",
+      "b": "rust-build-resolver",
+      "similarity": 0.414,
+      "a_source": "everything-claude-code",
+      "b_source": "everything-claude-code",
+      "a_domain": "frontend",
+      "b_domain": "frontend"
+    }
+  ],
+  "trigger_groups": {
+    "plan project": [
+      {
+        "id": "cs-project-manager",
+        "score": 93.0,
+        "source": "alirezarezvani-claude-skills"
+      },
+      {
+        "id": "architect",
+        "score": 92.0,
+        "source": "continuous-claude-v3"
+      },
+      {
+        "id": "plan-reviewer",
+        "score": 90.0,
+        "source": "continuous-claude-v3"
+      },
+      {
+        "id": "review-agent",
+        "score": 90.0,
+        "source": "continuous-claude-v3"
+      },
+      {
+        "id": "cs-agile-product-owner",
+        "score": 89.0,
+        "source": "alirezarezvani-claude-skills"
+      },
+      {
+        "id": "cloud-architect",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "planner",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "scrum-master",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "plan-agent",
+        "score": 86.0,
+        "source": "continuous-claude-v3"
+      },
+      {
+        "id": "cs-product-manager",
+        "score": 85.4,
+        "source": "alirezarezvani-claude-skills"
+      }
+    ],
+    "test / TDD": [
+      {
+        "id": "architect",
+        "score": 92.0,
+        "source": "continuous-claude-v3"
+      },
+      {
+        "id": "penetration-tester",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "prompt-engineer",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "tdd-guide",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "arbiter",
+        "score": 86.0,
+        "source": "continuous-claude-v3"
+      },
+      {
+        "id": "accessibility-tester",
+        "score": 85.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "frontend-developer",
+        "score": 85.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "migration-planner",
+        "score": 85.0,
+        "source": "alirezarezvani-claude-skills"
+      },
+      {
+        "id": "qa-expert",
+        "score": 85.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "test-automator",
+        "score": 85.0,
+        "source": "voltagent-subagents"
+      }
+    ],
+    "design / architect": [
+      {
+        "id": "architect",
+        "score": 92.0,
+        "source": "continuous-claude-v3"
+      },
+      {
+        "id": "deployment-engineer",
+        "score": 91.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "devops-engineer",
+        "score": 91.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "ml-engineer",
+        "score": 91.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "plan-reviewer",
+        "score": 90.0,
+        "source": "continuous-claude-v3"
+      },
+      {
+        "id": "kotlin-reviewer",
+        "score": 88.2,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "angular-architect",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "api-designer",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "build-error-resolver",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "cli-developer",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      }
+    ],
+    "document": [
+      {
+        "id": "architect",
+        "score": 92.0,
+        "source": "continuous-claude-v3"
+      },
+      {
+        "id": "api-designer",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "doc-updater",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "tdd-guide",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "technical-writer",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "opensource-packager",
+        "score": 83.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "docs-lookup",
+        "score": 82.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "scribe",
+        "score": 82.0,
+        "source": "continuous-claude-v3"
+      },
+      {
+        "id": "documentation-engineer",
+        "score": 80.6,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "api-documenter",
+        "score": 77.0,
+        "source": "voltagent-subagents"
+      }
+    ],
+    "write code": [
+      {
+        "id": "deployment-engineer",
+        "score": 91.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "devops-engineer",
+        "score": 91.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "ml-engineer",
+        "score": 91.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "review-agent",
+        "score": 90.0,
+        "source": "continuous-claude-v3"
+      },
+      {
+        "id": "devops-incident-responder",
+        "score": 89.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "vue-specialist",
+        "score": 88.0,
+        "source": "rohitg00-toolkit"
+      },
+      {
+        "id": "dart-build-resolver",
+        "score": 87.2,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "kotlin-build-resolver",
+        "score": 87.2,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "api-designer",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "build-engineer",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      }
+    ],
+    "deploy / devops": [
+      {
+        "id": "deployment-engineer",
+        "score": 91.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "devops-engineer",
+        "score": 91.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "healthcare-reviewer",
+        "score": 91.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "ml-engineer",
+        "score": 91.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "cs-demand-gen-specialist",
+        "score": 89.0,
+        "source": "alirezarezvani-claude-skills"
+      },
+      {
+        "id": "devops-incident-responder",
+        "score": 89.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "vue-specialist",
+        "score": 88.0,
+        "source": "rohitg00-toolkit"
+      },
+      {
+        "id": "dart-build-resolver",
+        "score": 87.2,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "kotlin-build-resolver",
+        "score": 87.2,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "api-designer",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      }
+    ],
+    "secure / audit": [
+      {
+        "id": "devops-engineer",
+        "score": 91.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "healthcare-reviewer",
+        "score": 91.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "api-designer",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "cloud-architect",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "csharp-reviewer",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "database-reviewer",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "incident-responder",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "penetration-tester",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "python-reviewer",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "security-auditor",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      }
+    ],
+    "data / ML / AI": [
+      {
+        "id": "devops-engineer",
+        "score": 91.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "ml-engineer",
+        "score": 91.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "review-agent",
+        "score": 90.0,
+        "source": "continuous-claude-v3"
+      },
+      {
+        "id": "cs-demand-gen-specialist",
+        "score": 89.0,
+        "source": "alirezarezvani-claude-skills"
+      },
+      {
+        "id": "devops-incident-responder",
+        "score": 89.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "dart-build-resolver",
+        "score": 87.2,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "kotlin-build-resolver",
+        "score": 87.2,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "build-error-resolver",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "cpp-build-resolver",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "go-build-resolver",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      }
+    ],
+    "review code": [
+      {
+        "id": "healthcare-reviewer",
+        "score": 91.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "plan-reviewer",
+        "score": 90.0,
+        "source": "continuous-claude-v3"
+      },
+      {
+        "id": "review-agent",
+        "score": 90.0,
+        "source": "continuous-claude-v3"
+      },
+      {
+        "id": "kotlin-reviewer",
+        "score": 88.2,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "cpp-reviewer",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "csharp-reviewer",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "data-engineer",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "database-reviewer",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "go-reviewer",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "python-reviewer",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      }
+    ],
+    "optimize performance": [
+      {
+        "id": "ml-engineer",
+        "score": 91.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "angular-architect",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "build-engineer",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "cpp-reviewer",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "csharp-reviewer",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "database-optimizer",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "database-reviewer",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "go-reviewer",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "graphql-architect",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "nextjs-developer",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      }
+    ],
+    "fix bug / debug": [
+      {
+        "id": "devops-incident-responder",
+        "score": 89.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "dart-build-resolver",
+        "score": 87.2,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "kotlin-build-resolver",
+        "score": 87.2,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "build-error-resolver",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "cpp-build-resolver",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "data-engineer",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "database-reviewer",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "go-build-resolver",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "go-reviewer",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "java-build-resolver",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      }
+    ],
+    "refactor / clean": [
+      {
+        "id": "kotlin-reviewer",
+        "score": 88.2,
+        "source": "everything-claude-code"
+      },
+      {
+        "id": "api-designer",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "build-engineer",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "cli-developer",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "cloud-architect",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "data-engineer",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "database-optimizer",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "mlops-engineer",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "nextjs-developer",
+        "score": 87.0,
+        "source": "voltagent-subagents"
+      },
+      {
+        "id": "planner",
+        "score": 87.0,
+        "source": "everything-claude-code"
+      }
+    ]
+  },
+  "untagged_count": 18
+}
