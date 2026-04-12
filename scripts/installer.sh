@@ -134,6 +134,28 @@ for c in selected["components"]:
             except OSError as e:
                 skipped.append((c["id"], str(e)))
                 continue
+
+            # Post-copy validation: skill must have SKILL.md with YAML frontmatter
+            dst_skill = dst_dir / "SKILL.md"
+            if not dst_skill.exists():
+                # Upstream used README.md instead of SKILL.md — promote it
+                dst_readme = dst_dir / "README.md"
+                if dst_readme.exists():
+                    dst_readme.rename(dst_skill)
+
+            if not dst_skill.exists():
+                shutil.rmtree(dst_dir)
+                skipped.append((c["id"], "no SKILL.md or README.md found"))
+                continue
+
+            try:
+                first_line = dst_skill.read_text(encoding="utf-8", errors="replace").lstrip().split("\n", 1)[0].strip()
+            except OSError:
+                first_line = ""
+            if not first_line.startswith("---"):
+                shutil.rmtree(dst_dir)
+                skipped.append((c["id"], "SKILL.md missing YAML frontmatter"))
+                continue
     elif ctype == "agent":
         dst = STAGE / "agents" / f"{c['id']}.md"
         if not DRY:
@@ -286,15 +308,32 @@ if [ "$DRY_RUN" -eq 0 ]; then
 import json
 from pathlib import Path
 from datetime import datetime
+
 sel = json.loads(Path(r"$SELECTED").read_text(encoding="utf-8"))
+target = Path(r"$CLAUDE_HOME")
+
+# Count actual installed items (includes the 2 orchestrator items)
+actual_skills = len([d for d in (target / "skills").iterdir() if d.is_dir()]) if (target / "skills").exists() else 0
+actual_agents = len(list((target / "agents").iterdir())) if (target / "agents").exists() else 0
+actual_commands = len(list((target / "commands").iterdir())) if (target / "commands").exists() else 0
+actual_total = actual_skills + actual_agents + actual_commands
+
 manifest = {
     "installed_at": datetime.now().isoformat(timespec="seconds"),
     "target": r"$CLAUDE_HOME",
     "backup": r"$BACKUP_DIR",
     "stage": r"$STAGE_DIR",
-    "total": sel["total"],
-    "by_type": sel.get("by_type", {}),
-    "by_domain": sel.get("by_domain", {}),
+    # Selection counts (what selected.json intended to install)
+    "selected_total": sel["total"],
+    "selected_by_type": sel.get("by_type", {}),
+    "selected_by_domain": sel.get("by_domain", {}),
+    # Actual installed counts (after validation + orchestrator)
+    "total": actual_total,
+    "installed": {
+        "skills": actual_skills,
+        "agents": actual_agents,
+        "commands": actual_commands,
+    },
     "orchestrator": {
         "lifecycle_skill": "skills/project-lifecycle/SKILL.md",
         "meta_command": "commands/start-project.md",
@@ -305,6 +344,7 @@ manifest = {
 }
 Path(r"$MANIFEST").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 print("  OK install-manifest.json")
+print(f"  Selected: {sel['total']}  Installed: {actual_total}")
 MFEOF
 fi
 echo ""

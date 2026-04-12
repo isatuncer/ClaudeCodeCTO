@@ -141,10 +141,13 @@ MANIFEST="$ROOT_BASH/decisions/install-manifest.json"
 if [ -f "$MANIFEST" ]; then
     manifest_total=$(python -c "import json; print(json.load(open(r'$(cygpath -w $MANIFEST)'))['total'])" 2>/dev/null || echo "0")
     actual_total=$(( $(ls "$CLAUDE_HOME/skills" | wc -l) + $(ls "$CLAUDE_HOME/agents" | wc -l) + $(ls "$CLAUDE_HOME/commands" | wc -l) ))
-    if [ "$manifest_total" -gt 0 ] && [ "$actual_total" -ge "$manifest_total" ]; then
-        pass "Manifest total ($manifest_total) matches installed ($actual_total)"
+    # Manifest "total" is the actual installed count (post-validation + orchestrator)
+    if [ "$manifest_total" = "$actual_total" ]; then
+        pass "Installed $actual_total matches manifest"
+    elif [ "$manifest_total" -gt 0 ]; then
+        warn "Manifest says $manifest_total, actual $actual_total (diff: $((actual_total - manifest_total)))"
     else
-        warn "Manifest says $manifest_total, actual $actual_total"
+        warn "Could not read manifest total"
     fi
 else
     fail "install-manifest.json missing"
@@ -194,7 +197,7 @@ cat > "$REPORT_FILE" << EOF
 
 ## Failures
 
-$(if [ "${#FAILURES[@]:-0}" = "0" ]; then echo "_None_"; else for f in "${FAILURES[@]}"; do echo "- $f"; done; fi)
+$(if [ "$FAIL" = "0" ]; then echo "_None_"; else for f in "${FAILURES[@]}"; do echo "- $f"; done; fi)
 
 ## Next Steps
 

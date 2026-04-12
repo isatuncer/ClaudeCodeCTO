@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Skill validation in installer** — post-copy, the installer now verifies every skill has a `SKILL.md` with YAML frontmatter. If only `README.md` exists (with valid frontmatter), it's promoted to `SKILL.md`. Skills without valid frontmatter are rejected and logged as skipped.
+- **Manifest now tracks actual installed counts** — `install-manifest.json` now contains both `selected_total` (from `selected.json`) and `total` (actually installed after validation + orchestrator), plus a per-type `installed` breakdown.
+
 ### Fixed
 - **Installer temp dir is now platform-aware** — previously hardcoded `/c/tmp/` (Windows-only), now falls back to `$TMPDIR` on macOS/Linux. Override with `CCCTO_TMP` env var. Fixes CI failures on Ubuntu and macOS runners.
 - **smoke_test.sh:107** — quoted Python subshell invocation to silence shellcheck SC2046
+- **smoke_test.sh:197** — `${#FAILURES[@]:-0}` bad substitution replaced with `$FAIL` counter
+- **Fresh-machine test caught 10 invalid skills in upstream submodules:** 4 used `README.md` instead of `SKILL.md` (now auto-promoted), 6 had no YAML frontmatter at all (now rejected cleanly). Result: 1840 clean skills instead of 1846 with 10 invisible-to-Claude entries.
 
 ### Removed
 - `sources/enterprise-software-house` submodule — contributed 0 components to curation; reduced source repo count from 15 to 14
