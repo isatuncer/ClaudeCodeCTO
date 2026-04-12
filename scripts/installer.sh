@@ -2,8 +2,12 @@
 # ============================================================
 # CloaudeCodeCTO Installer — Stage 5
 #
-# Installs selected components + orchestrator + rules + templates
-# into ~/.claude/ with atomic staging + backup.
+# Installs selected components + orchestrator (from install-assets.json)
+# + rules into ~/.claude/ with atomic staging + backup.
+#
+# Single source of truth: decisions/ folder only.
+#   - decisions/selected.json      — curated component list
+#   - decisions/install-assets.json — embedded orchestrator files
 #
 # Factory reset aware: assumes ~/.claude/ only has .credentials.json.
 # ============================================================
@@ -14,7 +18,8 @@ ROOT_BASH="$(cd "$(dirname "$0")/.." && pwd)"
 # Windows path for Python (so Python's pathlib finds files)
 ROOT="$(cygpath -w "$ROOT_BASH" 2>/dev/null || echo "$ROOT_BASH")"
 DECISIONS="$ROOT_BASH/decisions"
-TEMPLATES="$ROOT_BASH/templates"
+INSTALL_ASSETS_BASH="$DECISIONS/install-assets.json"
+INSTALL_ASSETS="$(cygpath -w "$INSTALL_ASSETS_BASH" 2>/dev/null || echo "$INSTALL_ASSETS_BASH")"
 SELECTED_BASH="$DECISIONS/selected.json"
 SELECTED="$(cygpath -w "$SELECTED_BASH" 2>/dev/null || echo "$SELECTED_BASH")"
 MANIFEST_BASH="$DECISIONS/install-manifest.json"
@@ -49,6 +54,7 @@ echo -e "${CYAN}==========================================${NC}"
 echo ""
 
 [ -f "$SELECTED_BASH" ] || { echo -e "${RED}ERROR:${NC} $SELECTED_BASH not found"; exit 1; }
+[ -f "$INSTALL_ASSETS_BASH" ] || { echo -e "${RED}ERROR:${NC} $INSTALL_ASSETS_BASH not found"; exit 1; }
 [ -d "$CLAUDE_HOME_BASH" ] || { echo -e "${RED}ERROR:${NC} $CLAUDE_HOME_BASH does not exist"; exit 1; }
 
 TOTAL=$(python -c "import json; print(json.load(open(r'$SELECTED','r',encoding='utf-8'))['total'])")
@@ -145,21 +151,32 @@ PYEOF
 
 echo ""
 
-# --- [4/9] Install orchestrator (lifecycle skill + /start-project command) ---
+# --- [4/9] Install orchestrator (from decisions/install-assets.json) ---
 echo -e "${CYAN}[4/9] Install orchestrator${NC}"
-if [ -d "$TEMPLATES/project-lifecycle" ]; then
-    mkdir -p "$STAGE_DIR_BASH/skills/project-lifecycle"
-    cp -r "$TEMPLATES/project-lifecycle/." "$STAGE_DIR_BASH/skills/project-lifecycle/"
-    echo -e "  ${GREEN}+${NC} skills/project-lifecycle/"
-fi
-if [ -f "$TEMPLATES/start-project.md" ]; then
-    cp "$TEMPLATES/start-project.md" "$STAGE_DIR_BASH/commands/start-project.md"
-    echo -e "  ${GREEN}+${NC} commands/start-project.md"
-fi
-if [ -f "$TEMPLATES/lifecycle.json" ]; then
-    cp "$TEMPLATES/lifecycle.json" "$STAGE_DIR_BASH/config/lifecycle.json"
-    echo -e "  ${GREEN}+${NC} config/lifecycle.json"
-fi
+python << PYEOF
+import json
+import sys
+from pathlib import Path
+
+STAGE = Path(r"$STAGE_DIR")
+assets_path = Path(r"$INSTALL_ASSETS")
+
+try:
+    data = json.loads(assets_path.read_text(encoding="utf-8"))
+except Exception as e:
+    print(f"  ERROR: cannot read install-assets.json: {e}", file=sys.stderr)
+    sys.exit(1)
+
+written = 0
+for rel_path, content in data.get("assets", {}).items():
+    dst = STAGE / rel_path
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    dst.write_text(content, encoding="utf-8")
+    print(f"  + {rel_path}")
+    written += 1
+
+print(f"  ({written} asset files written)")
+PYEOF
 echo ""
 
 # --- [5/9] Install rules (decision tree + global rules) ---

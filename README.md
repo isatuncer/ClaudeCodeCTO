@@ -104,9 +104,9 @@ scripts/bootstrap.sh        ← first-time clone wrapper
 scripts/installer.sh        ← safe staged install with backup
 scripts/smoke_test.sh       ← post-install verification
 scripts/tracker.sh          ← optional usage tracking
-templates/                  ← files copied to ~/.claude/ by installer
-decisions/                  ← pre-built curation checkpoints
+decisions/                  ← pre-built curation checkpoints (SINGLE source of truth)
     selected.json           ← the authoritative list of what to install
+    install-assets.json     ← embedded orchestrator files (lifecycle/start-project/SKILL)
     install-manifest.json
     lifecycle-bindings.json
     budget-profile.json
@@ -197,14 +197,11 @@ CloaudeCodeCTO/
 │   └── tracker.sh              optional usage tracking
 ├── decisions/                  pipeline outputs (most are .gitignored)
 │   ├── selected.json           curated component list
+│   ├── install-assets.json     embedded orchestrator files (lifecycle/start-project/SKILL)
 │   ├── install-manifest.json   last install checkpoint
 │   ├── budget-profile.json     token cost profile
 │   ├── agent-decision-tree.md  agent disambiguation tree
 │   └── smoke-test-report.md    latest smoke test
-├── templates/                  installable configs
-│   ├── lifecycle.json          8-phase project map
-│   ├── start-project.md        /start-project command
-│   └── project-lifecycle/      orchestrator skill
 └── docs/
     ├── PLAN.md                 master plan
     └── diagrams/               5 Mermaid diagrams
