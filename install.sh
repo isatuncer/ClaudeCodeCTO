@@ -242,6 +242,221 @@ ensure_python() {
 }
 
 # ============================================================
+# Node.js detection + optional auto-install
+# ============================================================
+detect_node() {
+    if command -v node >/dev/null 2>&1; then
+        if node --version 2>&1 | grep -qE "^v(1[8-9]|[2-9][0-9])\."; then
+            NODE_CMD=node
+            return 0
+        fi
+    fi
+    return 1
+}
+
+ensure_node() {
+    if detect_node; then
+        ok "Node.js: $(node --version 2>&1) ($(command -v node))"
+        return 0
+    fi
+
+    warn "Node.js 18+ not found (required for Claude Code)"
+
+    local install_cmd=""
+    local needs_sudo=0
+    local platform_hint=""
+
+    case "$(uname -s)" in
+        Linux*)
+            if command -v apt-get >/dev/null 2>&1; then
+                install_cmd="apt-get install -y nodejs npm"
+                needs_sudo=1
+                platform_hint="Debian/Ubuntu"
+            elif command -v dnf >/dev/null 2>&1; then
+                install_cmd="dnf install -y nodejs npm"
+                needs_sudo=1
+                platform_hint="Fedora/RHEL"
+            elif command -v pacman >/dev/null 2>&1; then
+                install_cmd="pacman -S --noconfirm nodejs npm"
+                needs_sudo=1
+                platform_hint="Arch/Manjaro"
+            elif command -v apk >/dev/null 2>&1; then
+                install_cmd="apk add nodejs npm"
+                needs_sudo=1
+                platform_hint="Alpine"
+            fi
+            ;;
+        Darwin*)
+            if command -v brew >/dev/null 2>&1; then
+                install_cmd="brew install node"
+                platform_hint="macOS (Homebrew)"
+            else
+                err "Homebrew not found"
+                info "Install brew first: https://brew.sh"
+                info "Or install Node.js directly: https://nodejs.org/"
+                return 1
+            fi
+            ;;
+        MINGW*|MSYS*|CYGWIN*)
+            if command -v winget >/dev/null 2>&1; then
+                install_cmd="winget install -e --id OpenJS.NodeJS --scope user --accept-source-agreements --accept-package-agreements"
+                platform_hint="Windows (winget, user scope)"
+            else
+                err "winget not found"
+                info "Install Node.js manually: https://nodejs.org/"
+                return 1
+            fi
+            ;;
+    esac
+
+    if [ -z "$install_cmd" ]; then
+        err "No supported package manager detected for Node.js"
+        info "Install manually: https://nodejs.org/"
+        return 1
+    fi
+
+    echo ""
+    info "Platform: $platform_hint"
+    if [ "$needs_sudo" -eq 1 ]; then
+        echo -e "  Command:  ${BOLD}sudo $install_cmd${NC}"
+        warn "This will prompt for your sudo password"
+    else
+        echo -e "  Command:  ${BOLD}$install_cmd${NC}"
+    fi
+    echo ""
+
+    if ! confirm "Install Node.js now?" "Y"; then
+        err "Node.js required — installation cancelled"
+        return 1
+    fi
+
+    step "Installing Node.js..."
+    if [ "$needs_sudo" -eq 1 ]; then
+        # shellcheck disable=SC2086
+        if ! sudo $install_cmd; then
+            err "Node.js install failed"
+            return 1
+        fi
+    else
+        # shellcheck disable=SC2086
+        if ! $install_cmd; then
+            err "Node.js install failed"
+            return 1
+        fi
+    fi
+
+    if detect_node; then
+        ok "Node.js installed: $(node --version 2>&1)"
+        return 0
+    else
+        err "Node.js install completed but node not on PATH"
+        info "Open a new terminal and re-run install.sh"
+        return 1
+    fi
+}
+
+# ============================================================
+# Claude Code detection + optional auto-install
+# ============================================================
+detect_claude_code() {
+    # Claude Code installed if `claude` command exists AND ~/.claude/ has credentials
+    if command -v claude >/dev/null 2>&1; then
+        return 0
+    fi
+    return 1
+}
+
+ensure_claude_code() {
+    if detect_claude_code; then
+        ok "Claude Code: $(claude --version 2>&1 | head -1) ($(command -v claude))"
+    else
+        warn "Claude Code not installed"
+        echo ""
+        info "Claude Code will be installed via npm (requires Node.js)"
+        info "Package: @anthropic-ai/claude-code"
+        echo ""
+
+        if ! confirm "Install Claude Code now?" "Y"; then
+            err "Claude Code required — installation cancelled"
+            return 1
+        fi
+
+        # Ensure Node.js first
+        if ! ensure_node; then
+            err "Node.js is required for Claude Code"
+            return 1
+        fi
+
+        # Install Claude Code via npm
+        local npm_cmd="npm install -g @anthropic-ai/claude-code"
+        local npm_needs_sudo=0
+
+        # Check if global npm install needs sudo (typical on Linux)
+        case "$(uname -s)" in
+            Linux*)
+                # Check if user can write to npm global prefix
+                local npm_prefix
+                npm_prefix=$(npm config get prefix 2>/dev/null || echo "/usr")
+                if [ ! -w "$npm_prefix/lib/node_modules" ] 2>/dev/null; then
+                    npm_needs_sudo=1
+                fi
+                ;;
+        esac
+
+        echo ""
+        if [ "$npm_needs_sudo" -eq 1 ]; then
+            echo -e "  Command:  ${BOLD}sudo $npm_cmd${NC}"
+            warn "Global npm install needs sudo on this system"
+        else
+            echo -e "  Command:  ${BOLD}$npm_cmd${NC}"
+        fi
+        echo ""
+
+        step "Installing Claude Code..."
+        if [ "$npm_needs_sudo" -eq 1 ]; then
+            # shellcheck disable=SC2086
+            if ! sudo $npm_cmd; then
+                err "Claude Code install failed"
+                info "Try manually: sudo npm install -g @anthropic-ai/claude-code"
+                return 1
+            fi
+        else
+            # shellcheck disable=SC2086
+            if ! $npm_cmd; then
+                err "Claude Code install failed"
+                info "Try manually: npm install -g @anthropic-ai/claude-code"
+                return 1
+            fi
+        fi
+
+        if detect_claude_code; then
+            ok "Claude Code installed: $(claude --version 2>&1 | head -1)"
+        else
+            err "Claude Code install completed but 'claude' command not on PATH"
+            info "Open a new terminal and re-run install.sh"
+            return 1
+        fi
+    fi
+
+    # Now check for login (credentials)
+    if [ -f "$HOME/.claude/.credentials.json" ]; then
+        ok "Claude Code credentials present"
+        return 0
+    else
+        warn "Claude Code not logged in"
+        info ""
+        info "Run this command in a separate terminal:"
+        echo -e "    ${BOLD}claude${NC}    ${DIM}# will prompt for login${NC}"
+        info ""
+        info "After logging in, re-run install.sh to continue."
+        if confirm "Continue without login (setup.sh will fail at install step)?" "N"; then
+            return 0
+        fi
+        return 1
+    fi
+}
+
+# ============================================================
 # [1/6] Prerequisite Check
 # ============================================================
 header "1/6" "Prerequisite Check"
@@ -269,15 +484,9 @@ if ! ensure_python; then
     abort "Python 3 is required"
 fi
 
-# Claude Code check (warning only — can proceed without it)
-if [ -d "$HOME/.claude" ] && [ -f "$HOME/.claude/.credentials.json" ]; then
-    ok "Claude Code installed with credentials"
-else
-    warn "Claude Code not found or not logged in"
-    info "Install from: https://docs.claude.com/en/docs/claude-code"
-    if ! confirm "Continue anyway (setup.sh will fail at install step)?" "N"; then
-        abort "Claude Code required"
-    fi
+# Claude Code — auto-install if missing (pulls in Node.js as needed)
+if ! ensure_claude_code; then
+    abort "Claude Code is required"
 fi
 
 # ============================================================

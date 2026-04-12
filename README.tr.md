@@ -541,7 +541,7 @@ CloaudeCodeCTO/
 
 ## Gereksinimler
 
-- **Claude Code** kurulu, credentials `~/.claude/.credentials.json`'da
+- **Claude Code** — `install.sh` yoksa `npm` ile otomatik kurulum önerir, gerekirse Node.js 18+'ı native package manager ile getirir. Bir kere `claude` komutunu çalıştırıp giriş yapman gerekir (`~/.claude/.credentials.json` oluşur).
 - **Python 3.8+** — sadece stdlib, üçüncü parti paket yok. `install.sh` Python 3 yoksa platforma göre (apt/dnf/pacman/brew/winget) otomatik kurulum önerir.
 - **Bash** 4+ (Windows'ta git-bash, zsh kullanıcıları: `bash script.sh` ile çağırın)
 - **Git** submodule desteği ile

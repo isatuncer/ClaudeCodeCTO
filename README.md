@@ -541,7 +541,7 @@ CloaudeCodeCTO/
 
 ## Requirements
 
-- **Claude Code** installed with credentials at `~/.claude/.credentials.json`
+- **Claude Code** — `install.sh` auto-prompts to install it via `npm` if missing, and pulls in Node.js 18+ through the native package manager if needed. Requires you to run `claude` once to log in (creates `~/.claude/.credentials.json`).
 - **Python 3.8+** — stdlib only, no third-party packages. `install.sh` auto-prompts to install Python 3 via the native package manager if it's missing.
 - **Bash** 4+ (git-bash on Windows, zsh users: invoke with `bash script.sh`)
 - **Git** with submodule support
