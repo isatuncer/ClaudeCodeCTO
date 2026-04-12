@@ -68,3 +68,8 @@ claude-install-backup-*
 # Local-only documentation (kept on disk but not pushed)
 docs/
 .github/
+
+# Local-only obsolete/legacy scripts (kept on disk but not pushed)
+scripts/scanner.sh
+scripts/inventory.sh
+scripts/SETUP_README.md

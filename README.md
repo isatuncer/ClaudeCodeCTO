@@ -50,8 +50,6 @@ bash scripts/setup.sh
 
 The setup script walks you through all 12 phases, asking for confirmation at each critical step (submodule pull, install, git commit, git push).
 
-For details, see [`scripts/SETUP_README.md`](scripts/SETUP_README.md).
-
 ### Install Script Options (env vars)
 
 The one-liner install script supports env var customization:
@@ -178,7 +176,7 @@ CloaudeCodeCTO/
 ├── sources/                    SUBMODULES (init with --recursive)
 ├── scripts/                    pipeline implementation
 │   ├── setup.sh                ★ main entry point
-│   ├── SETUP_README.md         detailed setup docs
+│   ├── bootstrap.sh            first-time clone wrapper
 │   ├── extractor.py            Stage 2
 │   ├── scorer_rubric.py        Stage 3a
 │   ├── prepare_self_scoring.py Stage 3b (manual)
