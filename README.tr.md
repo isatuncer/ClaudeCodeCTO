@@ -1,6 +1,6 @@
 # CloaudeCodeCTO
 
-> **Dil:** [English](README.md) · **Türkçe**
+> **Dil:** [English](README.md) · **Türkçe** · [Deutsch](docs/i18n/README.de.md) · [Español](docs/i18n/README.es.md) · [Français](docs/i18n/README.fr.md) · [日本語](docs/i18n/README.ja.md) · [한국어](docs/i18n/README.ko.md) · [中文](docs/i18n/README.zh-CN.md) · [Русский](docs/i18n/README.ru.md) · [العربية](docs/i18n/README.ar.md)
 
 > Claude Code'u tam yaşam döngülü bir CTO'ya dönüştürün: 15 önde gelen açık kaynak repodan elle seçilmiş 2,388 skill, agent ve command, sıfır harici maliyetle `~/.claude/`'a kurulur.
 

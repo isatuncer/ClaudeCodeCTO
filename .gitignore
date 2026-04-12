@@ -66,7 +66,10 @@ claude-install-stage-*
 claude-install-backup-*
 
 # Local-only documentation (kept on disk but not pushed)
-docs/
+# Keep docs/i18n/ for translated READMEs
+docs/*
+!docs/i18n/
+docs/i18n/.*
 .github/
 
 # Local-only obsolete/legacy scripts (kept on disk but not pushed)

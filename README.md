@@ -1,6 +1,6 @@
 # CloaudeCodeCTO
 
-> **Language:** **English** · [Türkçe](README.tr.md)
+> **Language:** **English** · [Türkçe](README.tr.md) · [Deutsch](docs/i18n/README.de.md) · [Español](docs/i18n/README.es.md) · [Français](docs/i18n/README.fr.md) · [日本語](docs/i18n/README.ja.md) · [한국어](docs/i18n/README.ko.md) · [中文](docs/i18n/README.zh-CN.md) · [Русский](docs/i18n/README.ru.md) · [العربية](docs/i18n/README.ar.md)
 
 > Turn Claude Code into a full-lifecycle CTO: 2,388 hand-curated skills, agents, and commands from 15 top open-source repositories, installed into `~/.claude/` with zero external cost.
 
