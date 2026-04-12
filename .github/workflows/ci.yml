@@ -1,0 +1,139 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  # -----------------------------------------------------------
+  # Lint: shellcheck + JSON validation
+  # -----------------------------------------------------------
+  lint:
+    name: Lint (shellcheck + JSON)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run shellcheck on all bash scripts
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: './scripts'
+          severity: warning
+          additional_files: 'install.sh'
+        env:
+          SHELLCHECK_OPTS: -e SC2034 -e SC2155 -e SC2086
+
+      - name: Validate JSON in decisions/
+        run: |
+          set -e
+          for f in decisions/*.json; do
+            echo "Checking $f..."
+            python -c "import json; json.load(open('$f', encoding='utf-8'))"
+          done
+          echo "All JSON files valid."
+
+      - name: Check install-assets.json asset keys
+        run: |
+          python -c "
+          import json
+          data = json.load(open('decisions/install-assets.json', encoding='utf-8'))
+          assets = data.get('assets', {})
+          expected = {
+              'skills/project-lifecycle/SKILL.md',
+              'commands/start-project.md',
+              'config/lifecycle.json',
+          }
+          actual = set(assets.keys())
+          assert actual == expected, f'Mismatch: {actual} vs {expected}'
+          print(f'install-assets.json has expected {len(assets)} keys')
+          "
+
+  # -----------------------------------------------------------
+  # Setup dry-run: verify the installer flow on Ubuntu + macOS
+  # -----------------------------------------------------------
+  dry-run:
+    name: Setup dry-run (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 1
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install PyYAML
+        run: python -m pip install pyyaml
+
+      - name: Create fake ~/.claude/ with credentials
+        run: |
+          mkdir -p "$HOME/.claude"
+          echo '{"fake": "credentials"}' > "$HOME/.claude/.credentials.json"
+
+      - name: Run setup in check mode
+        run: bash scripts/setup.sh --check
+
+      - name: Run setup in dry-run mode (auto)
+        run: bash scripts/setup.sh --auto --dry-run --no-smoke
+
+      - name: Run installer in dry-run mode
+        run: bash scripts/installer.sh --dry-run
+
+      - name: Upload setup log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: setup-log-${{ matrix.os }}
+          path: decisions/setup.log
+          if-no-files-found: ignore
+
+  # -----------------------------------------------------------
+  # Markdown lint: ensure READMEs stay well-formed
+  # -----------------------------------------------------------
+  markdown:
+    name: Markdown lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lint main READMEs
+        uses: DavidAnson/markdownlint-cli2-action@v16
+        with:
+          globs: |
+            README.md
+            README.tr.md
+            docs/i18n/README.*.md
+            CHANGELOG.md
+            CONTRIBUTING.md
+            SECURITY.md
+        continue-on-error: true  # informational only — don't block PRs
+
+  # -----------------------------------------------------------
+  # Submodule sanity: ensure .gitmodules matches reality
+  # -----------------------------------------------------------
+  submodules:
+    name: Submodule sanity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Count submodules in .gitmodules
+        run: |
+          count=$(grep -c "^\[submodule " .gitmodules)
+          echo "Submodules declared: $count"
+          if [ "$count" -ne 14 ]; then
+            echo "::error::Expected 14 submodules, found $count"
+            exit 1
+          fi

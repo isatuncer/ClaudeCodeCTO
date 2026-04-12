@@ -2,7 +2,7 @@
 
 > **言語:** [English](../../README.md) · [Türkçe](../../README.tr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Français](README.fr.md) · **日本語** · [한국어](README.ko.md) · [中文](README.zh-CN.md) · [Русский](README.ru.md) · [العربية](README.ar.md)
 
-> Claude Code を完全ライフサイクル CTO に変える:15 のトップオープンソースリポジトリから厳選された 2,388 のスキル、エージェント、コマンドを、外部コストゼロで `~/.claude/` にインストール。
+> Claude Code を完全ライフサイクル CTO に変える:14 のトップオープンソースリポジトリから厳選された 2,388 のスキル、エージェント、コマンドを、外部コストゼロで `~/.claude/` にインストール。
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](../../LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-8A2BE2)](https://docs.claude.com/en/docs/claude-code)
@@ -12,7 +12,7 @@
 
 ## これは何ですか?
 
-CloaudeCodeCTO は、15 の公開 Claude Code リポジトリから最高のスキル、エージェント、コマンドを取得し、統一されたツールキットとして `~/.claude/` ディレクトリにインストールする**キュレーションおよびインストールシステム**です。
+CloaudeCodeCTO は、14 の公開 Claude Code リポジトリから最高のスキル、エージェント、コマンドを取得し、統一されたツールキットとして `~/.claude/` ディレクトリにインストールする**キュレーションおよびインストールシステム**です。
 
 結果:アイデアから本番環境までガイドしてくれる Claude Code インストール — Discovery、Planning、Design、Build、Test、ドキュメント化、Shipping、メンテナンスを通じて、各フェーズで目的別のエージェントを使用します。
 
@@ -60,7 +60,7 @@ bash scripts/setup.sh
 
 ## 機能
 
-- **2,388 コンポーネント** — 15 リポジトリからキュレーションされた 1,845 スキル + 307 エージェント + 236 コマンド
+- **2,388 コンポーネント** — 14 リポジトリからキュレーションされた 1,845 スキル + 307 エージェント + 236 コマンド
 - **8 フェーズライフサイクル** — Discovery → Planning → Design → Build → Test → Document → Ship → Maintain
 - **外部コストゼロ** — Anthropic API 呼び出しなし、有料サービスなし、テレメトリなし
 - **ファクトリーリセット対応** — クリーンな `~/.claude/` で動作し、`.credentials.json` を保持
@@ -160,7 +160,7 @@ bash scripts/setup.sh
 
 ## ソースリポジトリ
 
-15 のアクティブなサブモジュール。すべてのライセンスは各ディレクトリに保持されます。
+14 のアクティブなサブモジュール。すべてのライセンスは各ディレクトリに保持されます。
 
 | リポジトリ | フォーカス | Skills | Agents | Commands |
 |---|---|---:|---:|---:|
@@ -241,6 +241,6 @@ MIT — [LICENSE](../../LICENSE) を参照。
 
 ## 謝辞
 
-このプロジェクトは 15 のオープンソースリポジトリからコンテンツをキュレーションします。完全なリストは [`.gitmodules`](../../.gitmodules) を参照してください。すべてのサブモジュールライセンスは、それぞれの `sources/<repo>/` ディレクトリに保持されています。
+このプロジェクトは 14 のオープンソースリポジトリからコンテンツをキュレーションします。完全なリストは [`.gitmodules`](../../.gitmodules) を参照してください。すべてのサブモジュールライセンスは、それぞれの `sources/<repo>/` ディレクトリに保持されています。
 
 [@isatuncer](https://github.com/isatuncer) によって構築されました。PR と issue は歓迎します。

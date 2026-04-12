@@ -2,7 +2,7 @@
 
 > **Dil:** [English](README.md) · **Türkçe** · [Deutsch](docs/i18n/README.de.md) · [Español](docs/i18n/README.es.md) · [Français](docs/i18n/README.fr.md) · [日本語](docs/i18n/README.ja.md) · [한국어](docs/i18n/README.ko.md) · [中文](docs/i18n/README.zh-CN.md) · [Русский](docs/i18n/README.ru.md) · [العربية](docs/i18n/README.ar.md)
 
-> Claude Code'u tam yaşam döngülü bir CTO'ya dönüştürün: 15 önde gelen açık kaynak repodan elle seçilmiş 2,388 skill, agent ve command, sıfır harici maliyetle `~/.claude/`'a kurulur.
+> Claude Code'u tam yaşam döngülü bir CTO'ya dönüştürün: 14 önde gelen açık kaynak repodan elle seçilmiş 2,388 skill, agent ve command, sıfır harici maliyetle `~/.claude/`'a kurulur.
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-8A2BE2)](https://docs.claude.com/en/docs/claude-code)
@@ -40,7 +40,7 @@
 
 ## Bu nedir?
 
-CloaudeCodeCTO, 15 açık kaynaklı Claude Code reposundan en iyi skill, agent ve command'ları alıp tek tutarlı bir araç seti olarak `~/.claude/` dizininize kuran bir **küratörlük ve kurulum sistemidir**.
+CloaudeCodeCTO, 14 açık kaynaklı Claude Code reposundan en iyi skill, agent ve command'ları alıp tek tutarlı bir araç seti olarak `~/.claude/` dizininize kuran bir **küratörlük ve kurulum sistemidir**.
 
 Sonuç: Claude Code kurulumu, sizi **fikirden canlıya** — keşif, planlama, tasarım, inşa, test, dokümantasyon, yayınlama ve bakım — boyunca her fazda amaca uygun ajanlar kullanarak yönlendirir.
 
@@ -59,7 +59,7 @@ Claude Code ekosistemi patladı. Artık düzinelerce repoda **binlerce** açık 
 
 CloaudeCodeCTO bunu şu şekilde çözer: maintainer'ın makinesinde (yerel olarak) çalışan 9 aşamalı bir küratörlük pipeline'ı ile:
 
-1. 15 kaynak reposunun tamamını tarar
+1. 14 kaynak reposunun tamamını tarar
 2. Her bileşeni 100 puanlık bir rubrik ile puanlar
 3. Opsiyonel olarak Claude Code subagent'ları ile semantik self-scoring ekler (sıfır maliyet)
 4. Çakışan ajanları/skill'leri birleştirir ve en iyi versiyonu seçer
@@ -74,7 +74,7 @@ Son kullanıcılar sadece **tek bir komut** çalıştırır ve küratörlenmiş 
 
 ## Özellikler
 
-- **2,388 bileşen** — 15 repodan küratörlenmiş 1,845 skill + 307 agent + 236 command
+- **2,388 bileşen** — 14 repodan küratörlenmiş 1,845 skill + 307 agent + 236 command
 - **8 fazlı yaşam döngüsü** — Discovery → Planning → Design → Build → Test → Document → Ship → Maintain
 - **Sıfır harici maliyet** — Anthropic API çağrısı yok, ücretli servis yok, telemetri yok
 - **Factory-reset uyumlu** — temiz bir `~/.claude/`'da çalışır, `.credentials.json`'u korur
@@ -89,7 +89,7 @@ Son kullanıcılar sadece **tek bir komut** çalıştırır ve küratörlenmiş 
 
 ## Hızlı Başlangıç — Tek Komut
 
-En hızlı yol. Repoyu klonlar, 15 submodule'ü başlatır ve setup pipeline'ını çalıştırır:
+En hızlı yol. Repoyu klonlar, 14 submodule'ü başlatır ve setup pipeline'ını çalıştırır:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh | bash
@@ -184,7 +184,7 @@ Bu repo **önceden küratörlenmiş** bir set gönderir. Küratörlük pipeline'
 ```mermaid
 flowchart LR
     subgraph "Maintainer Makinesi (Local)"
-        A[15 Submodule] --> B[Metadata çıkar]
+        A[14 Submodule] --> B[Metadata çıkar]
         B --> C[100 pt rubrik ile puanla]
         C --> D[Claude Code ile self-scoring]
         D --> E[Dedupe + küratörle]
@@ -222,7 +222,7 @@ decisions/                  ← TEK gerçek kaynak
     agent-overlap-report.json
     agent-decision-tree.md  ← agent ayrıştırma ağacı
     smoke-test-report.md    ← son smoke test sonucu
-sources/                    ← 15 git submodule (asıl içerik)
+sources/                    ← 14 git submodule (asıl içerik)
 ```
 
 ### Yerel Kalanlar (Sadece Maintainer)
@@ -383,7 +383,7 @@ Birçok repo aynı isimle agent gönderiyor (`code-reviewer`, `debugger`, `test-
 
 ## Kaynak Repolar
 
-`sources/` dizininde 15 aktif submodule. Tüm lisanslar ilgili submodule dizinlerinde korunur.
+`sources/` dizininde 14 aktif submodule. Tüm lisanslar ilgili submodule dizinlerinde korunur.
 
 | Repo | Odak | Skills | Agents | Commands |
 |---|---|---:|---:|---:|
@@ -401,7 +401,6 @@ Birçok repo aynı isimle agent gönderiyor (`code-reviewer`, `debugger`, `test-
 | [hesreallyhim/awesome-claude-code](https://github.com/hesreallyhim/awesome-claude-code) | Awesome listesi | — | — | — |
 | [f/awesome-chatgpt-prompts](https://github.com/f/awesome-chatgpt-prompts) | Prompt kütüphanesi | — | — | — |
 | [dair-ai/Prompt-Engineering-Guide](https://github.com/dair-ai/Prompt-Engineering-Guide) | Prompt pattern'leri | — | — | — |
-| [isatuncer/enterprise-software-house](https://github.com/isatuncer/enterprise-software-house) | Kurumsal şablonlar | — | — | — |
 
 Tam liste ve sabitlenmiş commit'ler [`.gitmodules`](.gitmodules) içinde.
 
@@ -518,7 +517,7 @@ CloaudeCodeCTO/
 ├── README.tr.md                ← buradasınız (Türkçe)
 ├── LICENSE                     MIT
 ├── install.sh                  tek komut kurulumu (curl-pipe uyumlu)
-├── .gitmodules                 15 kaynak repo
+├── .gitmodules                 14 kaynak repo
 ├── .gitignore                  üretilen artifact'leri hariç tutar
 ├── sources/                    SUBMODULE'LER (--recursive ile başlat)
 ├── scripts/                    kurulum altyapısı (GitHub'da)
@@ -628,7 +627,7 @@ Evet — `setup.sh`'ı çalıştırmadan önce `decisions/selected.json`'ı düz
 Tam skill indeksi için oturum başında yaklaşık **105K token**. Tam dağılım için `decisions/budget-profile.json`'a bakın. Çoğu skill tetiklendiğinde lazy yüklenir, yani her turda 105K tam ödemezsiniz.
 
 **S: Neden 15 repo, daha fazla/az değil?**
-15, repo eklemenin yeni benzersiz yüksek kaliteli bileşen üretmeyi bıraktığı sayı. Rubrik duplicate'leri filtreler ve 15 repodan sonra çoğunlukla aynı skill'in varyasyonlarını puanlıyorduk.
+14, repo eklemenin yeni benzersiz yüksek kaliteli bileşen üretmeyi bıraktığı sayı. Rubrik duplicate'leri filtreler ve 14 repodan sonra çoğunlukla aynı skill'in varyasyonlarını puanlıyorduk.
 
 **S: Küratörlenmiş setin üzerine kendi custom skill'lerimi ekleyebilir miyim?**
 Evet — kurulumdan sonra `~/.claude/skills/senin-skill/` altına bırakın. Installer yeniden kurulumda sadece `decisions/selected.json`'da listelenen dizinlere dokunur.
@@ -674,6 +673,6 @@ MIT — [LICENSE](LICENSE).
 
 ## Teşekkürler
 
-Bu proje 15 açık kaynak repodan içerik küratörler. Tam liste [`.gitmodules`](.gitmodules)'da. Tüm submodule lisansları ilgili `sources/<repo>/` dizinlerinde korunur.
+Bu proje 14 açık kaynak repodan içerik küratörler. Tam liste [`.gitmodules`](.gitmodules)'da. Tüm submodule lisansları ilgili `sources/<repo>/` dizinlerinde korunur.
 
 [@isatuncer](https://github.com/isatuncer) tarafından yapıldı. PR ve issue'lar hoş karşılanır.

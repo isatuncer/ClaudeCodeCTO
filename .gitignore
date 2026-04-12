@@ -70,7 +70,6 @@ claude-install-backup-*
 docs/*
 !docs/i18n/
 docs/i18n/.*
-.github/
 
 # Local-only obsolete/legacy scripts (kept on disk but not pushed)
 scripts/scanner.sh

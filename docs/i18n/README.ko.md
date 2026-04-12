@@ -2,7 +2,7 @@
 
 > **언어:** [English](../../README.md) · [Türkçe](../../README.tr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Français](README.fr.md) · [日本語](README.ja.md) · **한국어** · [中文](README.zh-CN.md) · [Русский](README.ru.md) · [العربية](README.ar.md)
 
-> Claude Code를 전체 라이프사이클 CTO로 전환: 15개 최고 오픈소스 저장소에서 엄선된 2,388개의 스킬, 에이전트, 커맨드를 외부 비용 없이 `~/.claude/`에 설치합니다.
+> Claude Code를 전체 라이프사이클 CTO로 전환: 14개 최고 오픈소스 저장소에서 엄선된 2,388개의 스킬, 에이전트, 커맨드를 외부 비용 없이 `~/.claude/`에 설치합니다.
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](../../LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-8A2BE2)](https://docs.claude.com/en/docs/claude-code)
@@ -12,7 +12,7 @@
 
 ## 이것은 무엇인가요?
 
-CloaudeCodeCTO는 15개 공개 Claude Code 저장소에서 최고의 스킬, 에이전트, 커맨드를 가져와 하나의 일관된 툴킷으로 `~/.claude/` 디렉토리에 설치하는 **큐레이션 및 설치 시스템**입니다.
+CloaudeCodeCTO는 14개 공개 Claude Code 저장소에서 최고의 스킬, 에이전트, 커맨드를 가져와 하나의 일관된 툴킷으로 `~/.claude/` 디렉토리에 설치하는 **큐레이션 및 설치 시스템**입니다.
 
 결과: 아이디어에서 프로덕션까지 안내해주는 Claude Code 설치 — Discovery, Planning, Design, Build, Test, 문서화, Shipping, 유지보수를 통해, 각 단계마다 목적에 맞는 에이전트를 사용합니다.
 
@@ -60,7 +60,7 @@ bash scripts/setup.sh
 
 ## 기능
 
-- **2,388 컴포넌트** — 15개 저장소에서 큐레이션된 1,845 스킬 + 307 에이전트 + 236 커맨드
+- **2,388 컴포넌트** — 14개 저장소에서 큐레이션된 1,845 스킬 + 307 에이전트 + 236 커맨드
 - **8단계 라이프사이클** — Discovery → Planning → Design → Build → Test → Document → Ship → Maintain
 - **외부 비용 없음** — Anthropic API 호출 없음, 유료 서비스 없음, 텔레메트리 없음
 - **팩토리 리셋 호환** — 깨끗한 `~/.claude/`에서 작동, `.credentials.json` 보존
@@ -160,7 +160,7 @@ bash scripts/setup.sh
 
 ## 소스 저장소
 
-15개의 활성 서브모듈. 모든 라이선스는 각자의 디렉토리에 보존됩니다.
+14개의 활성 서브모듈. 모든 라이선스는 각자의 디렉토리에 보존됩니다.
 
 | 저장소 | 초점 | Skills | Agents | Commands |
 |---|---|---:|---:|---:|
@@ -241,6 +241,6 @@ MIT — [LICENSE](../../LICENSE) 참조.
 
 ## 감사의 말
 
-이 프로젝트는 15개의 오픈소스 저장소에서 콘텐츠를 큐레이션합니다. 전체 목록은 [`.gitmodules`](../../.gitmodules)을 참조하세요. 모든 서브모듈 라이선스는 각자의 `sources/<repo>/` 디렉토리에 보존됩니다.
+이 프로젝트는 14개의 오픈소스 저장소에서 콘텐츠를 큐레이션합니다. 전체 목록은 [`.gitmodules`](../../.gitmodules)을 참조하세요. 모든 서브모듈 라이선스는 각자의 `sources/<repo>/` 디렉토리에 보존됩니다.
 
 [@isatuncer](https://github.com/isatuncer)가 만들었습니다. PR과 이슈 환영합니다.

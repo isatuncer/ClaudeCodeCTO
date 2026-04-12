@@ -40,6 +40,3 @@
 [submodule "sources/continuous-claude-v3"]
 	path = sources/continuous-claude-v3
 	url = https://github.com/parcadei/Continuous-Claude-v3.git
-[submodule "sources/enterprise-software-house"]
-	path = sources/enterprise-software-house
-	url = https://github.com/isatuncer/enterprise-software-house.git

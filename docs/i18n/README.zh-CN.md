@@ -2,7 +2,7 @@
 
 > **语言:** [English](../../README.md) · [Türkçe](../../README.tr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Français](README.fr.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · **中文** · [Русский](README.ru.md) · [العربية](README.ar.md)
 
-> 将 Claude Code 转变为全生命周期 CTO:从 15 个顶级开源代码库中精选 2,388 个技能、代理和命令,零外部成本安装到 `~/.claude/`。
+> 将 Claude Code 转变为全生命周期 CTO:从 14 个顶级开源代码库中精选 2,388 个技能、代理和命令,零外部成本安装到 `~/.claude/`。
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](../../LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-8A2BE2)](https://docs.claude.com/en/docs/claude-code)
@@ -12,7 +12,7 @@
 
 ## 这是什么?
 
-CloaudeCodeCTO 是一个**策划和安装系统**,它从 15 个公共 Claude Code 代码库中获取最佳的技能、代理和命令,并将它们作为一个统一的工具包安装到您的 `~/.claude/` 目录中。
+CloaudeCodeCTO 是一个**策划和安装系统**,它从 14 个公共 Claude Code 代码库中获取最佳的技能、代理和命令,并将它们作为一个统一的工具包安装到您的 `~/.claude/` 目录中。
 
 结果:一个可以指导您**从想法到生产**的 Claude Code 安装 — 通过发现、规划、设计、构建、测试、文档、发布和维护 — 在每个阶段使用专门的代理。
 
@@ -60,7 +60,7 @@ bash scripts/setup.sh
 
 ## 特性
 
-- **2,388 个组件** — 从 15 个代码库精选的 1,845 个技能 + 307 个代理 + 236 个命令
+- **2,388 个组件** — 从 14 个代码库精选的 1,845 个技能 + 307 个代理 + 236 个命令
 - **8 阶段生命周期** — 发现 → 规划 → 设计 → 构建 → 测试 → 文档 → 发布 → 维护
 - **零外部成本** — 无 Anthropic API 调用,无付费服务,无遥测
 - **工厂重置兼容** — 在干净的 `~/.claude/` 上工作,保留 `.credentials.json`
@@ -160,7 +160,7 @@ bash scripts/setup.sh
 
 ## 源代码库
 
-15 个活跃的子模块。所有许可证都保留在各自的目录中。
+14 个活跃的子模块。所有许可证都保留在各自的目录中。
 
 | 代码库 | 重点 | Skills | Agents | Commands |
 |---|---|---:|---:|---:|
@@ -241,6 +241,6 @@ MIT — 参见 [LICENSE](../../LICENSE)。
 
 ## 致谢
 
-本项目策划来自 15 个开源代码库的内容。完整列表见 [`.gitmodules`](../../.gitmodules)。所有子模块许可证都保留在各自的 `sources/<repo>/` 目录中。
+本项目策划来自 14 个开源代码库的内容。完整列表见 [`.gitmodules`](../../.gitmodules)。所有子模块许可证都保留在各自的 `sources/<repo>/` 目录中。
 
 由 [@isatuncer](https://github.com/isatuncer) 构建。欢迎 PR 和 issue。

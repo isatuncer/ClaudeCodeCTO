@@ -2,7 +2,7 @@
 
 > **Language:** **English** · [Türkçe](README.tr.md) · [Deutsch](docs/i18n/README.de.md) · [Español](docs/i18n/README.es.md) · [Français](docs/i18n/README.fr.md) · [日本語](docs/i18n/README.ja.md) · [한국어](docs/i18n/README.ko.md) · [中文](docs/i18n/README.zh-CN.md) · [Русский](docs/i18n/README.ru.md) · [العربية](docs/i18n/README.ar.md)
 
-> Turn Claude Code into a full-lifecycle CTO: 2,388 hand-curated skills, agents, and commands from 15 top open-source repositories, installed into `~/.claude/` with zero external cost.
+> Turn Claude Code into a full-lifecycle CTO: 2,388 hand-curated skills, agents, and commands from 14 top open-source repositories, installed into `~/.claude/` with zero external cost.
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-8A2BE2)](https://docs.claude.com/en/docs/claude-code)
@@ -40,7 +40,7 @@
 
 ## What Is This?
 
-CloaudeCodeCTO is a **curation and installation system** that takes the best skills, agents, and commands from 15 public Claude Code repositories and installs them into your `~/.claude/` directory as one cohesive toolkit.
+CloaudeCodeCTO is a **curation and installation system** that takes the best skills, agents, and commands from 14 public Claude Code repositories and installs them into your `~/.claude/` directory as one cohesive toolkit.
 
 The result: a Claude Code installation that can guide you **from idea to production** — through discovery, planning, design, build, test, documentation, shipping, and maintenance — using purpose-built agents at each phase.
 
@@ -59,7 +59,7 @@ The Claude Code ecosystem has exploded. There are now **thousands** of open-sour
 
 CloaudeCodeCTO solves this by running a 9-stage curation pipeline (locally, on the maintainer's machine) that:
 
-1. Scans all 15 source repos
+1. Scans all 14 source repos
 2. Scores every component against a 100-point rubric
 3. Optionally adds semantic self-scoring via Claude Code subagents (zero cost)
 4. Deduplicates overlapping agents/skills and picks the best version
@@ -74,7 +74,7 @@ End users just run **one command** and get the curated set installed.
 
 ## Features
 
-- **2,388 components** — 1,845 skills + 307 agents + 236 commands, pre-curated from 15 repos
+- **2,388 components** — 1,845 skills + 307 agents + 236 commands, pre-curated from 14 repos
 - **8-phase lifecycle** — Discovery → Planning → Design → Build → Test → Document → Ship → Maintain
 - **Zero external cost** — no Anthropic API calls, no paid services, no telemetry
 - **Factory-reset aware** — works on a clean `~/.claude/`, preserves `.credentials.json`
@@ -89,7 +89,7 @@ End users just run **one command** and get the curated set installed.
 
 ## Quick Start — One Command
 
-The fastest path. Clones the repo, initializes all 15 submodules, and launches the setup pipeline:
+The fastest path. Clones the repo, initializes all 14 submodules, and launches the setup pipeline:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh | bash
@@ -184,7 +184,7 @@ This repo ships a **pre-curated** set. The curation pipeline runs on the maintai
 ```mermaid
 flowchart LR
     subgraph "Maintainer's Machine (Local)"
-        A[15 Submodules] --> B[Extract metadata]
+        A[14 Submodules] --> B[Extract metadata]
         B --> C[Score with 100pt rubric]
         C --> D[Self-scoring via Claude Code]
         D --> E[Deduplicate + curate]
@@ -222,7 +222,7 @@ decisions/                  ← SINGLE source of truth
     agent-overlap-report.json
     agent-decision-tree.md  ← agent disambiguation tree
     smoke-test-report.md    ← last smoke test result
-sources/                    ← 15 git submodules (actual content)
+sources/                    ← 14 git submodules (actual content)
 ```
 
 ### What Stays Local (Maintainer-Only)
@@ -383,7 +383,7 @@ Many repos ship agents with the same name (`code-reviewer`, `debugger`, `test-au
 
 ## Source Repositories
 
-15 active submodules in `sources/`. All licenses are preserved inside each submodule's directory.
+14 active submodules in `sources/`. All licenses are preserved inside each submodule's directory.
 
 | Repository | Focus | Skills | Agents | Commands |
 |---|---|---:|---:|---:|
@@ -401,7 +401,6 @@ Many repos ship agents with the same name (`code-reviewer`, `debugger`, `test-au
 | [hesreallyhim/awesome-claude-code](https://github.com/hesreallyhim/awesome-claude-code) | Awesome list | — | — | — |
 | [f/awesome-chatgpt-prompts](https://github.com/f/awesome-chatgpt-prompts) | Prompt library | — | — | — |
 | [dair-ai/Prompt-Engineering-Guide](https://github.com/dair-ai/Prompt-Engineering-Guide) | Prompt patterns | — | — | — |
-| [isatuncer/enterprise-software-house](https://github.com/isatuncer/enterprise-software-house) | Enterprise templates | — | — | — |
 
 Full list and pinned commits in [`.gitmodules`](.gitmodules).
 
@@ -518,7 +517,7 @@ CloaudeCodeCTO/
 ├── README.tr.md                ← Türkçe
 ├── LICENSE                     MIT
 ├── install.sh                  one-command installer (curl-pipe compatible)
-├── .gitmodules                 15 source repos
+├── .gitmodules                 14 source repos
 ├── .gitignore                  excludes generated artifacts
 ├── sources/                    SUBMODULES (init with --recursive)
 ├── scripts/                    install infrastructure (GitHub-tracked)
@@ -627,8 +626,8 @@ Yes — edit `decisions/selected.json` before running `setup.sh`. Or exclude who
 **Q: What's the token cost of loading 1,845 skills?**
 About **105K tokens** at session startup for the full skill index. See `decisions/budget-profile.json` for the exact breakdown. Most skills load lazily when triggered, so you're not paying the full 105K on every turn.
 
-**Q: Why 15 repos and not more / fewer?**
-15 is the count where adding a repo stopped producing new unique high-quality components. The rubric filters out duplicates, and beyond 15 repos we were mostly scoring rehashes of the same skill.
+**Q: Why 14 repos and not more / fewer?**
+14 is the count where adding a repo stopped producing new unique high-quality components. The rubric filters out duplicates, and beyond 14 repos we were mostly scoring rehashes of the same skill.
 
 **Q: Can I add my own custom skills on top of the curated set?**
 Yes — drop them into `~/.claude/skills/your-skill/` after install. The installer only touches directories listed in `decisions/selected.json` on re-install.
@@ -674,6 +673,6 @@ MIT — see [LICENSE](LICENSE).
 
 ## Acknowledgments
 
-This project curates content from 15 open-source repositories. See [`.gitmodules`](.gitmodules) for the full list. All submodule licenses are preserved inside their respective `sources/<repo>/` directories.
+This project curates content from 14 open-source repositories. See [`.gitmodules`](.gitmodules) for the full list. All submodule licenses are preserved inside their respective `sources/<repo>/` directories.
 
 Built by [@isatuncer](https://github.com/isatuncer). PRs and issues welcome.

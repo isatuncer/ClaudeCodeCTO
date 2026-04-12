@@ -1,0 +1,94 @@
+name: Feature Request
+description: Suggest a new feature, improvement, or change to CloaudeCodeCTO
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature!
+
+        **Note:** For requests about **individual skills/agents/commands** (e.g., "please include skill X"), please open a separate issue using the Component Request label instead of this template.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve? Who benefits?
+      placeholder: "As a user who installs CloaudeCodeCTO on multiple machines, I need a way to..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed Solution
+      description: Describe the feature in one paragraph. Be specific.
+      placeholder: "Add a `scripts/export.sh` script that bundles the current `~/.claude/` into a tarball for restoring on another machine."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: What other approaches did you consider? Why is yours better?
+      placeholder: "I considered using `rsync`, but that doesn't preserve the install manifest..."
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected Area
+      description: Which part of the project does this touch?
+      multiple: true
+      options:
+        - install.sh (one-command installer)
+        - scripts/setup.sh (main entry point)
+        - scripts/installer.sh (staged install)
+        - scripts/smoke_test.sh (verification)
+        - scripts/bootstrap.sh (first-time wrapper)
+        - scripts/tracker.sh (usage tracking)
+        - decisions/selected.json (curation output)
+        - decisions/install-assets.json (embedded orchestrator)
+        - templates/ (N/A — removed)
+        - 8-phase lifecycle orchestrator
+        - CLAUDE.md (global config generation)
+        - CI/CD workflows
+        - Documentation / README
+        - i18n / translations
+        - Other
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this to you?
+      options:
+        - Nice to have
+        - Would noticeably improve my workflow
+        - Critical — I cannot use CloaudeCodeCTO effectively without it
+    validations:
+      required: true
+
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Implementation Sketch (optional)
+      description: If you have a rough idea of how this could be built, share it.
+      placeholder: |
+        1. Add a new bash function `export_claude_home()` in setup.sh
+        2. Use tar with --exclude for sensitive files
+        3. ...
+      render: markdown
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched existing issues and discussions
+          required: true
+        - label: This feature is not already covered by an existing flag / script
+          required: true
+        - label: I am willing to help implement or test this (optional)
+          required: false

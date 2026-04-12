@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or Discussion
+    url: https://github.com/isatuncer/ClaudeCodeCTO/discussions
+    about: Ask a question, share an idea, or start a discussion (not a bug or feature request)
+  - name: Security Vulnerability
+    url: https://github.com/isatuncer/ClaudeCodeCTO/security/advisories/new
+    about: Report a security issue privately — do NOT open a public issue
+  - name: Claude Code Documentation
+    url: https://docs.claude.com/en/docs/claude-code
+    about: Official Claude Code docs (unrelated to CloaudeCodeCTO specifically)
+  - name: Upstream Submodule Issues
+    url: https://github.com/isatuncer/ClaudeCodeCTO/blob/main/.gitmodules
+    about: For issues in individual skills/agents, report to the upstream repo listed in .gitmodules

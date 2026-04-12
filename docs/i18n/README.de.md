@@ -2,7 +2,7 @@
 
 > **Sprache:** [English](../../README.md) · [Türkçe](../../README.tr.md) · **Deutsch** · [Español](README.es.md) · [Français](README.fr.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [中文](README.zh-CN.md) · [Русский](README.ru.md) · [العربية](README.ar.md)
 
-> Verwandeln Sie Claude Code in einen vollständigen CTO: 2.388 handverlesene Skills, Agents und Commands aus 15 führenden Open-Source-Repositories, installiert in `~/.claude/` ohne externe Kosten.
+> Verwandeln Sie Claude Code in einen vollständigen CTO: 2.388 handverlesene Skills, Agents und Commands aus 14 führenden Open-Source-Repositories, installiert in `~/.claude/` ohne externe Kosten.
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](../../LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-8A2BE2)](https://docs.claude.com/en/docs/claude-code)
@@ -160,7 +160,7 @@ Die 9-stufige Pipeline erstellt `decisions/selected.json`. Sie läuft nur auf de
 
 ## Quell-Repositories
 
-15 aktive Submodules. Alle Lizenzen bleiben erhalten.
+14 aktive Submodules. Alle Lizenzen bleiben erhalten.
 
 | Repository | Fokus | Skills | Agents | Commands |
 |---|---|---:|---:|---:|
@@ -241,6 +241,6 @@ MIT — siehe [LICENSE](../../LICENSE).
 
 ## Danksagungen
 
-Dieses Projekt kuratiert Inhalte aus 15 Open-Source-Repositories. Siehe [`.gitmodules`](../../.gitmodules) für die vollständige Liste. Alle Submodule-Lizenzen bleiben in den jeweiligen `sources/<repo>/`-Verzeichnissen erhalten.
+Dieses Projekt kuratiert Inhalte aus 14 Open-Source-Repositories. Siehe [`.gitmodules`](../../.gitmodules) für die vollständige Liste. Alle Submodule-Lizenzen bleiben in den jeweiligen `sources/<repo>/`-Verzeichnissen erhalten.
 
 Gebaut von [@isatuncer](https://github.com/isatuncer). PRs und Issues willkommen.
