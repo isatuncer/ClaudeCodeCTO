@@ -542,7 +542,7 @@ CloaudeCodeCTO/
 ## Requirements
 
 - **Claude Code** installed with credentials at `~/.claude/.credentials.json`
-- **Python 3.8+** with `PyYAML` (auto-installed by `install.sh` if missing)
+- **Python 3.8+** — stdlib only, no third-party packages. `install.sh` auto-prompts to install Python 3 via the native package manager if it's missing.
 - **Bash** 4+ (git-bash on Windows, zsh users: invoke with `bash script.sh`)
 - **Git** with submodule support
 - **~1 GB free disk** for submodules + generated artifacts
@@ -556,14 +556,27 @@ Supported platforms: Windows (git-bash), macOS, Linux.
 
 ### Setup fails at "Environment Check"
 
-Install missing tools:
+Make sure Python 3 is installed and runs as `python3` or `python`:
 
 ```bash
-# PyYAML
-pip install pyyaml
-# or
-python -m pip install pyyaml
+# Linux (Debian/Ubuntu)
+sudo apt install python3
+
+# Linux (Fedora/RHEL)
+sudo dnf install python3
+
+# macOS
+brew install python3
+
+# Windows
+winget install -e --id Python.Python.3 --scope user
 ```
+
+`install.sh` auto-prompts for installation on a fresh system. If you cloned manually and Python 3 is missing, install it first then re-run `bash scripts/setup.sh`.
+
+### Windows "Python not found" when python3 IS installed
+
+Windows has a fake `python3` launcher stub from Microsoft Store that exists as a command but prints "Python was not found" when run. CloaudeCodeCTO's detection verifies `python3 --version` actually returns "Python 3" before using it — falling back to `python` if needed. If both fail, disable the Store alias at: **Settings → Apps → Advanced app settings → App execution aliases**, and install Python from https://www.python.org/downloads/.
 
 ### Submodule pull fails
 

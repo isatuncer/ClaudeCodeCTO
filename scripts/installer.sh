@@ -2,37 +2,46 @@
 # ============================================================
 # CloaudeCodeCTO Installer — Stage 5
 #
-# Installs selected components + orchestrator (from install-assets.json)
-# + rules into ~/.claude/ with atomic staging + backup.
+# Reads decisions/install.tsv and copies components from
+# sources/ into ~/.claude/ with atomic staging + backup.
 #
-# Single source of truth: decisions/ folder only.
-#   - decisions/selected.json      — curated component list
-#   - decisions/install-assets.json — embedded orchestrator files
+# Uses Python for the hot-path file copying (fast, single process).
+# Pure bash is ~10x slower on Windows git-bash due to subprocess
+# spawn overhead, so we stick with Python here.
 #
-# Factory reset aware: assumes ~/.claude/ only has .credentials.json.
+# Python detection: python3 > python > error. Setup scripts
+# handle installation prompts before we get called here.
+#
+# Single source of truth: decisions/ folder
+#   - decisions/install.tsv   — TSV list: type\tid\tsrc_path
+#   - decisions/assets/       — orchestrator files (plain dirs)
+#
+# Env vars:
+#   CLAUDE_HOME       Target Claude home (default: ~/.claude)
+#   CCCTO_TMP         Temp base dir (default: /c/tmp on Windows, $TMPDIR)
+#
+# Flags:
+#   --dry-run         Show what would happen, make no changes
 # ============================================================
 
-set -euo pipefail
+set -uo pipefail
 
 ROOT_BASH="$(cd "$(dirname "$0")/.." && pwd)"
-# Windows path for Python (so Python's pathlib finds files)
+# Windows path for Python pathlib
 ROOT="$(cygpath -w "$ROOT_BASH" 2>/dev/null || echo "$ROOT_BASH")"
-DECISIONS="$ROOT_BASH/decisions"
-INSTALL_ASSETS_BASH="$DECISIONS/install-assets.json"
-INSTALL_ASSETS="$(cygpath -w "$INSTALL_ASSETS_BASH" 2>/dev/null || echo "$INSTALL_ASSETS_BASH")"
-SELECTED_BASH="$DECISIONS/selected.json"
-SELECTED="$(cygpath -w "$SELECTED_BASH" 2>/dev/null || echo "$SELECTED_BASH")"
-MANIFEST_BASH="$DECISIONS/install-manifest.json"
+DECISIONS_BASH="$ROOT_BASH/decisions"
+INSTALL_TSV_BASH="$DECISIONS_BASH/install.tsv"
+INSTALL_TSV="$(cygpath -w "$INSTALL_TSV_BASH" 2>/dev/null || echo "$INSTALL_TSV_BASH")"
+ASSETS_DIR_BASH="$DECISIONS_BASH/assets"
+ASSETS_DIR="$(cygpath -w "$ASSETS_DIR_BASH" 2>/dev/null || echo "$ASSETS_DIR_BASH")"
+MANIFEST_BASH="$DECISIONS_BASH/install-manifest.json"
 MANIFEST="$(cygpath -w "$MANIFEST_BASH" 2>/dev/null || echo "$MANIFEST_BASH")"
 
 CLAUDE_HOME_BASH="${CLAUDE_HOME:-$HOME/.claude}"
 CLAUDE_HOME="$(cygpath -w "$CLAUDE_HOME_BASH" 2>/dev/null || echo "$CLAUDE_HOME_BASH")"
 TS=$(date +%Y%m%d-%H%M%S)
 
-# Portable temp base directory:
-#   - Windows git-bash: prefer /c/tmp/ if writable (user expectation, short paths)
-#   - macOS/Linux: use ${TMPDIR:-/tmp}
-#   - Override: set CCCTO_TMP=/custom/path
+# Portable temp base directory
 if [ -n "${CCCTO_TMP:-}" ]; then
     TMP_BASE="$CCCTO_TMP"
 elif [ -w /c/tmp ] 2>/dev/null || { mkdir -p /c/tmp 2>/dev/null && [ -w /c/tmp ]; }; then
@@ -46,11 +55,32 @@ STAGE_DIR="$(cygpath -w "$STAGE_DIR_BASH" 2>/dev/null || echo "$STAGE_DIR_BASH")
 BACKUP_DIR_BASH="$TMP_BASE/claude-install-backup-$TS"
 BACKUP_DIR="$(cygpath -w "$BACKUP_DIR_BASH" 2>/dev/null || echo "$BACKUP_DIR_BASH")"
 
+# Python detection — verify it actually works (Windows has fake python3 stubs)
+detect_python() {
+    local candidate
+    for candidate in python3 python; do
+        if command -v "$candidate" >/dev/null 2>&1; then
+            if "$candidate" --version 2>&1 | grep -q "^Python 3"; then
+                PYTHON="$candidate"
+                return 0
+            fi
+        fi
+    done
+    return 1
+}
+
+if [ -n "${PYTHON:-}" ]; then
+    : # Use exported PYTHON
+elif ! detect_python; then
+    echo "ERROR: Python 3 not found. Run setup.sh or install Python 3 first." >&2
+    exit 1
+fi
+
 if [ -t 1 ]; then
     RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
     CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
 else
-    RED='' GREEN='' YELLOW='' CYAN='' BOLD='' NC=''
+    RED=''; GREEN=''; YELLOW=''; CYAN=''; BOLD=''; NC=''
 fi
 
 DRY_RUN=0
@@ -66,15 +96,17 @@ echo -e "${BOLD}  CloaudeCodeCTO Installer${NC}"
 echo -e "${CYAN}==========================================${NC}"
 echo ""
 
-[ -f "$SELECTED_BASH" ] || { echo -e "${RED}ERROR:${NC} $SELECTED_BASH not found"; exit 1; }
-[ -f "$INSTALL_ASSETS_BASH" ] || { echo -e "${RED}ERROR:${NC} $INSTALL_ASSETS_BASH not found"; exit 1; }
+[ -f "$INSTALL_TSV_BASH" ] || { echo -e "${RED}ERROR:${NC} $INSTALL_TSV_BASH not found"; exit 1; }
+[ -d "$ASSETS_DIR_BASH" ] || { echo -e "${RED}ERROR:${NC} $ASSETS_DIR_BASH not found"; exit 1; }
 [ -d "$CLAUDE_HOME_BASH" ] || { echo -e "${RED}ERROR:${NC} $CLAUDE_HOME_BASH does not exist"; exit 1; }
 
-TOTAL=$(python -c "import json; print(json.load(open(r'$SELECTED','r',encoding='utf-8'))['total'])")
+TOTAL=$(grep -v '^#' "$INSTALL_TSV_BASH" | grep -c '[^[:space:]]' || echo 0)
+
 echo -e "  Components:  ${BOLD}$TOTAL${NC}"
-echo -e "  Target:      $CLAUDE_HOME"
-echo -e "  Stage:       $STAGE_DIR"
-echo -e "  Backup:      $BACKUP_DIR"
+echo -e "  Target:      $CLAUDE_HOME_BASH"
+echo -e "  Stage:       $STAGE_DIR_BASH"
+echo -e "  Backup:      $BACKUP_DIR_BASH"
+echo -e "  Python:      $PYTHON ($($PYTHON --version 2>&1))"
 [ "$DRY_RUN" -eq 1 ] && echo -e "  ${YELLOW}[DRY-RUN MODE]${NC}"
 echo ""
 
@@ -83,7 +115,7 @@ echo -e "${CYAN}[1/9] Backup${NC}"
 if [ "$DRY_RUN" -eq 0 ]; then
     mkdir -p "$BACKUP_DIR_BASH"
     cp -r "$CLAUDE_HOME_BASH/." "$BACKUP_DIR_BASH/" 2>/dev/null || true
-    echo -e "  ${GREEN}OK${NC}"
+    echo -e "  ${GREEN}OK${NC} $BACKUP_DIR_BASH"
 fi
 echo ""
 
@@ -93,136 +125,141 @@ mkdir -p "$STAGE_DIR_BASH"/{skills,agents,commands,hooks,rules,projects,config}
 echo -e "  ${GREEN}OK${NC} $STAGE_DIR_BASH"
 echo ""
 
-# --- [3/9] Copy components from selected.json ---
+# --- [3/9] Copy components from install.tsv (Python, fast) ---
 echo -e "${CYAN}[3/9] Copy selected components${NC}"
 
-python << PYEOF
-import json
+DRY_INT=$DRY_RUN "$PYTHON" - << PYEOF
+import os
 import shutil
 import sys
 from pathlib import Path
 
 ROOT = Path(r"$ROOT")
 STAGE = Path(r"$STAGE_DIR")
-DRY = int("$DRY_RUN")
+TSV = Path(r"$INSTALL_TSV")
+DRY = int(os.environ.get("DRY_INT", "0"))
 
 if not ROOT.exists():
     print(f"  ERROR: ROOT does not exist: {ROOT}", file=sys.stderr)
     sys.exit(1)
 
-selected = json.loads((ROOT / "decisions" / "selected.json").read_text(encoding="utf-8"))
-
 copied = {"skill": 0, "agent": 0, "command": 0}
 skipped = []
 
-for c in selected["components"]:
-    src = ROOT / c["path"]
-    if not src.exists():
-        skipped.append((c["id"], "source missing"))
-        continue
+def validate_skill_dir(dst_dir: Path, item_id: str) -> bool:
+    """Ensure SKILL.md exists with YAML frontmatter. Promote README.md if needed."""
+    dst_skill = dst_dir / "SKILL.md"
 
-    ctype = c["type"]
+    if not dst_skill.exists():
+        dst_readme = dst_dir / "README.md"
+        if dst_readme.exists():
+            dst_readme.rename(dst_skill)
 
-    if ctype == "skill":
-        src_dir = src.parent
-        dst_dir = STAGE / "skills" / c["id"]
-        if not DRY:
-            if dst_dir.exists():
-                shutil.rmtree(dst_dir)
-            try:
-                shutil.copytree(src_dir, dst_dir)
-            except OSError as e:
-                skipped.append((c["id"], str(e)))
-                continue
+    if not dst_skill.exists():
+        shutil.rmtree(dst_dir, ignore_errors=True)
+        skipped.append((item_id, "no SKILL.md or README.md"))
+        return False
 
-            # Post-copy validation: skill must have SKILL.md with YAML frontmatter
-            dst_skill = dst_dir / "SKILL.md"
-            if not dst_skill.exists():
-                # Upstream used README.md instead of SKILL.md — promote it
-                dst_readme = dst_dir / "README.md"
-                if dst_readme.exists():
-                    dst_readme.rename(dst_skill)
+    try:
+        content = dst_skill.read_text(encoding="utf-8", errors="replace")
+        first_line = content.lstrip().split("\n", 1)[0].strip()
+    except OSError:
+        first_line = ""
 
-            if not dst_skill.exists():
-                shutil.rmtree(dst_dir)
-                skipped.append((c["id"], "no SKILL.md or README.md found"))
-                continue
+    if not first_line.startswith("---"):
+        shutil.rmtree(dst_dir, ignore_errors=True)
+        skipped.append((item_id, "SKILL.md missing YAML frontmatter"))
+        return False
 
-            try:
-                first_line = dst_skill.read_text(encoding="utf-8", errors="replace").lstrip().split("\n", 1)[0].strip()
-            except OSError:
-                first_line = ""
-            if not first_line.startswith("---"):
-                shutil.rmtree(dst_dir)
-                skipped.append((c["id"], "SKILL.md missing YAML frontmatter"))
-                continue
-    elif ctype == "agent":
-        dst = STAGE / "agents" / f"{c['id']}.md"
-        if not DRY:
-            try:
-                shutil.copy2(src, dst)
-            except OSError as e:
-                skipped.append((c["id"], str(e)))
-                continue
-    elif ctype == "command":
-        dst = STAGE / "commands" / f"{c['id']}.md"
-        if not DRY:
-            try:
-                shutil.copy2(src, dst)
-            except OSError as e:
-                skipped.append((c["id"], str(e)))
-                continue
+    return True
 
-    copied[ctype] = copied.get(ctype, 0) + 1
+# Read TSV — skip comments and blank lines
+with TSV.open(encoding="utf-8") as f:
+    for line in f:
+        line = line.rstrip("\r\n")
+        if not line or line.startswith("#"):
+            continue
+        parts = line.split("\t")
+        if len(parts) != 3:
+            skipped.append(("?", f"malformed line: {line[:60]}"))
+            continue
+        ctype, cid, cpath = parts
+        src = ROOT / cpath
+        if not src.exists():
+            skipped.append((cid, "source missing"))
+            continue
 
-print(f"  Skills:   {copied.get('skill', 0)}")
-print(f"  Agents:   {copied.get('agent', 0)}")
-print(f"  Commands: {copied.get('command', 0)}")
+        if ctype == "skill":
+            src_dir = src.parent
+            dst_dir = STAGE / "skills" / cid
+            if not DRY:
+                try:
+                    if dst_dir.exists():
+                        shutil.rmtree(dst_dir)
+                    shutil.copytree(src_dir, dst_dir)
+                except OSError as e:
+                    skipped.append((cid, f"copy failed: {e}"))
+                    continue
+                if not validate_skill_dir(dst_dir, cid):
+                    continue
+            copied["skill"] += 1
+        elif ctype == "agent":
+            dst = STAGE / "agents" / f"{cid}.md"
+            if not DRY:
+                try:
+                    shutil.copy2(src, dst)
+                except OSError as e:
+                    skipped.append((cid, f"copy failed: {e}"))
+                    continue
+            copied["agent"] += 1
+        elif ctype == "command":
+            dst = STAGE / "commands" / f"{cid}.md"
+            if not DRY:
+                try:
+                    shutil.copy2(src, dst)
+                except OSError as e:
+                    skipped.append((cid, f"copy failed: {e}"))
+                    continue
+            copied["command"] += 1
+        else:
+            skipped.append((cid, f"unknown type: {ctype}"))
+
+print(f"  Skills:   {copied['skill']}")
+print(f"  Agents:   {copied['agent']}")
+print(f"  Commands: {copied['command']}")
 if skipped:
     print(f"  Skipped:  {len(skipped)}")
-    for id_, reason in skipped[:3]:
-        print(f"    - {id_}: {reason[:50]}")
+    for cid, reason in skipped[:3]:
+        print(f"    - {cid}: {reason[:60]}")
 PYEOF
 
 echo ""
 
-# --- [4/9] Install orchestrator (from decisions/install-assets.json) ---
+# --- [4/9] Install orchestrator (from decisions/assets/) ---
 echo -e "${CYAN}[4/9] Install orchestrator${NC}"
-python << PYEOF
-import json
-import sys
-from pathlib import Path
-
-STAGE = Path(r"$STAGE_DIR")
-assets_path = Path(r"$INSTALL_ASSETS")
-
-try:
-    data = json.loads(assets_path.read_text(encoding="utf-8"))
-except Exception as e:
-    print(f"  ERROR: cannot read install-assets.json: {e}", file=sys.stderr)
-    sys.exit(1)
-
-written = 0
-for rel_path, content in data.get("assets", {}).items():
-    dst = STAGE / rel_path
-    dst.parent.mkdir(parents=True, exist_ok=True)
-    dst.write_text(content, encoding="utf-8")
-    print(f"  + {rel_path}")
-    written += 1
-
-print(f"  ({written} asset files written)")
-PYEOF
+if [ "$DRY_RUN" -eq 0 ]; then
+    asset_count=0
+    while IFS= read -r -d '' f; do
+        rel="${f#"$ASSETS_DIR_BASH/"}"
+        dst="$STAGE_DIR_BASH/$rel"
+        mkdir -p "$(dirname "$dst")"
+        cp "$f" "$dst"
+        echo -e "  ${GREEN}+${NC} $rel"
+        asset_count=$((asset_count + 1))
+    done < <(find "$ASSETS_DIR_BASH" -type f -print0)
+    echo "  ($asset_count asset files written)"
+fi
 echo ""
 
-# --- [5/9] Install rules (decision tree + global rules) ---
+# --- [5/9] Install rules ---
 echo -e "${CYAN}[5/9] Install rules${NC}"
-if [ -f "$DECISIONS/agent-decision-tree.md" ]; then
-    cp "$DECISIONS/agent-decision-tree.md" "$STAGE_DIR_BASH/rules/agent-decision-tree.md"
-    echo -e "  ${GREEN}+${NC} rules/agent-decision-tree.md"
-fi
+if [ "$DRY_RUN" -eq 0 ]; then
+    if [ -f "$DECISIONS_BASH/agent-decision-tree.md" ]; then
+        cp "$DECISIONS_BASH/agent-decision-tree.md" "$STAGE_DIR_BASH/rules/agent-decision-tree.md"
+        echo -e "  ${GREEN}+${NC} rules/agent-decision-tree.md"
+    fi
 
-# Generate a minimal global CLAUDE.md
-cat > "$STAGE_DIR_BASH/CLAUDE.md" << 'CMEOF'
+    cat > "$STAGE_DIR_BASH/CLAUDE.md" << 'CMEOF'
 # Claude Code — Global Configuration
 
 This Claude Code installation was curated by CloaudeCodeCTO.
@@ -254,19 +291,22 @@ It groups agents by trigger (review, debug, test, build, etc.) in priority order
 Per-project memory is stored in `~/.claude/projects/<project-id>/MEMORY.md`.
 Claude Code reads this at session start.
 CMEOF
-echo -e "  ${GREEN}+${NC} CLAUDE.md (global)"
+    echo -e "  ${GREEN}+${NC} CLAUDE.md (global)"
+fi
 echo ""
 
 # --- [6/9] Generate settings.json ---
 echo -e "${CYAN}[6/9] Generate settings.json${NC}"
-cat > "$STAGE_DIR_BASH/settings.json" << 'SETTINGS'
+if [ "$DRY_RUN" -eq 0 ]; then
+    cat > "$STAGE_DIR_BASH/settings.json" << 'SETTINGS'
 {
   "alwaysThinkingEnabled": true,
   "hooks": {},
   "$comment": "Generated by CloaudeCodeCTO installer. Edit to add hooks."
 }
 SETTINGS
-echo -e "  ${GREEN}+${NC} settings.json"
+    echo -e "  ${GREEN}+${NC} settings.json"
+fi
 echo ""
 
 # --- [7/9] Commit to target ---
@@ -276,8 +316,8 @@ if [ "$DRY_RUN" -eq 0 ]; then
         if [ -d "$STAGE_DIR_BASH/$d" ]; then
             mkdir -p "$CLAUDE_HOME_BASH/$d"
             cp -r "$STAGE_DIR_BASH/$d/." "$CLAUDE_HOME_BASH/$d/" 2>/dev/null || true
-            count=$(find "$STAGE_DIR_BASH/$d" -maxdepth 1 | wc -l)
-            echo -e "  ${GREEN}+${NC} $d ($((count - 1)) items)"
+            count=$(find "$STAGE_DIR_BASH/$d" -maxdepth 1 -mindepth 1 | wc -l | tr -d ' ')
+            echo -e "  ${GREEN}+${NC} $d ($count items)"
         fi
     done
     for f in settings.json CLAUDE.md; do
@@ -294,25 +334,24 @@ echo ""
 # --- [8/9] Verify ---
 echo -e "${CYAN}[8/9] Verify${NC}"
 if [ "$DRY_RUN" -eq 0 ]; then
-    skills_c=$(ls "$CLAUDE_HOME_BASH/skills/" 2>/dev/null | wc -l)
-    agents_c=$(ls "$CLAUDE_HOME_BASH/agents/" 2>/dev/null | wc -l)
-    cmds_c=$(ls "$CLAUDE_HOME_BASH/commands/" 2>/dev/null | wc -l)
-    echo -e "  Target has: skills=$skills_c  agents=$agents_c  commands=$cmds_c"
+    skills_c=$(find "$CLAUDE_HOME_BASH/skills" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')
+    agents_c=$(find "$CLAUDE_HOME_BASH/agents" -maxdepth 1 -mindepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')
+    cmds_c=$(find "$CLAUDE_HOME_BASH/commands" -maxdepth 1 -mindepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')
+    echo "  Target has: skills=$skills_c  agents=$agents_c  commands=$cmds_c"
 fi
 echo ""
 
-# --- [9/9] Manifest ---
+# --- [9/9] Write manifest ---
 echo -e "${CYAN}[9/9] Write manifest${NC}"
 if [ "$DRY_RUN" -eq 0 ]; then
-    python << MFEOF
+    "$PYTHON" - << MFEOF
 import json
 from pathlib import Path
 from datetime import datetime
 
-sel = json.loads(Path(r"$SELECTED").read_text(encoding="utf-8"))
 target = Path(r"$CLAUDE_HOME")
+total_selected = int("$TOTAL")
 
-# Count actual installed items (includes the 2 orchestrator items)
 actual_skills = len([d for d in (target / "skills").iterdir() if d.is_dir()]) if (target / "skills").exists() else 0
 actual_agents = len(list((target / "agents").iterdir())) if (target / "agents").exists() else 0
 actual_commands = len(list((target / "commands").iterdir())) if (target / "commands").exists() else 0
@@ -323,11 +362,7 @@ manifest = {
     "target": r"$CLAUDE_HOME",
     "backup": r"$BACKUP_DIR",
     "stage": r"$STAGE_DIR",
-    # Selection counts (what selected.json intended to install)
-    "selected_total": sel["total"],
-    "selected_by_type": sel.get("by_type", {}),
-    "selected_by_domain": sel.get("by_domain", {}),
-    # Actual installed counts (after validation + orchestrator)
+    "selected_total": total_selected,
     "total": actual_total,
     "installed": {
         "skills": actual_skills,
@@ -343,8 +378,8 @@ manifest = {
     "generated": ["CLAUDE.md", "settings.json"],
 }
 Path(r"$MANIFEST").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
-print("  OK install-manifest.json")
-print(f"  Selected: {sel['total']}  Installed: {actual_total}")
+print(f"  OK install-manifest.json")
+print(f"  Selected: {total_selected}  Installed: {actual_total}")
 MFEOF
 fi
 echo ""
@@ -352,7 +387,7 @@ echo ""
 echo -e "${GREEN}==========================================${NC}"
 echo -e "${BOLD}  Install complete${NC}"
 echo -e "${GREEN}==========================================${NC}"
-echo -e "  Backup:   $BACKUP_DIR"
+echo -e "  Backup:   $BACKUP_DIR_BASH"
 echo -e "  Manifest: decisions/install-manifest.json"
 [ "$DRY_RUN" -eq 1 ] && echo -e "  ${YELLOW}[DRY-RUN — no changes applied]${NC}"
 echo ""

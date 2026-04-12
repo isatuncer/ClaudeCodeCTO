@@ -129,11 +129,28 @@ echo -e "  ${DIM}Log: $SETUP_LOG${NC}"
 echo ""
 
 # ============================================================
+# Python detection — verify it actually works (Windows has fake stubs)
+# ============================================================
+detect_python() {
+    local candidate
+    for candidate in python3 python; do
+        if command -v "$candidate" >/dev/null 2>&1; then
+            if "$candidate" --version 2>&1 | grep -q "^Python 3"; then
+                PYTHON="$candidate"
+                export PYTHON
+                return 0
+            fi
+        fi
+    done
+    return 1
+}
+
+# ============================================================
 # [1/6] Environment Check
 # ============================================================
 header "1/6" "Environment Check"
 
-for cmd in bash git python; do
+for cmd in bash git; do
     if command -v "$cmd" >/dev/null 2>&1; then
         ver=$("$cmd" --version 2>&1 | head -1)
         ok "$cmd: $ver"
@@ -142,6 +159,17 @@ for cmd in bash git python; do
         abort "missing required tool: $cmd"
     fi
 done
+
+if detect_python; then
+    ok "python: $("$PYTHON" --version 2>&1) ($PYTHON)"
+else
+    err "Python 3 NOT FOUND"
+    info "Run install.sh from scratch for auto-install, or install manually:"
+    info "  Linux:   sudo apt install python3  (or dnf/pacman)"
+    info "  macOS:   brew install python3"
+    info "  Windows: winget install -e --id Python.Python.3"
+    abort "Python 3 is required"
+fi
 
 if [ -d "$CLAUDE_HOME" ]; then
     ok "Claude home: $CLAUDE_HOME"
@@ -176,12 +204,13 @@ if [ -f "$MANIFEST" ]; then
     ok "Pre-built manifest exists"
 fi
 
-SELECTED="$DECISIONS/selected.json"
-if [ -f "$SELECTED" ]; then
-    TOTAL=$(python -c "import json; print(json.load(open(r'$(cygpath -w $SELECTED 2>/dev/null || echo $SELECTED)'))['total'])" 2>/dev/null || echo "?")
+INSTALL_TSV="$DECISIONS/install.tsv"
+ASSETS_DIR="$DECISIONS/assets"
+if [ -f "$INSTALL_TSV" ] && [ -d "$ASSETS_DIR" ]; then
+    TOTAL=$(grep -v '^#' "$INSTALL_TSV" | grep -c '[^[:space:]]' || echo 0)
     ok "Pre-built selection: $TOTAL components"
 else
-    err "decisions/selected.json missing — cannot install"
+    err "decisions/install.tsv or decisions/assets/ missing — cannot install"
     abort "pre-built selection not found"
 fi
 

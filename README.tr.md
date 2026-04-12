@@ -542,7 +542,7 @@ CloaudeCodeCTO/
 ## Gereksinimler
 
 - **Claude Code** kurulu, credentials `~/.claude/.credentials.json`'da
-- **Python 3.8+** ve `PyYAML` (yoksa `install.sh` otomatik kurar)
+- **Python 3.8+** — sadece stdlib, üçüncü parti paket yok. `install.sh` Python 3 yoksa platforma göre (apt/dnf/pacman/brew/winget) otomatik kurulum önerir.
 - **Bash** 4+ (Windows'ta git-bash, zsh kullanıcıları: `bash script.sh` ile çağırın)
 - **Git** submodule desteği ile
 - **~1 GB boş disk** submodule'ler + üretilen artifact'ler için
@@ -556,14 +556,27 @@ Desteklenen platformlar: Windows (git-bash), macOS, Linux.
 
 ### Setup "Environment Check"'te başarısız
 
-Eksik araçları kur:
+Python 3'ün kurulu ve `python3` veya `python` olarak çalışır olduğundan emin ol:
 
 ```bash
-# PyYAML
-pip install pyyaml
-# veya
-python -m pip install pyyaml
+# Linux (Debian/Ubuntu)
+sudo apt install python3
+
+# Linux (Fedora/RHEL)
+sudo dnf install python3
+
+# macOS
+brew install python3
+
+# Windows
+winget install -e --id Python.Python.3 --scope user
 ```
+
+`install.sh` temiz bir sistemde otomatik kurulum önerir. Manuel clone yaptıysan ve Python 3 yoksa, önce kur, sonra `bash scripts/setup.sh` çalıştır.
+
+### Windows'ta `python3` var ama "Python not found" diyor
+
+Windows'ta Microsoft Store'dan gelen fake bir `python3` launcher stub'ı var — komut olarak mevcut ama çalıştırılınca "Python was not found" diyor. CloaudeCodeCTO detection'ı `python3 --version` gerçekten "Python 3" döndürüyor mu diye doğrular, dönmüyorsa `python`'a düşer. İkisi de fail ederse Store alias'ı şuradan kapat: **Ayarlar → Uygulamalar → Gelişmiş uygulama ayarları → Uygulama yürütme takma adları**, sonra https://www.python.org/downloads/ adresinden Python kur.
 
 ### Submodule pull başarısız
 

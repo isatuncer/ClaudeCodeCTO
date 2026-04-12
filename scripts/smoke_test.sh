@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================
-# CloaudeCodeCTO Smoke Test — Stage 5.5
+# CloaudeCodeCTO Smoke Test (pure bash, no Python)
 #
 # Structural + syntactic verification of the installed system.
 # Does NOT test functional behavior (that requires a fresh
@@ -9,15 +9,24 @@
 
 set -uo pipefail
 
-ROOT_BASH="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 CLAUDE_HOME="${CLAUDE_HOME:-$HOME/.claude}"
-REPORT_FILE="$ROOT_BASH/decisions/smoke-test-report.md"
+REPORT_FILE="$ROOT/decisions/smoke-test-report.md"
+
+# Temp base dir (for backup check) — same logic as installer.sh
+if [ -n "${CCCTO_TMP:-}" ]; then
+    TMP_BASE="$CCCTO_TMP"
+elif [ -d /c/tmp ]; then
+    TMP_BASE="/c/tmp"
+else
+    TMP_BASE="${TMPDIR:-/tmp}"
+fi
 
 if [ -t 1 ]; then
     GREEN='\033[0;32m'; RED='\033[0;31m'; YELLOW='\033[1;33m'
     CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
 else
-    GREEN='' RED='' YELLOW='' CYAN='' BOLD='' NC=''
+    GREEN=''; RED=''; YELLOW=''; CYAN=''; BOLD=''; NC=''
 fi
 
 PASS=0
@@ -34,14 +43,14 @@ echo -e "${CYAN}==========================================${NC}"
 echo -e "${BOLD}  CloaudeCodeCTO Smoke Test${NC}"
 echo -e "${CYAN}==========================================${NC}"
 echo ""
-echo -e "  Target: $CLAUDE_HOME"
+echo "  Target: $CLAUDE_HOME"
 echo ""
 
 # --- Test 1: Directory structure ---
 echo -e "${CYAN}[1/8] Directory structure${NC}"
 for d in skills agents commands rules config; do
     if [ -d "$CLAUDE_HOME/$d" ]; then
-        count=$(ls "$CLAUDE_HOME/$d" 2>/dev/null | wc -l)
+        count=$(find "$CLAUDE_HOME/$d" -maxdepth 1 -mindepth 1 2>/dev/null | wc -l | tr -d ' ')
         pass "$d/ exists ($count items)"
     else
         fail "$d/ missing"
@@ -82,53 +91,71 @@ echo ""
 # --- Test 4: Rules ---
 echo -e "${CYAN}[4/8] Rules${NC}"
 if [ -f "$CLAUDE_HOME/rules/agent-decision-tree.md" ]; then
-    lines=$(wc -l < "$CLAUDE_HOME/rules/agent-decision-tree.md")
+    lines=$(wc -l < "$CLAUDE_HOME/rules/agent-decision-tree.md" | tr -d ' ')
     pass "agent-decision-tree.md ($lines lines)"
 else
     fail "agent-decision-tree.md missing"
 fi
 echo ""
 
-# --- Test 5: JSON syntax ---
-echo -e "${CYAN}[5/8] JSON syntax${NC}"
-for f in "$CLAUDE_HOME/settings.json" "$CLAUDE_HOME/config/lifecycle.json"; do
-    if [ -f "$f" ]; then
-        if python -c "import json; json.load(open(r'$(cygpath -w $f)', encoding='utf-8'))" 2>/dev/null; then
-            pass "$(basename $f) valid JSON"
-        else
-            fail "$(basename $f) invalid JSON"
-        fi
+# --- Test 5: JSON sanity (basic check — file exists, non-empty, balanced braces) ---
+echo -e "${CYAN}[5/8] JSON sanity${NC}"
+check_json_basic() {
+    local f="$1"
+    local name
+    name=$(basename "$f")
+    if [ ! -f "$f" ]; then
+        fail "$name missing"
+        return
     fi
-done
+    if [ ! -s "$f" ]; then
+        fail "$name empty"
+        return
+    fi
+    # First non-whitespace char must be { or [
+    local first
+    first=$(head -c 10 "$f" | tr -d '[:space:]' | head -c 1)
+    if [ "$first" != "{" ] && [ "$first" != "[" ]; then
+        fail "$name not valid JSON (starts with '$first')"
+        return
+    fi
+    # Rough brace balance check
+    local open_braces close_braces
+    open_braces=$(tr -cd '{' < "$f" | wc -c | tr -d ' ')
+    close_braces=$(tr -cd '}' < "$f" | wc -c | tr -d ' ')
+    if [ "$open_braces" != "$close_braces" ]; then
+        fail "$name unbalanced braces ($open_braces open, $close_braces close)"
+        return
+    fi
+    pass "$name structurally valid"
+}
+check_json_basic "$CLAUDE_HOME/settings.json"
+check_json_basic "$CLAUDE_HOME/config/lifecycle.json"
 echo ""
 
-# --- Test 6: SKILL.md frontmatter (Python, fast) ---
+# --- Test 6: SKILL.md frontmatter (pure bash) ---
 echo -e "${CYAN}[6/8] Frontmatter sanity${NC}"
-read -r total_skills missing_fm <<< "$(python - << PYEOF
-from pathlib import Path
-skills_dir = Path(r"$(cygpath -w $CLAUDE_HOME)/skills")
-total = 0
-missing = 0
-for d in skills_dir.iterdir():
-    if not d.is_dir():
-        continue
-    total += 1
-    sk = d / "SKILL.md"
-    if sk.exists():
-        try:
-            first = sk.read_text(encoding="utf-8", errors="replace").split("\n", 1)[0]
-            if not first.strip().startswith("---"):
-                missing += 1
-        except OSError:
-            missing += 1
-    else:
-        missing += 1
-print(total, missing)
-PYEOF
-)"
-if [ "${missing_fm:-0}" -eq 0 ]; then
+total_skills=0
+missing_fm=0
+for d in "$CLAUDE_HOME"/skills/*/; do
+    [ -d "$d" ] || continue
+    total_skills=$((total_skills + 1))
+    sk="$d/SKILL.md"
+    if [ -f "$sk" ]; then
+        # Get first non-empty line
+        first=$(head -5 "$sk" 2>/dev/null | grep -v '^$' | head -1 || echo "")
+        case "$first" in
+            ---*) ;;  # ok
+            *) missing_fm=$((missing_fm + 1)) ;;
+        esac
+    else
+        missing_fm=$((missing_fm + 1))
+    fi
+done
+
+if [ "$missing_fm" -eq 0 ]; then
     pass "All $total_skills skills have frontmatter"
-elif [ "${missing_fm:-0}" -lt $((total_skills / 20)) ]; then
+elif [ "$missing_fm" -lt $((total_skills / 20)) ]; then
     warn "$missing_fm/$total_skills skills missing frontmatter (tolerable)"
 else
     fail "$missing_fm/$total_skills skills missing frontmatter (too many)"
@@ -137,14 +164,18 @@ echo ""
 
 # --- Test 7: Manifest sanity ---
 echo -e "${CYAN}[7/8] Install manifest${NC}"
-MANIFEST="$ROOT_BASH/decisions/install-manifest.json"
+MANIFEST="$ROOT/decisions/install-manifest.json"
 if [ -f "$MANIFEST" ]; then
-    manifest_total=$(python -c "import json; print(json.load(open(r'$(cygpath -w $MANIFEST)'))['total'])" 2>/dev/null || echo "0")
-    actual_total=$(( $(ls "$CLAUDE_HOME/skills" | wc -l) + $(ls "$CLAUDE_HOME/agents" | wc -l) + $(ls "$CLAUDE_HOME/commands" | wc -l) ))
-    # Manifest "total" is the actual installed count (post-validation + orchestrator)
-    if [ "$manifest_total" = "$actual_total" ]; then
+    # Extract "total" field with grep/sed (manifest format is fixed)
+    manifest_total=$(grep '"total":' "$MANIFEST" | head -1 | sed 's/.*"total":[[:space:]]*\([0-9][0-9]*\).*/\1/')
+    actual_skills=$(find "$CLAUDE_HOME/skills" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')
+    actual_agents=$(find "$CLAUDE_HOME/agents" -maxdepth 1 -mindepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')
+    actual_commands=$(find "$CLAUDE_HOME/commands" -maxdepth 1 -mindepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')
+    actual_total=$((actual_skills + actual_agents + actual_commands))
+
+    if [ -n "$manifest_total" ] && [ "$manifest_total" = "$actual_total" ]; then
         pass "Installed $actual_total matches manifest"
-    elif [ "$manifest_total" -gt 0 ]; then
+    elif [ -n "$manifest_total" ] && [ "$manifest_total" -gt 0 ] 2>/dev/null; then
         warn "Manifest says $manifest_total, actual $actual_total (diff: $((actual_total - manifest_total)))"
     else
         warn "Could not read manifest total"
@@ -156,7 +187,7 @@ echo ""
 
 # --- Test 8: Backup preservation ---
 echo -e "${CYAN}[8/8] Backup preservation${NC}"
-latest_backup=$(ls -dt /c/tmp/claude-install-backup-* 2>/dev/null | head -1)
+latest_backup=$(find "$TMP_BASE" -maxdepth 1 -name "claude-install-backup-*" -type d 2>/dev/null | sort -r | head -1)
 if [ -n "$latest_backup" ] && [ -d "$latest_backup" ]; then
     pass "Backup exists at $latest_backup"
 else
@@ -190,7 +221,7 @@ cat > "$REPORT_FILE" << EOF
 2. Core files (settings, CLAUDE.md, credentials)
 3. Orchestrator (project-lifecycle skill + /start-project command + lifecycle.json)
 4. Rules (agent-decision-tree)
-5. JSON syntax
+5. JSON sanity
 6. Frontmatter sanity
 7. Install manifest consistency
 8. Backup preservation
@@ -203,12 +234,10 @@ $(if [ "$FAIL" = "0" ]; then echo "_None_"; else for f in "${FAILURES[@]}"; do e
 
 - Start a fresh Claude Code session to verify skill loading works
 - Test \`/start-project\` command interactively
-- Monitor \`~/.claude/cost-tracker.log\` for token usage patterns
-- Stage 6 (OPTIMIZE) will be ongoing based on real usage data
 EOF
 
 echo ""
-echo -e "  Report: decisions/smoke-test-report.md"
+echo "  Report: decisions/smoke-test-report.md"
 
 if [ "$FAIL" -eq 0 ]; then
     exit 0

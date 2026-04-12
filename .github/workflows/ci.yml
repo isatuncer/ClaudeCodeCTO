@@ -32,25 +32,40 @@ jobs:
           set -e
           for f in decisions/*.json; do
             echo "Checking $f..."
-            python -c "import json; json.load(open('$f', encoding='utf-8'))"
+            python3 -c "import json; json.load(open('$f', encoding='utf-8'))"
           done
           echo "All JSON files valid."
 
-      - name: Check install-assets.json asset keys
+      - name: Validate install.tsv structure
         run: |
-          python -c "
-          import json
-          data = json.load(open('decisions/install-assets.json', encoding='utf-8'))
-          assets = data.get('assets', {})
-          expected = {
-              'skills/project-lifecycle/SKILL.md',
-              'commands/start-project.md',
-              'config/lifecycle.json',
-          }
-          actual = set(assets.keys())
-          assert actual == expected, f'Mismatch: {actual} vs {expected}'
-          print(f'install-assets.json has expected {len(assets)} keys')
-          "
+          set -e
+          total=$(grep -v '^#' decisions/install.tsv | grep -c '[^[:space:]]')
+          echo "install.tsv has $total component rows"
+          if [ "$total" -lt 2000 ]; then
+            echo "::error::install.tsv has suspiciously few rows ($total)"
+            exit 1
+          fi
+          # Verify all rows have exactly 3 tab-separated fields
+          bad=$(grep -v '^#' decisions/install.tsv | awk -F'\t' 'NF != 3 && NF > 0 {print NR": "NF" fields"}' | head -5)
+          if [ -n "$bad" ]; then
+            echo "::error::install.tsv has malformed rows:"
+            echo "$bad"
+            exit 1
+          fi
+
+      - name: Check decisions/assets/ exists
+        run: |
+          set -e
+          for required in \
+            decisions/assets/skills/project-lifecycle/SKILL.md \
+            decisions/assets/commands/start-project.md \
+            decisions/assets/config/lifecycle.json; do
+            if [ ! -f "$required" ]; then
+              echo "::error::Missing required asset: $required"
+              exit 1
+            fi
+          done
+          echo "All required assets present"
 
   # -----------------------------------------------------------
   # Setup dry-run: verify the installer flow on Ubuntu + macOS
@@ -73,9 +88,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
-      - name: Install PyYAML
-        run: python -m pip install pyyaml
 
       - name: Create fake ~/.claude/ with credentials
         run: |

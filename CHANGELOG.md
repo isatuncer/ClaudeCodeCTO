@@ -9,7 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **Skill validation in installer** — post-copy, the installer now verifies every skill has a `SKILL.md` with YAML frontmatter. If only `README.md` exists (with valid frontmatter), it's promoted to `SKILL.md`. Skills without valid frontmatter are rejected and logged as skipped.
-- **Manifest now tracks actual installed counts** — `install-manifest.json` now contains both `selected_total` (from `selected.json`) and `total` (actually installed after validation + orchestrator), plus a per-type `installed` breakdown.
+- **Manifest now tracks actual installed counts** — `install-manifest.json` now contains both `selected_total` and `total` (actually installed after validation + orchestrator), plus a per-type `installed` breakdown.
+- **Python auto-install** — `install.sh` now detects missing Python 3 and prompts to install it via the platform's native package manager (apt/dnf/pacman/apk on Linux, brew on macOS, winget on Windows). Sudo prompts are handled by the OS natively.
+- **Robust Python detection** — All scripts now use a `detect_python()` helper that verifies Python 3 actually runs (not just that a `python3` file exists). This catches the Windows quirk where `python3` is a Microsoft Store launcher stub that prints "Python bulunamad" and exits with code 49, while the real Python is only available as `python`.
+- **`decisions/install.tsv`** — New bash-friendly flat TSV list replacing the JSON parse path. Format: `type\tid\tsrc_path`. 275KB vs 1.4MB for selected.json. Used directly by the installer (Python reads it faster than parsing the full JSON).
+- **`decisions/assets/`** — Plain directory tree containing the 3 orchestrator files (`skills/project-lifecycle/SKILL.md`, `commands/start-project.md`, `config/lifecycle.json`). Replaces the embedded `install-assets.json` approach.
+
+### Changed
+- **Installer now reads `install.tsv` instead of `selected.json`** — same behavior, faster parse, simpler code.
+- **Orchestrator files are now plain dirs in `decisions/assets/`** — installer copies them with a `cp -r` instead of writing them from embedded JSON strings. Simpler, more transparent.
+- **`smoke_test.sh` is now pure bash** — removed Python dependencies. Uses `read` builtin for frontmatter check, `grep`/`sed` for manifest parsing.
+
+### Removed
+- **`decisions/install-assets.json`** — superseded by `decisions/assets/` (plain dir tree)
+- **`PyYAML` dependency** — no longer needed; installer uses only Python stdlib (`json`, `shutil`, `pathlib`)
 
 ### Fixed
 - **Installer temp dir is now platform-aware** — previously hardcoded `/c/tmp/` (Windows-only), now falls back to `$TMPDIR` on macOS/Linux. Override with `CCCTO_TMP` env var. Fixes CI failures on Ubuntu and macOS runners.

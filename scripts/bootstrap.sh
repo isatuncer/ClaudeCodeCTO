@@ -58,19 +58,35 @@ echo -e "${CYAN}║${NC}  ${DIM}First-time setup wrapper${NC}               ${CY
 echo -e "${CYAN}╚══════════════════════════════════════════╝${NC}"
 echo ""
 info "This script prepares your clone for the main setup:"
-info "  1. Check required tools (git, python, bash)"
-info "  2. Initialize submodules (16 source repos, ~1 GB)"
-info "  3. Verify Python dependencies"
-info "  4. Launch scripts/setup.sh for the full pipeline"
+info "  1. Check required tools (git, bash, python3)"
+info "  2. Initialize submodules (14 source repos, ~1 GB)"
+info "  3. Launch scripts/setup.sh for the full pipeline"
 echo ""
 
 # ============================================================
-# [1/4] Tool check
+# Python detection — verify it actually works
 # ============================================================
-header "1/4" "Tool Check"
+detect_python() {
+    local candidate
+    for candidate in python3 python; do
+        if command -v "$candidate" >/dev/null 2>&1; then
+            if "$candidate" --version 2>&1 | grep -q "^Python 3"; then
+                PYTHON="$candidate"
+                export PYTHON
+                return 0
+            fi
+        fi
+    done
+    return 1
+}
+
+# ============================================================
+# [1/3] Tool check
+# ============================================================
+header "1/3" "Tool Check"
 
 missing=0
-for cmd in git python bash; do
+for cmd in git bash; do
     if command -v "$cmd" >/dev/null 2>&1; then
         ver=$("$cmd" --version 2>&1 | head -1)
         ok "$cmd: $ver"
@@ -86,6 +102,18 @@ if [ "$missing" -gt 0 ]; then
     exit 1
 fi
 
+if detect_python; then
+    ok "python: $("$PYTHON" --version 2>&1) ($PYTHON)"
+else
+    err "Python 3 NOT FOUND"
+    info "Install it first:"
+    info "  Linux:   sudo apt install python3  (or dnf/pacman)"
+    info "  macOS:   brew install python3"
+    info "  Windows: winget install -e --id Python.Python.3"
+    info "Or run install.sh which auto-prompts for installation."
+    exit 1
+fi
+
 if [ -d "$CLAUDE_HOME" ]; then
     ok "Claude Code home: $CLAUDE_HOME"
 else
@@ -97,30 +125,7 @@ else
 fi
 
 # ============================================================
-# [2/4] Python dependency check
-# ============================================================
-header "2/4" "Python Dependencies"
-
-if python -c "import yaml" 2>/dev/null; then
-    ok "PyYAML installed"
-else
-    warn "PyYAML is not installed"
-    info "PyYAML is required for parsing SKILL.md frontmatter"
-    if confirm "Install PyYAML now (pip install pyyaml)?" "Y"; then
-        if python -m pip install pyyaml 2>&1 | tail -3 | sed 's/^/    /'; then
-            ok "PyYAML installed"
-        else
-            err "Pip install failed — try manually: pip install pyyaml"
-            exit 1
-        fi
-    else
-        warn "Skipping — setup.sh will fail without PyYAML"
-        exit 1
-    fi
-fi
-
-# ============================================================
-# [3/4] Submodule initialization
+# [2/3] Submodule initialization
 # ============================================================
 header "3/4" "Submodule Initialization"
 
@@ -159,7 +164,7 @@ else
 fi
 
 # ============================================================
-# [4/4] Launch main setup
+# [3/3] Launch main setup
 # ============================================================
 header "4/4" "Launch Main Setup"
 

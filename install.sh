@@ -118,12 +118,136 @@ info "Repo URL:         $CCCTO_REPO_URL"
 [ "$CCCTO_NO_SETUP" = "1" ]    && echo -e "  ${YELLOW}[NO-SETUP]${NC} setup.sh will not be launched"
 
 # ============================================================
+# Python detection + optional auto-install
+# ============================================================
+# Verifies python3 actually works (Windows has fake Store stubs that
+# exist as files but fail when executed).
+detect_python() {
+    local candidate
+    for candidate in python3 python; do
+        if command -v "$candidate" >/dev/null 2>&1; then
+            if "$candidate" --version 2>&1 | grep -q "^Python 3"; then
+                PYTHON="$candidate"
+                return 0
+            fi
+        fi
+    done
+    return 1
+}
+
+# Attempts to auto-install Python 3 with user confirmation.
+# Platform-aware: apt/dnf/pacman/apk on Linux, brew on macOS, winget on Windows.
+ensure_python() {
+    if detect_python; then
+        ok "Python: $("$PYTHON" --version 2>&1)"
+        export PYTHON
+        return 0
+    fi
+
+    warn "Python 3 not found"
+
+    local install_cmd=""
+    local needs_sudo=0
+    local platform_hint=""
+
+    case "$(uname -s)" in
+        Linux*)
+            if command -v apt-get >/dev/null 2>&1; then
+                install_cmd="apt-get install -y python3"
+                needs_sudo=1
+                platform_hint="Debian/Ubuntu"
+            elif command -v dnf >/dev/null 2>&1; then
+                install_cmd="dnf install -y python3"
+                needs_sudo=1
+                platform_hint="Fedora/RHEL"
+            elif command -v pacman >/dev/null 2>&1; then
+                install_cmd="pacman -S --noconfirm python"
+                needs_sudo=1
+                platform_hint="Arch/Manjaro"
+            elif command -v apk >/dev/null 2>&1; then
+                install_cmd="apk add python3"
+                needs_sudo=1
+                platform_hint="Alpine"
+            fi
+            ;;
+        Darwin*)
+            if command -v brew >/dev/null 2>&1; then
+                install_cmd="brew install python3"
+                platform_hint="macOS (Homebrew)"
+            else
+                err "Homebrew not found"
+                info "Install brew first: https://brew.sh"
+                info "Or install Python directly: https://www.python.org/downloads/"
+                return 1
+            fi
+            ;;
+        MINGW*|MSYS*|CYGWIN*)
+            if command -v winget >/dev/null 2>&1; then
+                install_cmd="winget install -e --id Python.Python.3 --scope user --accept-source-agreements --accept-package-agreements"
+                platform_hint="Windows (winget, user scope)"
+            else
+                err "winget not found"
+                info "Install Python manually: https://www.python.org/downloads/"
+                return 1
+            fi
+            ;;
+    esac
+
+    if [ -z "$install_cmd" ]; then
+        err "No supported package manager detected"
+        info "Install Python 3 manually: https://www.python.org/downloads/"
+        return 1
+    fi
+
+    echo ""
+    info "Platform: $platform_hint"
+    if [ "$needs_sudo" -eq 1 ]; then
+        echo -e "  Command:  ${BOLD}sudo $install_cmd${NC}"
+        warn "This will prompt for your sudo password"
+    else
+        echo -e "  Command:  ${BOLD}$install_cmd${NC}"
+    fi
+    echo ""
+
+    if ! confirm "Install Python 3 now?" "Y"; then
+        err "Python 3 required — installation cancelled"
+        return 1
+    fi
+
+    step "Installing Python 3..."
+    if [ "$needs_sudo" -eq 1 ]; then
+        # shellcheck disable=SC2086
+        if ! sudo $install_cmd; then
+            err "Python install failed"
+            return 1
+        fi
+    else
+        # shellcheck disable=SC2086
+        if ! $install_cmd; then
+            err "Python install failed"
+            return 1
+        fi
+    fi
+
+    # Verify
+    if detect_python; then
+        ok "Python installed: $("$PYTHON" --version 2>&1)"
+        export PYTHON
+        return 0
+    else
+        err "Python install completed but python3 still not found"
+        info "PATH may need reloading — try opening a new terminal"
+        return 1
+    fi
+}
+
+# ============================================================
 # [1/6] Prerequisite Check
 # ============================================================
 header "1/6" "Prerequisite Check"
 
 missing=0
-for cmd in git python bash; do
+for cmd in git bash; do
     if command -v "$cmd" >/dev/null 2>&1; then
         ver=$("$cmd" --version 2>&1 | head -1)
         ok "$cmd: $ver"
@@ -136,9 +260,13 @@ done
 if [ "$missing" -gt 0 ]; then
     echo ""
     err "Install missing tools and re-run:"
-    [ "$missing" -gt 0 ] && echo "    git:    https://git-scm.com/downloads"
-    [ "$missing" -gt 0 ] && echo "    python: https://www.python.org/downloads/"
+    echo "    git: https://git-scm.com/downloads"
     abort "missing required tools"
+fi
+
+# Python 3 — auto-install if missing
+if ! ensure_python; then
+    abort "Python 3 is required"
 fi
 
 # Claude Code check (warning only — can proceed without it)
@@ -237,24 +365,16 @@ else
 fi
 
 # ============================================================
-# [4/6] Python Dependencies
+# [4/6] Python stdlib check
 # ============================================================
-header "4/6" "Python Dependencies"
+header "4/6" "Python stdlib check"
 
-if python -c "import yaml" 2>/dev/null; then
-    ok "PyYAML installed"
+# Installer only uses Python stdlib (json, shutil, pathlib) — no third-party deps.
+if "$PYTHON" -c "import json, shutil, pathlib" 2>/dev/null; then
+    ok "Python stdlib modules available"
 else
-    warn "PyYAML is required for parsing SKILL.md frontmatter"
-    if confirm "Install PyYAML now (python -m pip install pyyaml)?" "Y"; then
-        if python -m pip install pyyaml 2>&1 | tail -3 | sed 's/^/    /'; then
-            ok "PyYAML installed"
-        else
-            warn "Pip install failed — install manually: pip install pyyaml"
-            if ! confirm "Continue without PyYAML (setup.sh will fail)?" "N"; then
-                abort "Python dependency missing"
-            fi
-        fi
-    fi
+    err "Python stdlib broken — reinstall Python"
+    abort "Python stdlib missing"
 fi
 
 # ============================================================
