@@ -2,10 +2,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640">
   <!-- CloaudeCodeCTO — Social Preview (1280x640) -->
   <!-- GitHub requires 1280x640 PNG for repo social preview.
-       Convert this SVG to PNG with:
-         rsvg-convert -w 1280 -h 640 .github/social-preview.svg -o .github/social-preview.png
-       Or use an online SVG-to-PNG converter.
-       Then upload via: Settings → General → Social preview -->
+       Convert: rsvg-convert -w 1280 -h 640 .github/social-preview.svg -o .github/social-preview.png
+       Or: https://cloudconvert.com/svg-to-png
+       Upload: Settings → General → Social preview → Upload an image -->
 
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -31,8 +30,8 @@
   <!-- Background -->
   <rect width="1280" height="640" fill="url(#bg)"/>
 
-  <!-- Grid pattern overlay -->
-  <g stroke="#4F46E5" stroke-width="1" opacity="0.08">
+  <!-- Subtle grid pattern -->
+  <g stroke="#4F46E5" stroke-width="1" opacity="0.06">
     <line x1="0" y1="80" x2="1280" y2="80"/>
     <line x1="0" y1="160" x2="1280" y2="160"/>
     <line x1="0" y1="240" x2="1280" y2="240"/>
@@ -49,85 +48,90 @@
     <line x1="1120" y1="0" x2="1120" y2="640"/>
   </g>
 
+  <!-- Decorative circles top-right -->
+  <circle cx="1150" cy="120" r="100" fill="url(#accent)" opacity="0.08" filter="url(#glow)"/>
+  <circle cx="1150" cy="120" r="60" fill="none" stroke="url(#accent)" stroke-width="2" opacity="0.3"/>
+  <circle cx="1150" cy="120" r="30" fill="url(#accent)" opacity="0.25"/>
+
   <!-- Top-left badge -->
-  <g transform="translate(64, 64)">
-    <rect x="0" y="0" width="180" height="32" rx="16" fill="#8B5CF6" opacity="0.2" stroke="#8B5CF6" stroke-width="1"/>
-    <text x="90" y="21" text-anchor="middle" fill="#C4B5FD" font-family="monospace" font-size="14" font-weight="bold">CLAUDE CODE</text>
+  <g transform="translate(64, 60)">
+    <rect x="0" y="0" width="190" height="36" rx="18" fill="#8B5CF6" opacity="0.2" stroke="#8B5CF6" stroke-width="1.5"/>
+    <text x="95" y="23" text-anchor="middle" fill="#C4B5FD" font-family="monospace" font-size="15" font-weight="bold" letter-spacing="1">CLAUDE CODE</text>
   </g>
 
   <!-- Main title -->
-  <text x="64" y="180" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="88" font-weight="900">
+  <text x="64" y="190" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="92" font-weight="900" letter-spacing="-2">
     CloaudeCode<tspan fill="url(#accent)">CTO</tspan>
   </text>
 
   <!-- Tagline -->
-  <text x="64" y="240" fill="#CBD5E1" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="400">
+  <text x="64" y="245" fill="#CBD5E1" font-family="system-ui, -apple-system, sans-serif" font-size="30" font-weight="400">
     Turn Claude Code into a full-lifecycle CTO
   </text>
 
   <!-- Divider -->
-  <rect x="64" y="270" width="120" height="3" fill="url(#accent)"/>
+  <rect x="64" y="275" width="140" height="4" fill="url(#accent)" rx="2"/>
 
-  <!-- Stats row -->
+  <!-- Stats row — 4 cards evenly spaced -->
   <g font-family="system-ui, -apple-system, sans-serif">
-    <!-- Stat 1: Components -->
-    <g transform="translate(64, 340)">
-      <text x="0" y="0" fill="url(#accent)" font-size="56" font-weight="900">2,388</text>
-      <text x="0" y="30" fill="#94A3B8" font-size="18" font-weight="500">components</text>
+    <g transform="translate(64, 360)">
+      <text x="0" y="0" fill="url(#accent)" font-size="64" font-weight="900">2,388</text>
+      <text x="0" y="34" fill="#94A3B8" font-size="20" font-weight="500">components</text>
     </g>
-    <!-- Stat 2: Skills -->
-    <g transform="translate(280, 340)">
-      <text x="0" y="0" fill="#A78BFA" font-size="56" font-weight="900">1,845</text>
-      <text x="0" y="30" fill="#94A3B8" font-size="18" font-weight="500">skills</text>
+    <g transform="translate(310, 360)">
+      <text x="0" y="0" fill="#A78BFA" font-size="64" font-weight="900">1,845</text>
+      <text x="0" y="34" fill="#94A3B8" font-size="20" font-weight="500">skills</text>
     </g>
-    <!-- Stat 3: Agents -->
-    <g transform="translate(480, 340)">
-      <text x="0" y="0" fill="#F472B6" font-size="56" font-weight="900">307</text>
-      <text x="0" y="30" fill="#94A3B8" font-size="18" font-weight="500">agents</text>
+    <g transform="translate(550, 360)">
+      <text x="0" y="0" fill="#F472B6" font-size="64" font-weight="900">307</text>
+      <text x="0" y="34" fill="#94A3B8" font-size="20" font-weight="500">agents</text>
     </g>
-    <!-- Stat 4: Commands -->
-    <g transform="translate(620, 340)">
-      <text x="0" y="0" fill="#FB923C" font-size="56" font-weight="900">236</text>
-      <text x="0" y="30" fill="#94A3B8" font-size="18" font-weight="500">commands</text>
+    <g transform="translate(730, 360)">
+      <text x="0" y="0" fill="#FB923C" font-size="64" font-weight="900">236</text>
+      <text x="0" y="34" fill="#94A3B8" font-size="20" font-weight="500">commands</text>
     </g>
   </g>
 
-  <!-- Bottom-left: 8-phase lifecycle -->
-  <g font-family="monospace" font-size="16" fill="#CBD5E1">
-    <text x="64" y="440" fill="#8B5CF6" font-weight="bold">8-phase lifecycle:</text>
-    <text x="64" y="470" opacity="0.8">
-      Discovery → Planning → Design → Build → Test → Document → Ship → Maintain
-    </text>
-  </g>
+  <!-- 8-phase lifecycle header -->
+  <text x="64" y="465" fill="#8B5CF6" font-family="monospace" font-size="18" font-weight="bold">8-phase lifecycle</text>
 
-  <!-- Bottom badges -->
-  <g transform="translate(64, 520)">
-    <rect x="0" y="0" width="140" height="36" rx="18" fill="#10B981" opacity="0.15" stroke="#10B981" stroke-width="1"/>
-    <text x="70" y="24" text-anchor="middle" fill="#34D399" font-size="14" font-weight="bold" font-family="monospace">ZERO COST</text>
-
-    <rect x="160" y="0" width="170" height="36" rx="18" fill="#3B82F6" opacity="0.15" stroke="#3B82F6" stroke-width="1"/>
-    <text x="245" y="24" text-anchor="middle" fill="#60A5FA" font-size="14" font-weight="bold" font-family="monospace">OPEN SOURCE</text>
-
-    <rect x="350" y="0" width="180" height="36" rx="18" fill="#F59E0B" opacity="0.15" stroke="#F59E0B" stroke-width="1"/>
-    <text x="440" y="24" text-anchor="middle" fill="#FBBF24" font-size="14" font-weight="bold" font-family="monospace">ONE COMMAND</text>
-  </g>
-
-  <!-- Right side: one-liner install -->
-  <g transform="translate(720, 420)">
-    <rect x="0" y="0" width="500" height="120" rx="8" fill="#0F172A" stroke="#1E293B" stroke-width="2"/>
-    <text x="20" y="30" fill="#64748B" font-family="monospace" font-size="14"># One-command install</text>
-    <text x="20" y="60" fill="#10B981" font-family="monospace" font-size="13" font-weight="bold">$</text>
-    <text x="40" y="60" fill="#E2E8F0" font-family="monospace" font-size="13">curl -fsSL install.sh | bash</text>
-    <text x="20" y="95" fill="#64748B" font-family="monospace" font-size="12">github.com/isatuncer/ClaudeCodeCTO</text>
-  </g>
-
-  <!-- Bottom-right: @isatuncer -->
-  <text x="1216" y="604" text-anchor="end" fill="#64748B" font-family="system-ui, sans-serif" font-size="14">
-    @isatuncer · MIT License
+  <!-- Phase chain — broken into 2 lines for breathing room, full width usable -->
+  <text x="64" y="500" fill="#E2E8F0" font-family="monospace" font-size="22" font-weight="500">
+    Discovery <tspan fill="#64748B">→</tspan> Planning <tspan fill="#64748B">→</tspan> Design <tspan fill="#64748B">→</tspan> Build
+  </text>
+  <text x="64" y="530" fill="#E2E8F0" font-family="monospace" font-size="22" font-weight="500">
+    Test <tspan fill="#64748B">→</tspan> Document <tspan fill="#64748B">→</tspan> Ship <tspan fill="#64748B">→</tspan> Maintain
   </text>
 
-  <!-- Decorative circle top-right -->
-  <circle cx="1150" cy="120" r="80" fill="url(#accent)" opacity="0.1" filter="url(#glow)"/>
-  <circle cx="1150" cy="120" r="40" fill="none" stroke="url(#accent)" stroke-width="2" opacity="0.4"/>
-  <circle cx="1150" cy="120" r="20" fill="url(#accent)" opacity="0.3"/>
+  <!-- Bottom badges -->
+  <g transform="translate(64, 570)">
+    <rect x="0" y="0" width="160" height="40" rx="20" fill="#10B981" opacity="0.15" stroke="#10B981" stroke-width="1.5"/>
+    <text x="80" y="26" text-anchor="middle" fill="#34D399" font-size="15" font-weight="bold" font-family="monospace">ZERO COST</text>
+
+    <rect x="180" y="0" width="180" height="40" rx="20" fill="#3B82F6" opacity="0.15" stroke="#3B82F6" stroke-width="1.5"/>
+    <text x="270" y="26" text-anchor="middle" fill="#60A5FA" font-size="15" font-weight="bold" font-family="monospace">OPEN SOURCE</text>
+
+    <rect x="380" y="0" width="200" height="40" rx="20" fill="#F59E0B" opacity="0.15" stroke="#F59E0B" stroke-width="1.5"/>
+    <text x="480" y="26" text-anchor="middle" fill="#FBBF24" font-size="15" font-weight="bold" font-family="monospace">ONE COMMAND</text>
+  </g>
+
+  <!-- Right side: Install command card (moved right, clear of phase chain) -->
+  <g transform="translate(910, 440)">
+    <rect x="0" y="0" width="320" height="120" rx="10" fill="#0F172A" stroke="#334155" stroke-width="2"/>
+    <!-- Traffic light dots -->
+    <circle cx="20" cy="22" r="6" fill="#EF4444"/>
+    <circle cx="40" cy="22" r="6" fill="#FBBF24"/>
+    <circle cx="60" cy="22" r="6" fill="#10B981"/>
+    <line x1="0" y1="40" x2="320" y2="40" stroke="#1E293B" stroke-width="1"/>
+    <!-- Command -->
+    <text x="20" y="68" fill="#10B981" font-family="monospace" font-size="14" font-weight="bold">$</text>
+    <text x="34" y="68" fill="#E2E8F0" font-family="monospace" font-size="13">curl ... install.sh | bash</text>
+    <!-- Label -->
+    <text x="160" y="100" text-anchor="middle" fill="#64748B" font-family="monospace" font-size="11">one-command install</text>
+  </g>
+
+  <!-- Bottom credit -->
+  <text x="1216" y="615" text-anchor="end" fill="#64748B" font-family="system-ui, sans-serif" font-size="15">
+    github.com/isatuncer/ClaudeCodeCTO · MIT License
+  </text>
 </svg>
