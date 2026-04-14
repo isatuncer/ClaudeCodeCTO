@@ -136,7 +136,7 @@ echo -e "${CYAN}[2/5] Pull latest CloaudeCodeCTO${NC}"
 if [ "$NO_GIT_PULL" -eq 1 ]; then
     echo -e "  ${YELLOW}SKIP${NC} (--no-git-pull)"
 elif [ -d "$ROOT_BASH/.git" ]; then
-    cd "$ROOT_BASH"
+    cd "$ROOT_BASH" || { echo -e "  ${RED}ERROR${NC}: cannot cd to $ROOT_BASH"; exit 1; }
     branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")
     echo -e "  branch: $branch"
     if git pull origin "$branch" 2>&1 | sed 's/^/    /' | tail -5; then
@@ -147,7 +147,7 @@ elif [ -d "$ROOT_BASH/.git" ]; then
     if git submodule update --init --recursive 2>&1 | sed 's/^/    /' | tail -5; then
         echo -e "  ${GREEN}OK${NC} submodules synced"
     fi
-    cd - > /dev/null
+    cd - > /dev/null || true
 else
     echo -e "  ${YELLOW}WARN${NC} not a git repo — skipping pull"
 fi
