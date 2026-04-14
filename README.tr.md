@@ -128,12 +128,65 @@ Setup script sizi 6 faz boyunca yönlendirir (environment check → state incele
 | `CCCTO_AUTO` | `0` | `1` = interaktif olmayan mod |
 | `CCCTO_NO_INSTALL` | `0` | `1` = `~/.claude/` kurulum adımını atla |
 | `CCCTO_NO_SETUP` | `0` | `1` = `setup.sh`'ı çalıştırma |
+| `CCCTO_PROFILE` | `standard` | Kurulum profili: `minimal` / `standard` / `full` |
 
 Örnek — CI / interaktif olmayan:
 
 ```bash
 CCCTO_AUTO=1 CCCTO_DIR=/opt/ccc bash <(curl -fsSL https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh)
 ```
+
+---
+
+## Profiller — Token Bütçesi Önemli
+
+Claude Code session başında kurulu her skill'in YAML frontmatter'ını yüklüyor. 1840 skill'i körlemesine kurmak siz daha bir prompt yazmadan **~91k token** yiyor. CloaudeCodeCTO üç küratörlü profil sunar — bütçeni sen seç:
+
+| Profil | Bileşen | Tahmini session tokeni | Kapsam |
+|---|---|---|---|
+| `minimal` | ~70 | **~3k** | El seçimi temel: core diller, TDD, debug, review, orchestration runtime, security/performance temelleri |
+| `standard` (default) | ~560 | **~15-20k** | Yazılım proje geliştirme: tüm core diller + popüler web/mobil framework'leri + veritabanları + cloud + test + docs + mimari |
+| `full` | ~2400 | ~91k | Tüm katalog — 14 kaynak reponun hepsi (iş otomasyonu, oyunlar, regüle domainler, niş SDK sarmalayıcılar) |
+
+Kurulum sırasında profili seç:
+
+```bash
+# default — standard
+bash scripts/setup.sh
+
+# kısıtlı context için minimal
+bash scripts/setup.sh --profile=minimal
+
+# full (profil öncesi davranış)
+bash scripts/setup.sh --profile=full
+```
+
+Veya env var ile (curl-pipe installer'da da geçerli):
+
+```bash
+CCCTO_PROFILE=minimal curl -fsSL https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh | bash
+```
+
+Profil tanımları `decisions/profiles/*.tsv` altında yaşar ve kaynak listesi değiştikçe `python scripts/curate_profiles.py` ile yeniden üretilir.
+
+---
+
+## Özellikler — Hazır Gelen Runtime
+
+CloaudeCodeCTO kurulumu `~/.claude/`'a sadece dosya atmıyor. Installer aynı zamanda **32 hook**'u 7 event türüne (`PreToolUse`, `PostToolUse`, `SessionStart`, `SessionEnd`, `PreCompact`, `Stop`, `PostToolUseFailure`) bağlıyor; her session bu altı yetenekle açılıyor:
+
+| Özellik | Nasıl çalışır |
+|---|---|
+| **Token Optimization** | Profil tabanlı curation + `token-budget-advisor` + `context-budget` skill'leri + tur başına token kullanımını loglayan session-cost tracker hook'u |
+| **Memory Persistence** | `SessionStart` hook'u önceki session context'ini yüklüyor; `Stop` + `PreCompact` hook'ları session transcript + özetleri `~/.claude/sessions/` altına yazıyor |
+| **Continuous Learning** | `pre:observe` ve `post:observe` hook'ları tool kullanımlarını `continuous-learning-v2`'ye besliyor; offline `/learn-eval` tekrar eden pattern'leri kullanılabilir skill'lere dönüştürüyor |
+| **Verification Loops** | `post:quality-gate` hook'u her edit sonrası build/typecheck/lint/test/security koşturuyor; `verification-loop` + `eval-harness` skill'leri pass@k skorlu grader suite'leri çalıştırıyor |
+| **Parallelization** | `pre:bash:auto-tmux-dev` hook'u dev server'ları tmux'ta otomatik başlatıyor; `claude-devfleet` + `dmux-workflows` + `agent-sort` skill'leri git worktree'de paralel agent gönderiyor |
+| **Subagent Orchestration** | `iterative-retrieval` skill'i 4-faz Dispatch→Evaluate→Refine→Loop pattern'ini uyguluyor; `chief-of-staff` + `loop-operator` agent'ları subagent'lar arası context hand-off'u koordine ediyor |
+
+Runtime bağımlılıkları: **Node.js 18+** (`install.sh` otomatik kurar), `tmux` (opsiyonel, parallelization için), `git worktree` (git'e gömülü). Node yoksa veya hook path çözemezse hook'lar session'ı bloklamadan sessiz geçer.
+
+Runtime `~/.claude/scripts/hooks/` altında yaşar (33 JS dosyası, ~200 KB) ve her kurulumda sıfırlanır. Geçici devre dışı bırakmak için `~/.claude/settings.json`'da `ECC_HOOK_PROFILE=minimal` set et.
 
 ---
 

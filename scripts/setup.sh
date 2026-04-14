@@ -40,6 +40,9 @@ DRY_RUN=0
 CHECK_ONLY=0
 NO_INSTALL=0
 NO_SMOKE=0
+# Default profile is "standard" (~560 components, ~15k session tokens).
+# Override with --profile=minimal|standard|full or CCCTO_PROFILE env var.
+PROFILE="${CCCTO_PROFILE:-standard}"
 
 for arg in "$@"; do
     case "$arg" in
@@ -48,12 +51,19 @@ for arg in "$@"; do
         --check) CHECK_ONLY=1 ;;
         --no-install) NO_INSTALL=1 ;;
         --no-smoke) NO_SMOKE=1 ;;
+        --profile=*) PROFILE="${arg#--profile=}" ;;
         --help|-h)
             grep -E "^#" "$0" | head -30
             exit 0
             ;;
     esac
 done
+
+case "$PROFILE" in
+    minimal|standard|full) ;;
+    *) echo "ERROR: unknown --profile=$PROFILE (use minimal|standard|full)" >&2; exit 1 ;;
+esac
+export CCCTO_PROFILE="$PROFILE"
 
 # Colors
 if [ -t 1 ]; then
@@ -204,13 +214,15 @@ if [ -f "$MANIFEST" ]; then
     ok "Pre-built manifest exists"
 fi
 
-INSTALL_TSV="$DECISIONS/install.tsv"
+INSTALL_TSV="$DECISIONS/profiles/$PROFILE.tsv"
 ASSETS_DIR="$DECISIONS/assets"
 if [ -f "$INSTALL_TSV" ] && [ -d "$ASSETS_DIR" ]; then
     TOTAL=$(grep -v '^#' "$INSTALL_TSV" | grep -c '[^[:space:]]' || echo 0)
-    ok "Pre-built selection: $TOTAL components"
+    ok "Profile [$PROFILE]: $TOTAL components"
 else
-    err "decisions/install.tsv or decisions/assets/ missing — cannot install"
+    err "decisions/profiles/$PROFILE.tsv or decisions/assets/ missing — cannot install"
+    info "Available profiles: minimal, standard, full"
+    info "Regenerate with: python scripts/curate_profiles.py"
     abort "pre-built selection not found"
 fi
 

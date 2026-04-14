@@ -626,6 +626,7 @@ else
     SETUP_FLAGS=""
     [ "$CCCTO_AUTO" = "1" ]       && SETUP_FLAGS="$SETUP_FLAGS --auto"
     [ "$CCCTO_NO_INSTALL" = "1" ] && SETUP_FLAGS="$SETUP_FLAGS --no-install"
+    [ -n "${CCCTO_PROFILE:-}" ]   && SETUP_FLAGS="$SETUP_FLAGS --profile=$CCCTO_PROFILE"
 
     if confirm "Launch scripts/setup.sh now?" "Y"; then
         step "bash scripts/setup.sh$SETUP_FLAGS"

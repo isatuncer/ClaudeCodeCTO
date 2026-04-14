@@ -36,22 +36,40 @@ jobs:
           done
           echo "All JSON files valid."
 
-      - name: Validate install.tsv structure
+      - name: Validate install.tsv + profile TSVs
         run: |
           set -e
+          # Master list
           total=$(grep -v '^#' decisions/install.tsv | grep -c '[^[:space:]]')
           echo "install.tsv has $total component rows"
           if [ "$total" -lt 2000 ]; then
             echo "::error::install.tsv has suspiciously few rows ($total)"
             exit 1
           fi
-          # Verify all rows have exactly 3 tab-separated fields
-          bad=$(grep -v '^#' decisions/install.tsv | awk -F'\t' 'NF != 3 && NF > 0 {print NR": "NF" fields"}' | head -5)
-          if [ -n "$bad" ]; then
-            echo "::error::install.tsv has malformed rows:"
-            echo "$bad"
-            exit 1
-          fi
+          # Each profile TSV exists + has at least N rows
+          declare -A min_rows=( [minimal]=30 [standard]=200 [full]=2000 )
+          for p in minimal standard full; do
+            f="decisions/profiles/$p.tsv"
+            if [ ! -f "$f" ]; then
+              echo "::error::missing profile file $f — run python scripts/curate_profiles.py"
+              exit 1
+            fi
+            rows=$(grep -v '^#' "$f" | grep -c '[^[:space:]]' || echo 0)
+            echo "  $p.tsv: $rows rows (min ${min_rows[$p]})"
+            if [ "$rows" -lt "${min_rows[$p]}" ]; then
+              echo "::error::$p.tsv has too few rows ($rows < ${min_rows[$p]})"
+              exit 1
+            fi
+          done
+          # Verify all rows have exactly 3 tab-separated fields (all TSVs)
+          for f in decisions/install.tsv decisions/profiles/*.tsv; do
+            bad=$(grep -v '^#' "$f" | awk -F'\t' 'NF != 3 && NF > 0 {print NR": "NF" fields"}' | head -5)
+            if [ -n "$bad" ]; then
+              echo "::error::$f has malformed rows:"
+              echo "$bad"
+              exit 1
+            fi
+          done
 
       - name: Check decisions/assets/ exists
         run: |

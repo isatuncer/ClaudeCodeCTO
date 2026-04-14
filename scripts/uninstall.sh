@@ -35,7 +35,13 @@ set -uo pipefail
 ROOT_BASH="$(cd "$(dirname "$0")/.." && pwd)"
 ROOT="$(cygpath -w "$ROOT_BASH" 2>/dev/null || echo "$ROOT_BASH")"
 DECISIONS_BASH="$ROOT_BASH/decisions"
-INSTALL_TSV_BASH="$DECISIONS_BASH/install.tsv"
+# Prefer profiles/full.tsv (superset of all profiles) so we remove anything
+# any profile could have installed. Fall back to install.tsv for old checkouts.
+if [ -f "$DECISIONS_BASH/profiles/full.tsv" ]; then
+    INSTALL_TSV_BASH="$DECISIONS_BASH/profiles/full.tsv"
+else
+    INSTALL_TSV_BASH="$DECISIONS_BASH/install.tsv"
+fi
 INSTALL_TSV="$(cygpath -w "$INSTALL_TSV_BASH" 2>/dev/null || echo "$INSTALL_TSV_BASH")"
 
 CLAUDE_HOME_BASH="${CLAUDE_HOME:-$HOME/.claude}"
@@ -184,8 +190,28 @@ for rel in [
 print(f"  ({removed['orchestrator']} orchestrator files removed)")
 print()
 
-# [3/3] Remove generator-stamped CLAUDE.md / settings.json
-print("[3/3] Remove generator-stamped CLAUDE.md / settings.json")
+# [3/4] Remove runtime (scripts/hooks/)
+print("[3/4] Remove runtime scripts/hooks/")
+runtime_scripts = TARGET / "scripts" / "hooks"
+if runtime_scripts.is_dir():
+    js_count = len(list(runtime_scripts.glob("*.js")))
+    if rm(runtime_scripts, "generated"):
+        removed["generated"] += 1
+        print(f"  - scripts/hooks/ ({js_count} JS files)")
+    scripts_parent = TARGET / "scripts"
+    if scripts_parent.is_dir() and not any(scripts_parent.iterdir()):
+        if not DRY:
+            try:
+                scripts_parent.rmdir()
+                print("  rmdir empty: scripts/")
+            except OSError:
+                pass
+else:
+    print("  (nothing to remove)")
+print()
+
+# [4/4] Remove generator-stamped CLAUDE.md / settings.json
+print("[4/4] Remove generator-stamped CLAUDE.md / settings.json")
 if KEEP_GEN:
     print("  SKIP (--keep-generated)")
 else:
@@ -217,7 +243,7 @@ else:
 print()
 
 # Cleanup empty top-level dirs we created (but never delete projects/ or the root)
-for d in ["skills", "agents", "commands", "hooks", "rules", "config"]:
+for d in ["skills", "agents", "commands", "hooks", "rules", "config", "scripts"]:
     p = TARGET / d
     if p.is_dir() and not any(p.iterdir()):
         if not DRY:
