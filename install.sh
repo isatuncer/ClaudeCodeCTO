@@ -117,6 +117,38 @@ info "Repo URL:         $CCCTO_REPO_URL"
 [ "$CCCTO_NO_INSTALL" = "1" ]  && echo -e "  ${YELLOW}[NO-INSTALL]${NC} ~/.claude/ install will be skipped"
 [ "$CCCTO_NO_SETUP" = "1" ]    && echo -e "  ${YELLOW}[NO-SETUP]${NC} setup.sh will not be launched"
 
+# Detect existing CloaudeCodeCTO install by looking for our manifest
+# in the user's ~/.claude/. If present, this is an UPDATE, not a fresh
+# install — show a banner so the user knows what's about to happen.
+EXISTING_MANIFEST="$HOME/.claude/install-manifest.json"
+if [ -f "$EXISTING_MANIFEST" ]; then
+    echo ""
+    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${YELLOW}  UPDATE MODE — existing install detected${NC}"
+    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    # Try to show a compact summary without requiring python yet
+    if command -v python3 >/dev/null 2>&1 || command -v python >/dev/null 2>&1; then
+        py="python3"; command -v "$py" >/dev/null 2>&1 || py="python"
+        "$py" - "$EXISTING_MANIFEST" << 'PYMAN' 2>/dev/null || true
+import json, sys
+try:
+    d = json.load(open(sys.argv[1], encoding="utf-8"))
+    inst = d.get("installed", {}) or {}
+    profile = d.get("profile", "unknown")
+    total = d.get("total", "?")
+    print(f"  Current profile: {profile}")
+    print(f"  Current total:   {total} (skills={inst.get('skills','?')} agents={inst.get('agents','?')} commands={inst.get('commands','?')})")
+    print(f"  Installed at:    {d.get('installed_at', 'unknown')}")
+except Exception:
+    pass
+PYMAN
+    fi
+    echo ""
+    info "Your settings.json, .credentials.json, projects/, and custom files will be preserved."
+    info "A backup will be written to /c/tmp/claude-install-backup-<timestamp>/"
+    echo ""
+fi
+
 # ============================================================
 # Python detection + optional auto-install
 # ============================================================

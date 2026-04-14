@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **`scripts/update.sh`** — user-friendly updater for existing installs. Reads `~/.claude/install-manifest.json`, shows a Current→After-update diff table, pulls latest repo + submodules, then runs the installer with settings.json merge. Supports `--yes`, `--profile=<name>`, `--no-git-pull`. Reminds the user to restart Claude Code at the end.
+- **`install.sh` auto-detects existing installs** — when `~/.claude/install-manifest.json` is present, `install.sh` shows an "UPDATE MODE — existing install detected" banner with the user's current profile + component counts, then proceeds with `git pull` + re-run (the existing path already handled this flow, but the banner makes it obvious).
+- **`+6` Claude-specific source repos** — anthropics/claude-plugins-official, anthropics/claude-code (bundled plugins), wshobson/agents (77 plugins), 0xfurai/claude-code-subagents, vijaythecoder/awesome-claude-agents, daymade/claude-code-skills.
 - **Install profiles (minimal / standard / full)** — fixes the 91k-token session bloat caused by loading all 1840 skill frontmatter entries at session start. Three curated profiles:
   - `minimal` (~70 components, ~3k tokens) — hand-picked essentials
   - `standard` (default, ~560 components, ~15-20k tokens) — software project dev scope: core languages, top web/mobile frameworks, databases, cloud, testing, docs, architecture

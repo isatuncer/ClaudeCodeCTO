@@ -2,17 +2,17 @@
 
 > **Язык:** [English](../../README.md) · [Türkçe](../../README.tr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Français](README.fr.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [中文](README.zh-CN.md) · **Русский** · [العربية](README.ar.md)
 
-> Превратите Claude Code в CTO полного жизненного цикла: 2 388 тщательно отобранных навыков, агентов и команд из 14 лучших open-source репозиториев, устанавливаемых в `~/.claude/` без внешних затрат.
+> Превратите Claude Code в CTO полного жизненного цикла: 3.025 тщательно отобранных навыков, агентов и команд из 17 лучших open-source репозиториев, устанавливаемых в `~/.claude/` без внешних затрат.
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](../../LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-8A2BE2)](https://docs.claude.com/en/docs/claude-code)
-[![Components](https://img.shields.io/badge/Components-2388-green.svg)](../../decisions/selected.json)
+[![Components](https://img.shields.io/badge/Components-3025-green.svg)](../../decisions/selected.json)
 
 ---
 
 ## Что это?
 
-CloaudeCodeCTO — это **система курирования и установки**, которая берёт лучшие навыки, агенты и команды из 14 публичных репозиториев Claude Code и устанавливает их в ваш каталог `~/.claude/` как единый согласованный инструментарий.
+CloaudeCodeCTO — это **система курирования и установки**, которая берёт лучшие навыки, агенты и команды из 17 публичных репозиториев Claude Code и устанавливает их в ваш каталог `~/.claude/` как единый согласованный инструментарий.
 
 Результат: установка Claude Code, которая может провести вас **от идеи до производства** — через Discovery, Planning, Design, Build, Test, документацию, Shipping и поддержку — используя специализированных агентов на каждом этапе.
 
@@ -60,7 +60,7 @@ bash scripts/setup.sh
 
 ## Возможности
 
-- **2 388 компонентов** — 1 845 навыков + 307 агентов + 236 команд, курированных из 14 репозиториев
+- **3.025 компонентов** — 1 845 навыков + 550 агентов + 431 команд, курированных из 17 репозиториев
 - **Жизненный цикл из 8 фаз** — Discovery → Planning → Design → Build → Test → Document → Ship → Maintain
 - **Никаких внешних затрат** — без вызовов Anthropic API, без платных сервисов, без телеметрии
 - **Совместимость с factory-reset** — работает на чистом `~/.claude/`, сохраняет `.credentials.json`
@@ -81,8 +81,8 @@ bash scripts/setup.sh
 ├── settings.json                  конфиг harness (генерируется)
 ├── skills/                        1 845 навыков
 │   └── project-lifecycle/         мета-оркестратор (8 фаз)
-├── agents/                        307 специализированных агентов
-├── commands/                      236 слэш-команд
+├── agents/                        550 специализированных агентов
+├── commands/                      431 слэш-команд
 │   └── start-project.md           /start-project точка входа жизненного цикла
 ├── rules/
 │   └── agent-decision-tree.md     какой агент для какой задачи
@@ -160,7 +160,7 @@ bash scripts/setup.sh
 
 ## Исходные репозитории
 
-14 активных сабмодулей. Все лицензии сохраняются в соответствующих каталогах.
+17 активных сабмодулей. Все лицензии сохраняются в соответствующих каталогах.
 
 | Репозиторий | Фокус | Skills | Agents | Commands |
 |---|---|---:|---:|---:|
@@ -257,6 +257,6 @@ MIT — см. [LICENSE](../../LICENSE).
 
 ## Благодарности
 
-Этот проект курирует контент из 14 open-source репозиториев. Полный список см. в [`.gitmodules`](../../.gitmodules). Все лицензии сабмодулей сохраняются в их соответствующих каталогах `sources/<repo>/`.
+Этот проект курирует контент из 17 open-source репозиториев. Полный список см. в [`.gitmodules`](../../.gitmodules). Все лицензии сабмодулей сохраняются в их соответствующих каталогах `sources/<repo>/`.
 
 Создано [@isatuncer](https://github.com/isatuncer). PR и issue приветствуются.

@@ -2,14 +2,14 @@
 
 > **Language:** **English** · [Türkçe](README.tr.md) · [Deutsch](docs/i18n/README.de.md) · [Español](docs/i18n/README.es.md) · [Français](docs/i18n/README.fr.md) · [日本語](docs/i18n/README.ja.md) · [한국어](docs/i18n/README.ko.md) · [中文](docs/i18n/README.zh-CN.md) · [Русский](docs/i18n/README.ru.md) · [العربية](docs/i18n/README.ar.md)
 
-> Turn Claude Code into a full-lifecycle CTO: 2,388 hand-curated skills, agents, and commands from 14 top open-source repositories, installed into `~/.claude/` with zero external cost.
+> Turn Claude Code into a full-lifecycle CTO: 3,025 hand-curated skills, agents, and commands from 17 top open-source repositories, installed into `~/.claude/` with zero external cost.
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-8A2BE2)](https://docs.claude.com/en/docs/claude-code)
-[![Components](https://img.shields.io/badge/Components-2388-green.svg)](decisions/selected.json)
-[![Skills](https://img.shields.io/badge/Skills-1845-blue.svg)](decisions/selected.json)
-[![Agents](https://img.shields.io/badge/Agents-307-purple.svg)](decisions/selected.json)
-[![Commands](https://img.shields.io/badge/Commands-236-orange.svg)](decisions/selected.json)
+[![Components](https://img.shields.io/badge/Components-3025-green.svg)](decisions/install.tsv)
+[![Skills](https://img.shields.io/badge/Skills-2044-blue.svg)](decisions/install.tsv)
+[![Agents](https://img.shields.io/badge/Agents-550-purple.svg)](decisions/install.tsv)
+[![Commands](https://img.shields.io/badge/Commands-431-orange.svg)](decisions/install.tsv)
 
 ---
 
@@ -40,7 +40,7 @@
 
 ## What Is This?
 
-CloaudeCodeCTO is a **curation and installation system** that takes the best skills, agents, and commands from 14 public Claude Code repositories and installs them into your `~/.claude/` directory as one cohesive toolkit.
+CloaudeCodeCTO is a **curation and installation system** that takes the best skills, agents, and commands from 17 public Claude Code repositories and installs them into your `~/.claude/` directory as one cohesive toolkit.
 
 The result: a Claude Code installation that can guide you **from idea to production** — through discovery, planning, design, build, test, documentation, shipping, and maintenance — using purpose-built agents at each phase.
 
@@ -59,7 +59,7 @@ The Claude Code ecosystem has exploded. There are now **thousands** of open-sour
 
 CloaudeCodeCTO solves this by running a 9-stage curation pipeline (locally, on the maintainer's machine) that:
 
-1. Scans all 14 source repos
+1. Scans all 17 source repos
 2. Scores every component against a 100-point rubric
 3. Optionally adds semantic self-scoring via Claude Code subagents (zero cost)
 4. Deduplicates overlapping agents/skills and picks the best version
@@ -74,7 +74,7 @@ End users just run **one command** and get the curated set installed.
 
 ## Features
 
-- **2,388 components** — 1,845 skills + 307 agents + 236 commands, pre-curated from 14 repos
+- **3,025 components** — 2,044 skills + 550 agents + 431 commands, pre-curated from 17 repos
 - **8-phase lifecycle** — Discovery → Planning → Design → Build → Test → Document → Ship → Maintain
 - **Zero external cost** — no Anthropic API calls, no paid services, no telemetry
 - **Factory-reset aware** — works on a clean `~/.claude/`, preserves `.credentials.json`
@@ -89,7 +89,7 @@ End users just run **one command** and get the curated set installed.
 
 ## Quick Start — One Command
 
-The fastest path. Clones the repo, initializes all 14 submodules, and launches the setup pipeline:
+The fastest path. Clones the repo, initializes all 17 submodules, and launches the setup pipeline:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh | bash
@@ -146,7 +146,7 @@ Claude Code loads every installed skill's YAML frontmatter at session start. Ins
 |---|---|---|---|
 | `minimal` | ~70 | **~3k** | Hand-picked essentials: core languages, TDD, debug, review, orchestration runtime, security/performance basics |
 | `standard` (default) | ~560 | **~15-20k** | Software project development: all core languages + top web/mobile frameworks + databases + cloud + testing + docs + architecture |
-| `full` | ~2400 | ~91k | The entire catalog — everything from all 14 source repos (business automation, games, regulated domains, niche SDK wrappers) |
+| `full` | ~2400 | ~91k | The entire catalog — everything from all 17 source repos (business automation, games, regulated domains, niche SDK wrappers) |
 
 Set a profile at install time:
 
@@ -199,10 +199,10 @@ After a successful run, your `~/.claude/` contains:
 ├── .credentials.json              (preserved from before)
 ├── CLAUDE.md                      global instructions (generated)
 ├── settings.json                  harness config (generated)
-├── skills/                        1,845 skills
+├── skills/                        2,044 skills
 │   └── project-lifecycle/         meta-orchestrator (8-phase)
-├── agents/                        307 specialized agents
-├── commands/                      236 slash commands
+├── agents/                        550 specialized agents
+├── commands/                      431 slash commands
 │   └── start-project.md           /start-project lifecycle entry
 ├── rules/
 │   └── agent-decision-tree.md     which agent for which task
@@ -237,7 +237,7 @@ This repo ships a **pre-curated** set. The curation pipeline runs on the maintai
 ```mermaid
 flowchart LR
     subgraph "Maintainer's Machine (Local)"
-        A[14 Submodules] --> B[Extract metadata]
+        A[17 Submodules] --> B[Extract metadata]
         B --> C[Score with 100pt rubric]
         C --> D[Self-scoring via Claude Code]
         D --> E[Deduplicate + curate]
@@ -267,7 +267,7 @@ scripts/installer.sh        ← atomic staged install with backup
 scripts/smoke_test.sh       ← post-install verification
 scripts/tracker.sh          ← optional usage tracking
 decisions/                  ← SINGLE source of truth
-    selected.json           ← the authoritative list (1.4 MB, 2388 components)
+    selected.json           ← the authoritative list (1.4 MB, 3025 components)
     install-assets.json     ← embedded orchestrator files (lifecycle/SKILL/command)
     install-manifest.json   ← last install checkpoint
     lifecycle-bindings.json ← 8-phase → component mapping
@@ -275,7 +275,7 @@ decisions/                  ← SINGLE source of truth
     agent-overlap-report.json
     agent-decision-tree.md  ← agent disambiguation tree
     smoke-test-report.md    ← last smoke test result
-sources/                    ← 14 git submodules (actual content)
+sources/                    ← 17 git submodules (actual content)
 ```
 
 ### What Stays Local (Maintainer-Only)
@@ -436,24 +436,27 @@ Many repos ship agents with the same name (`code-reviewer`, `debugger`, `test-au
 
 ## Source Repositories
 
-14 active submodules in `sources/`. All licenses are preserved inside each submodule's directory.
+17 active submodules in `sources/`. All licenses are preserved inside each submodule's directory.
 
 | Repository | Focus | Skills | Agents | Commands |
 |---|---|---:|---:|---:|
+| [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) | Official Anthropic plugin directory | 23 | 14 | 16 |
+| [anthropics/claude-code](https://github.com/anthropics/claude-code) | Official Claude Code bundled plugins | 13 | 14 | 16 |
 | [anthropics/skills](https://github.com/anthropics/skills) | Official Anthropic skills | 19 | 0 | 0 |
-| [affaan-m/everything-claude-code](https://github.com/affaan-m/everything-claude-code) | All-in-one toolkit | 183 | 47 | 82 |
-| [sickn33/antigravity-awesome-skills](https://github.com/sickn33/antigravity-awesome-skills) | Massive skill collection | 1,404 | 0 | 0 |
-| [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills) | Domain specialists | 0 | 24 | 33 |
-| [VoltAgent/awesome-claude-code-subagents](https://github.com/VoltAgent/awesome-claude-code-subagents) | Curated subagents | 0 | 140 | 0 |
+| [affaan-m/everything-claude-code](https://github.com/affaan-m/everything-claude-code) | All-in-one toolkit + hook runtime | 183 | 47 | 82 |
+| [sickn33/antigravity-awesome-skills](https://github.com/sickn33/antigravity-awesome-skills) | Massive skill library | 1,404 | 0 | 0 |
+| [wshobson/agents](https://github.com/wshobson/agents) | 77 plugins: agents + skills + commands | 149 | 117 | 85 |
 | [rohitg00/awesome-claude-code-toolkit](https://github.com/rohitg00/awesome-claude-code-toolkit) | Full toolkit | 35 | 138 | 243 |
+| [VoltAgent/awesome-claude-code-subagents](https://github.com/VoltAgent/awesome-claude-code-subagents) | Curated subagents | 0 | 140 | 0 |
+| [0xfurai/claude-code-subagents](https://github.com/0xfurai/claude-code-subagents) | 100+ production subagents | 0 | 138 | 0 |
+| [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills) | Domain specialists | 231 | 42 | 31 |
+| [daymade/claude-code-skills](https://github.com/daymade/claude-code-skills) | Production skills marketplace | 50 | 3 | 0 |
+| [vijaythecoder/awesome-claude-agents](https://github.com/vijaythecoder/awesome-claude-agents) | Orchestrated agent dev team | 0 | 32 | 0 |
 | [parcadei/Continuous-Claude-v3](https://github.com/parcadei/Continuous-Claude-v3) | Continuous dev workflow | 156 | 32 | 0 |
-| [x1xhlol/system-prompts-and-models-of-ai-tools](https://github.com/x1xhlol/system-prompts-and-models-of-ai-tools) | System prompts | — | — | — |
-| [EliFuzz/awesome-system-prompts](https://github.com/EliFuzz/awesome-system-prompts) | System prompts | — | — | — |
-| [Piebald-AI/claude-code-system-prompts](https://github.com/Piebald-AI/claude-code-system-prompts) | System prompts | — | — | — |
-| [PatrickJS/awesome-cursorrules](https://github.com/PatrickJS/awesome-cursorrules) | Cursor → Claude rules | — | — | — |
-| [hesreallyhim/awesome-claude-code](https://github.com/hesreallyhim/awesome-claude-code) | Awesome list | — | — | — |
-| [f/awesome-chatgpt-prompts](https://github.com/f/awesome-chatgpt-prompts) | Prompt library | — | — | — |
-| [dair-ai/Prompt-Engineering-Guide](https://github.com/dair-ai/Prompt-Engineering-Guide) | Prompt patterns | — | — | — |
+| [x1xhlol/system-prompts-and-models-of-ai-tools](https://github.com/x1xhlol/system-prompts-and-models-of-ai-tools) | Reference: system prompts | — | — | — |
+| [EliFuzz/awesome-system-prompts](https://github.com/EliFuzz/awesome-system-prompts) | Reference: system prompts | — | — | — |
+| [Piebald-AI/claude-code-system-prompts](https://github.com/Piebald-AI/claude-code-system-prompts) | Reference: Claude's own prompts | — | — | — |
+| [hesreallyhim/awesome-claude-code](https://github.com/hesreallyhim/awesome-claude-code) | Reference: awesome-list meta | — | — | — |
 
 Full list and pinned commits in [`.gitmodules`](.gitmodules).
 
@@ -540,22 +543,47 @@ The installer generates a minimal `~/.claude/CLAUDE.md`. To replace it with your
 
 ## Updating
 
-The curation is regenerated by the maintainer periodically. To fetch the latest:
+Already installed an older version? Just re-run the one-command installer — it auto-detects your existing install, previews the diff, and updates safely. **Your `.credentials.json`, `projects/`, custom `settings.json` keys, and any files you added yourself are preserved.**
+
+### One-command update (recommended)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh | bash
+```
+
+When an existing `~/.claude/install-manifest.json` is found, `install.sh` shows an UPDATE MODE banner with your current profile + counts, then: `git pull` the repo → `git submodule update` → re-run the installer with settings.json merge preserved.
+
+### From an already-cloned repo
 
 ```bash
 cd CloaudeCodeCTO
-git pull
-git submodule update --init --recursive
-bash scripts/setup.sh
+bash scripts/update.sh
 ```
 
-The installer is idempotent — re-running it will:
-1. Back up the current `~/.claude/`
-2. Stage the new selection
-3. Diff and copy only changed files
-4. Run smoke test
+`scripts/update.sh` does a little more hand-holding than `setup.sh`:
 
-To check for updates without installing:
+1. Reads your current `~/.claude/install-manifest.json` (profile, component counts)
+2. `git pull` + `git submodule update --init --recursive`
+3. Computes the new profile's component counts
+4. Prints a side-by-side diff table (Current vs After update)
+5. Asks for confirmation (skip with `--yes`)
+6. Runs the installer, streams the log, and reminds you to **restart Claude Code** to pick up the new hooks/skills
+
+Flags:
+- `--yes` / `-y` — skip the confirmation prompt
+- `--profile=minimal|standard|full` — change profile during update (default: whatever's in the old manifest, fallback `standard`)
+- `--no-git-pull` — skip the git pull step (use current local state)
+
+### What the installer guarantees during update
+
+- **Backup first** — the entire current `~/.claude/` is copied to `/c/tmp/claude-install-backup-<timestamp>/` before any changes
+- **Stage-then-commit** — new install is built in `/c/tmp/claude-install-stage-<timestamp>/`, then atomically committed
+- **settings.json merge** — your `permissions.allow`, user env vars, and any custom keys are preserved; only `env.CLAUDE_PLUGIN_ROOT`, `env.ECC_HOOK_PROFILE`, and the `hooks` block are refreshed
+- **Never touches** — `.credentials.json`, `projects/`, and any skill/agent/command directory that isn't in our catalog
+- **Hard-fail verify** — if fewer than 80% of expected components end up installed, the installer exits with code 2 and leaves the backup intact
+
+### Check without installing
+
 ```bash
 bash scripts/setup.sh --check
 ```
@@ -590,7 +618,7 @@ CloaudeCodeCTO/
 ├── README.tr.md                ← Türkçe
 ├── LICENSE                     MIT
 ├── install.sh                  one-command installer (curl-pipe compatible)
-├── .gitmodules                 14 source repos
+├── .gitmodules                 17 source repos
 ├── .gitignore                  excludes generated artifacts
 ├── sources/                    SUBMODULES (init with --recursive)
 ├── scripts/                    install infrastructure (GitHub-tracked)
@@ -600,7 +628,7 @@ CloaudeCodeCTO/
 │   ├── smoke_test.sh           post-install verification (8 tests)
 │   └── tracker.sh              optional usage tracking
 └── decisions/                  SINGLE source of truth
-    ├── selected.json           2388 curated components
+    ├── selected.json           3025 curated components
     ├── install-assets.json     embedded orchestrator files
     ├── install-manifest.json   last install checkpoint
     ├── lifecycle-bindings.json 8-phase → component map
@@ -720,11 +748,11 @@ The installer backs up everything first to `$TMP_BASE/claude-install-backup-<tim
 **Q: Can I pick and choose which components to install?**
 Yes — edit `decisions/selected.json` before running `setup.sh`. Or exclude whole domains using the Python one-liner in [Configuration](#configuration).
 
-**Q: What's the token cost of loading 1,845 skills?**
+**Q: What's the token cost of loading 2,044 skills?**
 About **105K tokens** at session startup for the full skill index. See `decisions/budget-profile.json` for the exact breakdown. Most skills load lazily when triggered, so you're not paying the full 105K on every turn.
 
-**Q: Why 14 repos and not more / fewer?**
-14 is the count where adding a repo stopped producing new unique high-quality components. The rubric filters out duplicates, and beyond 14 repos we were mostly scoring rehashes of the same skill.
+**Q: Why 17 repos and not more / fewer?**
+17 is the count where adding a repo stopped producing new unique high-quality components. The rubric filters out duplicates, and beyond 17 repos we were mostly scoring rehashes of the same skill.
 
 **Q: Can I add my own custom skills on top of the curated set?**
 Yes — drop them into `~/.claude/skills/your-skill/` after install. The installer only touches directories listed in `decisions/selected.json` on re-install.
@@ -770,6 +798,6 @@ MIT — see [LICENSE](LICENSE).
 
 ## Acknowledgments
 
-This project curates content from 14 open-source repositories. See [`.gitmodules`](.gitmodules) for the full list. All submodule licenses are preserved inside their respective `sources/<repo>/` directories.
+This project curates content from 17 open-source repositories. See [`.gitmodules`](.gitmodules) for the full list. All submodule licenses are preserved inside their respective `sources/<repo>/` directories.
 
 Built by [@isatuncer](https://github.com/isatuncer). PRs and issues welcome.

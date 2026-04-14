@@ -2,17 +2,17 @@
 
 > **Langue:** [English](../../README.md) · [Türkçe](../../README.tr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · **Français** · [日本語](README.ja.md) · [한국어](README.ko.md) · [中文](README.zh-CN.md) · [Русский](README.ru.md) · [العربية](README.ar.md)
 
-> Transformez Claude Code en un CTO à cycle de vie complet : 2 388 skills, agents et commandes sélectionnés à la main depuis 14 dépôts open-source de premier plan, installés dans `~/.claude/` sans aucun coût externe.
+> Transformez Claude Code en un CTO à cycle de vie complet : 3.025 skills, agents et commandes sélectionnés à la main depuis 17 dépôts open-source de premier plan, installés dans `~/.claude/` sans aucun coût externe.
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](../../LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-8A2BE2)](https://docs.claude.com/en/docs/claude-code)
-[![Components](https://img.shields.io/badge/Components-2388-green.svg)](../../decisions/selected.json)
+[![Components](https://img.shields.io/badge/Components-3025-green.svg)](../../decisions/selected.json)
 
 ---
 
 ## Qu'est-ce que c'est ?
 
-CloaudeCodeCTO est un **système de curation et d'installation** qui prend les meilleurs skills, agents et commandes de 14 dépôts Claude Code publics et les installe dans votre répertoire `~/.claude/` en tant que boîte à outils cohérente.
+CloaudeCodeCTO est un **système de curation et d'installation** qui prend les meilleurs skills, agents et commandes de 17 dépôts Claude Code publics et les installe dans votre répertoire `~/.claude/` en tant que boîte à outils cohérente.
 
 Le résultat : une installation Claude Code qui peut vous guider **de l'idée à la production** — à travers discovery, planning, design, build, test, documentation, shipping et maintenance — en utilisant des agents spécialisés à chaque phase.
 
@@ -60,7 +60,7 @@ bash scripts/setup.sh
 
 ## Fonctionnalités
 
-- **2 388 composants** — 1 845 skills + 307 agents + 236 commandes, curés de 14 dépôts
+- **3.025 composants** — 2.044 skills + 550 agents + 236 commandes, curés de 17 dépôts
 - **Cycle de vie en 8 phases** — Discovery → Planning → Design → Build → Test → Document → Ship → Maintain
 - **Aucun coût externe** — pas d'appels API Anthropic, pas de services payants, pas de télémétrie
 - **Compatible factory-reset** — fonctionne sur un `~/.claude/` propre, préserve `.credentials.json`
@@ -79,9 +79,9 @@ bash scripts/setup.sh
 ├── .credentials.json              (préservé)
 ├── CLAUDE.md                      instructions globales (généré)
 ├── settings.json                  config du harness (généré)
-├── skills/                        1 845 skills
+├── skills/                        2.044 skills
 │   └── project-lifecycle/         méta-orchestrateur (8 phases)
-├── agents/                        307 agents spécialisés
+├── agents/                        550 agents spécialisés
 ├── commands/                      236 commandes slash
 │   └── start-project.md           entrée /start-project du cycle de vie
 ├── rules/
@@ -160,7 +160,7 @@ Le pipeline en 9 étapes construit `decisions/selected.json`. Il ne tourne que s
 
 ## Dépôts Sources
 
-14 sous-modules actifs. Toutes les licences sont préservées dans leurs répertoires respectifs.
+17 sous-modules actifs. Toutes les licences sont préservées dans leurs répertoires respectifs.
 
 | Dépôt | Focus | Skills | Agents | Commandes |
 |---|---|---:|---:|---:|
@@ -246,7 +246,7 @@ Non — l'installeur sauvegarde d'abord tout dans `/c/tmp/claude-install-backup-
 **Q : Puis-je choisir quels composants installer ?**
 Oui — éditez `decisions/selected.json` avant de lancer `setup.sh`.
 
-**Q : Quel est le coût en tokens pour charger 1 845 skills ?**
+**Q : Quel est le coût en tokens pour charger 2.044 skills ?**
 Environ **105K tokens** au démarrage de session. La plupart des skills sont chargés lazily quand ils sont déclenchés.
 
 ---
@@ -257,6 +257,6 @@ MIT — voir [LICENSE](../../LICENSE).
 
 ## Remerciements
 
-Ce projet cure du contenu de 14 dépôts open-source. Voir [`.gitmodules`](../../.gitmodules) pour la liste complète. Toutes les licences des sous-modules sont préservées dans leurs répertoires `sources/<repo>/` respectifs.
+Ce projet cure du contenu de 17 dépôts open-source. Voir [`.gitmodules`](../../.gitmodules) pour la liste complète. Toutes les licences des sous-modules sont préservées dans leurs répertoires `sources/<repo>/` respectifs.
 
 Construit par [@isatuncer](https://github.com/isatuncer). PRs et issues bienvenus.

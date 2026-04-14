@@ -2,17 +2,17 @@
 
 > **语言:** [English](../../README.md) · [Türkçe](../../README.tr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Français](README.fr.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · **中文** · [Русский](README.ru.md) · [العربية](README.ar.md)
 
-> 将 Claude Code 转变为全生命周期 CTO:从 14 个顶级开源代码库中精选 2,388 个技能、代理和命令,零外部成本安装到 `~/.claude/`。
+> 将 Claude Code 转变为全生命周期 CTO:从 17 个顶级开源代码库中精选 3,025 个技能、代理和命令,零外部成本安装到 `~/.claude/`。
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](../../LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-8A2BE2)](https://docs.claude.com/en/docs/claude-code)
-[![Components](https://img.shields.io/badge/Components-2388-green.svg)](../../decisions/selected.json)
+[![Components](https://img.shields.io/badge/Components-3025-green.svg)](../../decisions/selected.json)
 
 ---
 
 ## 这是什么?
 
-CloaudeCodeCTO 是一个**策划和安装系统**,它从 14 个公共 Claude Code 代码库中获取最佳的技能、代理和命令,并将它们作为一个统一的工具包安装到您的 `~/.claude/` 目录中。
+CloaudeCodeCTO 是一个**策划和安装系统**,它从 17 个公共 Claude Code 代码库中获取最佳的技能、代理和命令,并将它们作为一个统一的工具包安装到您的 `~/.claude/` 目录中。
 
 结果:一个可以指导您**从想法到生产**的 Claude Code 安装 — 通过发现、规划、设计、构建、测试、文档、发布和维护 — 在每个阶段使用专门的代理。
 
@@ -60,7 +60,7 @@ bash scripts/setup.sh
 
 ## 特性
 
-- **2,388 个组件** — 从 14 个代码库精选的 1,845 个技能 + 307 个代理 + 236 个命令
+- **3,025 个组件** — 从 17 个代码库精选的 2,044 个技能 + 550 个代理 + 431 个命令
 - **8 阶段生命周期** — 发现 → 规划 → 设计 → 构建 → 测试 → 文档 → 发布 → 维护
 - **零外部成本** — 无 Anthropic API 调用,无付费服务,无遥测
 - **工厂重置兼容** — 在干净的 `~/.claude/` 上工作,保留 `.credentials.json`
@@ -79,10 +79,10 @@ bash scripts/setup.sh
 ├── .credentials.json              (保留)
 ├── CLAUDE.md                      全局指令(生成)
 ├── settings.json                  harness 配置(生成)
-├── skills/                        1,845 个技能
+├── skills/                        2,044 个技能
 │   └── project-lifecycle/         元编排器(8 阶段)
-├── agents/                        307 个专业代理
-├── commands/                      236 个斜杠命令
+├── agents/                        550 个专业代理
+├── commands/                      431 个斜杠命令
 │   └── start-project.md           /start-project 生命周期入口
 ├── rules/
 │   └── agent-decision-tree.md     哪个代理用于哪个任务
@@ -160,7 +160,7 @@ bash scripts/setup.sh
 
 ## 源代码库
 
-14 个活跃的子模块。所有许可证都保留在各自的目录中。
+17 个活跃的子模块。所有许可证都保留在各自的目录中。
 
 | 代码库 | 重点 | Skills | Agents | Commands |
 |---|---|---:|---:|---:|
@@ -246,7 +246,7 @@ cp -r /c/tmp/claude-install-backup-<timestamp>/. ~/.claude/
 **问: 我可以选择安装哪些组件吗?**
 可以 — 在运行 `setup.sh` 之前编辑 `decisions/selected.json`。
 
-**问: 加载 1,845 个技能的 token 成本是多少?**
+**问: 加载 2,044 个技能的 token 成本是多少?**
 会话启动时约 **105K tokens**。大多数技能在触发时延迟加载。
 
 ---
@@ -257,6 +257,6 @@ MIT — 参见 [LICENSE](../../LICENSE)。
 
 ## 致谢
 
-本项目策划来自 14 个开源代码库的内容。完整列表见 [`.gitmodules`](../../.gitmodules)。所有子模块许可证都保留在各自的 `sources/<repo>/` 目录中。
+本项目策划来自 17 个开源代码库的内容。完整列表见 [`.gitmodules`](../../.gitmodules)。所有子模块许可证都保留在各自的 `sources/<repo>/` 目录中。
 
 由 [@isatuncer](https://github.com/isatuncer) 构建。欢迎 PR 和 issue。

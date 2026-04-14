@@ -4,17 +4,17 @@
 
 > **اللغة:** [English](../../README.md) · [Türkçe](../../README.tr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Français](README.fr.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [中文](README.zh-CN.md) · [Русский](README.ru.md) · **العربية**
 
-> حوّل Claude Code إلى CTO لدورة حياة كاملة: 2,388 مهارة ووكيل وأمر مختارة يدوياً من 14 مستودع مفتوح المصدر رائد، مُثبّتة في `~/.claude/` بدون أي تكلفة خارجية.
+> حوّل Claude Code إلى CTO لدورة حياة كاملة: 3,025 مهارة ووكيل وأمر مختارة يدوياً من 17 مستودع مفتوح المصدر رائد، مُثبّتة في `~/.claude/` بدون أي تكلفة خارجية.
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](../../LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-8A2BE2)](https://docs.claude.com/en/docs/claude-code)
-[![Components](https://img.shields.io/badge/Components-2388-green.svg)](../../decisions/selected.json)
+[![Components](https://img.shields.io/badge/Components-3025-green.svg)](../../decisions/selected.json)
 
 ---
 
 ## ما هذا؟
 
-CloaudeCodeCTO هو **نظام تنظيم وتثبيت** يأخذ أفضل المهارات والوكلاء والأوامر من 14 مستودع Claude Code عام ويثبّتها في دليل `~/.claude/` الخاص بك كمجموعة أدوات موحدة.
+CloaudeCodeCTO هو **نظام تنظيم وتثبيت** يأخذ أفضل المهارات والوكلاء والأوامر من 17 مستودع Claude Code عام ويثبّتها في دليل `~/.claude/` الخاص بك كمجموعة أدوات موحدة.
 
 النتيجة: تثبيت Claude Code يمكن أن يرشدك **من الفكرة إلى الإنتاج** — عبر الاكتشاف، التخطيط، التصميم، البناء، الاختبار، التوثيق، الشحن، والصيانة — باستخدام وكلاء متخصصين في كل مرحلة.
 
@@ -62,7 +62,7 @@ bash scripts/setup.sh
 
 ## الميزات
 
-- **2,388 مكوّناً** — 1,845 مهارة + 307 وكيل + 236 أمر، منظمة من 14 مستودع
+- **3,025 مكوّناً** — 2,044 مهارة + 550 وكيل + 431 أمر، منظمة من 17 مستودع
 - **دورة حياة من 8 مراحل** — Discovery → Planning → Design → Build → Test → Document → Ship → Maintain
 - **صفر تكلفة خارجية** — لا استدعاءات API من Anthropic، لا خدمات مدفوعة، لا قياسات عن بعد
 - **متوافق مع إعادة ضبط المصنع** — يعمل على `~/.claude/` نظيف، يحافظ على `.credentials.json`
@@ -81,10 +81,10 @@ bash scripts/setup.sh
 ├── .credentials.json              (محفوظ)
 ├── CLAUDE.md                      تعليمات عامة (مُولّدة)
 ├── settings.json                  تكوين harness (مُولّد)
-├── skills/                        1,845 مهارة
+├── skills/                        2,044 مهارة
 │   └── project-lifecycle/         الموجّه الفوقي (8 مراحل)
-├── agents/                        307 وكيلاً متخصصاً
-├── commands/                      236 أمر slash
+├── agents/                        550 وكيلاً متخصصاً
+├── commands/                      431 أمر slash
 │   └── start-project.md           نقطة دخول /start-project لدورة الحياة
 ├── rules/
 │   └── agent-decision-tree.md     أي وكيل لأي مهمة
@@ -162,7 +162,7 @@ bash scripts/setup.sh
 
 ## المستودعات المصدر
 
-14 وحدة فرعية نشطة. جميع التراخيص محفوظة في الدلائل الخاصة بها.
+17 وحدة فرعية نشطة. جميع التراخيص محفوظة في الدلائل الخاصة بها.
 
 | المستودع | التركيز | Skills | Agents | Commands |
 |---|---|---:|---:|---:|
@@ -248,7 +248,7 @@ cp -r /c/tmp/claude-install-backup-<timestamp>/. ~/.claude/
 **س: هل يمكنني اختيار المكوّنات التي أُثبّتها؟**
 نعم — قم بتحرير `decisions/selected.json` قبل تشغيل `setup.sh`.
 
-**س: ما هي تكلفة الرموز لتحميل 1,845 مهارة؟**
+**س: ما هي تكلفة الرموز لتحميل 2,044 مهارة؟**
 حوالي **105K رمز** عند بدء الجلسة. معظم المهارات تُحمّل بشكل كسول عند تفعيلها.
 
 ---
@@ -259,7 +259,7 @@ MIT — انظر [LICENSE](../../LICENSE).
 
 ## الشكر والتقدير
 
-هذا المشروع ينظم المحتوى من 14 مستودع مفتوح المصدر. انظر [`.gitmodules`](../../.gitmodules) للقائمة الكاملة. جميع تراخيص الوحدات الفرعية محفوظة في الدلائل الخاصة بها `sources/<repo>/`.
+هذا المشروع ينظم المحتوى من 17 مستودع مفتوح المصدر. انظر [`.gitmodules`](../../.gitmodules) للقائمة الكاملة. جميع تراخيص الوحدات الفرعية محفوظة في الدلائل الخاصة بها `sources/<repo>/`.
 
 بُني بواسطة [@isatuncer](https://github.com/isatuncer). PRs والقضايا مُرحّب بها.
 

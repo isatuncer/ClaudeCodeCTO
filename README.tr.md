@@ -2,12 +2,12 @@
 
 > **Dil:** [English](README.md) · **Türkçe** · [Deutsch](docs/i18n/README.de.md) · [Español](docs/i18n/README.es.md) · [Français](docs/i18n/README.fr.md) · [日本語](docs/i18n/README.ja.md) · [한국어](docs/i18n/README.ko.md) · [中文](docs/i18n/README.zh-CN.md) · [Русский](docs/i18n/README.ru.md) · [العربية](docs/i18n/README.ar.md)
 
-> Claude Code'u tam yaşam döngülü bir CTO'ya dönüştürün: 14 önde gelen açık kaynak repodan elle seçilmiş 2,388 skill, agent ve command, sıfır harici maliyetle `~/.claude/`'a kurulur.
+> Claude Code'u tam yaşam döngülü bir CTO'ya dönüştürün: 17 önde gelen açık kaynak repodan elle seçilmiş 3,025 skill, agent ve command, sıfır harici maliyetle `~/.claude/`'a kurulur.
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-8A2BE2)](https://docs.claude.com/en/docs/claude-code)
-[![Components](https://img.shields.io/badge/Components-2388-green.svg)](decisions/selected.json)
-[![Skills](https://img.shields.io/badge/Skills-1845-blue.svg)](decisions/selected.json)
+[![Components](https://img.shields.io/badge/Components-3025-green.svg)](decisions/selected.json)
+[![Skills](https://img.shields.io/badge/Skills-2044-blue.svg)](decisions/selected.json)
 [![Agents](https://img.shields.io/badge/Agents-307-purple.svg)](decisions/selected.json)
 [![Commands](https://img.shields.io/badge/Commands-236-orange.svg)](decisions/selected.json)
 
@@ -40,7 +40,7 @@
 
 ## Bu nedir?
 
-CloaudeCodeCTO, 14 açık kaynaklı Claude Code reposundan en iyi skill, agent ve command'ları alıp tek tutarlı bir araç seti olarak `~/.claude/` dizininize kuran bir **küratörlük ve kurulum sistemidir**.
+CloaudeCodeCTO, 17 açık kaynaklı Claude Code reposundan en iyi skill, agent ve command'ları alıp tek tutarlı bir araç seti olarak `~/.claude/` dizininize kuran bir **küratörlük ve kurulum sistemidir**.
 
 Sonuç: Claude Code kurulumu, sizi **fikirden canlıya** — keşif, planlama, tasarım, inşa, test, dokümantasyon, yayınlama ve bakım — boyunca her fazda amaca uygun ajanlar kullanarak yönlendirir.
 
@@ -59,7 +59,7 @@ Claude Code ekosistemi patladı. Artık düzinelerce repoda **binlerce** açık 
 
 CloaudeCodeCTO bunu şu şekilde çözer: maintainer'ın makinesinde (yerel olarak) çalışan 9 aşamalı bir küratörlük pipeline'ı ile:
 
-1. 14 kaynak reposunun tamamını tarar
+1. 17 kaynak reposunun tamamını tarar
 2. Her bileşeni 100 puanlık bir rubrik ile puanlar
 3. Opsiyonel olarak Claude Code subagent'ları ile semantik self-scoring ekler (sıfır maliyet)
 4. Çakışan ajanları/skill'leri birleştirir ve en iyi versiyonu seçer
@@ -74,7 +74,7 @@ Son kullanıcılar sadece **tek bir komut** çalıştırır ve küratörlenmiş 
 
 ## Özellikler
 
-- **2,388 bileşen** — 14 repodan küratörlenmiş 1,845 skill + 307 agent + 236 command
+- **3,025 bileşen** — 17 repodan küratörlenmiş 2,044 skill + 550 agent + 431 command
 - **8 fazlı yaşam döngüsü** — Discovery → Planning → Design → Build → Test → Document → Ship → Maintain
 - **Sıfır harici maliyet** — Anthropic API çağrısı yok, ücretli servis yok, telemetri yok
 - **Factory-reset uyumlu** — temiz bir `~/.claude/`'da çalışır, `.credentials.json`'u korur
@@ -89,7 +89,7 @@ Son kullanıcılar sadece **tek bir komut** çalıştırır ve küratörlenmiş 
 
 ## Hızlı Başlangıç — Tek Komut
 
-En hızlı yol. Repoyu klonlar, 14 submodule'ü başlatır ve setup pipeline'ını çalıştırır:
+En hızlı yol. Repoyu klonlar, 17 submodule'ü başlatır ve setup pipeline'ını çalıştırır:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh | bash
@@ -146,7 +146,7 @@ Claude Code session başında kurulu her skill'in YAML frontmatter'ını yüklü
 |---|---|---|---|
 | `minimal` | ~70 | **~3k** | El seçimi temel: core diller, TDD, debug, review, orchestration runtime, security/performance temelleri |
 | `standard` (default) | ~560 | **~15-20k** | Yazılım proje geliştirme: tüm core diller + popüler web/mobil framework'leri + veritabanları + cloud + test + docs + mimari |
-| `full` | ~2400 | ~91k | Tüm katalog — 14 kaynak reponun hepsi (iş otomasyonu, oyunlar, regüle domainler, niş SDK sarmalayıcılar) |
+| `full` | ~2400 | ~91k | Tüm katalog — 17 kaynak reponun hepsi (iş otomasyonu, oyunlar, regüle domainler, niş SDK sarmalayıcılar) |
 
 Kurulum sırasında profili seç:
 
@@ -199,10 +199,10 @@ Başarılı bir kurulumdan sonra `~/.claude/` şunları içerir:
 ├── .credentials.json              (önceden korunan)
 ├── CLAUDE.md                      global talimatlar (üretilir)
 ├── settings.json                  harness config (üretilir)
-├── skills/                        1,845 skill
+├── skills/                        2,044 skill
 │   └── project-lifecycle/         meta-orkestratör (8 fazlı)
-├── agents/                        307 uzmanlaşmış agent
-├── commands/                      236 slash command
+├── agents/                        550 uzmanlaşmış agent
+├── commands/                      431 slash command
 │   └── start-project.md           /start-project yaşam döngüsü girişi
 ├── rules/
 │   └── agent-decision-tree.md     hangi görev için hangi agent
@@ -237,7 +237,7 @@ Bu repo **önceden küratörlenmiş** bir set gönderir. Küratörlük pipeline'
 ```mermaid
 flowchart LR
     subgraph "Maintainer Makinesi (Local)"
-        A[14 Submodule] --> B[Metadata çıkar]
+        A[17 Submodule] --> B[Metadata çıkar]
         B --> C[100 pt rubrik ile puanla]
         C --> D[Claude Code ile self-scoring]
         D --> E[Dedupe + küratörle]
@@ -267,7 +267,7 @@ scripts/installer.sh        ← atomic staged kurulum + backup
 scripts/smoke_test.sh       ← kurulum sonrası doğrulama
 scripts/tracker.sh          ← opsiyonel kullanım takibi
 decisions/                  ← TEK gerçek kaynak
-    selected.json           ← otoriteli liste (1.4 MB, 2388 bileşen)
+    selected.json           ← otoriteli liste (1.4 MB, 3025 bileşen)
     install-assets.json     ← gömülü orkestratör dosyaları (lifecycle/SKILL/command)
     install-manifest.json   ← son kurulum checkpoint'i
     lifecycle-bindings.json ← 8 fazlı → bileşen eşleşmesi
@@ -275,7 +275,7 @@ decisions/                  ← TEK gerçek kaynak
     agent-overlap-report.json
     agent-decision-tree.md  ← agent ayrıştırma ağacı
     smoke-test-report.md    ← son smoke test sonucu
-sources/                    ← 14 git submodule (asıl içerik)
+sources/                    ← 17 git submodule (asıl içerik)
 ```
 
 ### Yerel Kalanlar (Sadece Maintainer)
@@ -436,24 +436,27 @@ Birçok repo aynı isimle agent gönderiyor (`code-reviewer`, `debugger`, `test-
 
 ## Kaynak Repolar
 
-`sources/` dizininde 14 aktif submodule. Tüm lisanslar ilgili submodule dizinlerinde korunur.
+`sources/` dizininde 17 aktif submodule. Tüm lisanslar ilgili submodule dizinlerinde korunur.
 
 | Repo | Odak | Skills | Agents | Commands |
 |---|---|---:|---:|---:|
+| [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) | Resmi Anthropic plugin dizini | 23 | 14 | 16 |
+| [anthropics/claude-code](https://github.com/anthropics/claude-code) | Resmi Claude Code bundled plugin'leri | 13 | 14 | 16 |
 | [anthropics/skills](https://github.com/anthropics/skills) | Resmi Anthropic skill'leri | 19 | 0 | 0 |
-| [affaan-m/everything-claude-code](https://github.com/affaan-m/everything-claude-code) | Hepsi-bir-arada araç seti | 183 | 47 | 82 |
-| [sickn33/antigravity-awesome-skills](https://github.com/sickn33/antigravity-awesome-skills) | Massive skill koleksiyonu | 1,404 | 0 | 0 |
-| [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills) | Domain uzmanları | 0 | 24 | 33 |
-| [VoltAgent/awesome-claude-code-subagents](https://github.com/VoltAgent/awesome-claude-code-subagents) | Küratörlenmiş subagent'lar | 0 | 140 | 0 |
+| [affaan-m/everything-claude-code](https://github.com/affaan-m/everything-claude-code) | Hepsi-bir-arada araç seti + hook runtime | 183 | 47 | 82 |
+| [sickn33/antigravity-awesome-skills](https://github.com/sickn33/antigravity-awesome-skills) | Massive skill kütüphanesi | 1,404 | 0 | 0 |
+| [wshobson/agents](https://github.com/wshobson/agents) | 77 plugin: agents + skills + commands | 149 | 117 | 85 |
 | [rohitg00/awesome-claude-code-toolkit](https://github.com/rohitg00/awesome-claude-code-toolkit) | Full toolkit | 35 | 138 | 243 |
+| [VoltAgent/awesome-claude-code-subagents](https://github.com/VoltAgent/awesome-claude-code-subagents) | Küratörlenmiş subagent'lar | 0 | 140 | 0 |
+| [0xfurai/claude-code-subagents](https://github.com/0xfurai/claude-code-subagents) | 100+ production subagent | 0 | 138 | 0 |
+| [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills) | Domain uzmanları | 231 | 42 | 31 |
+| [daymade/claude-code-skills](https://github.com/daymade/claude-code-skills) | Production skill marketplace'i | 50 | 3 | 0 |
+| [vijaythecoder/awesome-claude-agents](https://github.com/vijaythecoder/awesome-claude-agents) | Orchestrated agent dev team | 0 | 32 | 0 |
 | [parcadei/Continuous-Claude-v3](https://github.com/parcadei/Continuous-Claude-v3) | Sürekli geliştirme | 156 | 32 | 0 |
-| [x1xhlol/system-prompts-and-models-of-ai-tools](https://github.com/x1xhlol/system-prompts-and-models-of-ai-tools) | System prompt'lar | — | — | — |
-| [EliFuzz/awesome-system-prompts](https://github.com/EliFuzz/awesome-system-prompts) | System prompt'lar | — | — | — |
-| [Piebald-AI/claude-code-system-prompts](https://github.com/Piebald-AI/claude-code-system-prompts) | System prompt'lar | — | — | — |
-| [PatrickJS/awesome-cursorrules](https://github.com/PatrickJS/awesome-cursorrules) | Cursor → Claude kuralları | — | — | — |
-| [hesreallyhim/awesome-claude-code](https://github.com/hesreallyhim/awesome-claude-code) | Awesome listesi | — | — | — |
-| [f/awesome-chatgpt-prompts](https://github.com/f/awesome-chatgpt-prompts) | Prompt kütüphanesi | — | — | — |
-| [dair-ai/Prompt-Engineering-Guide](https://github.com/dair-ai/Prompt-Engineering-Guide) | Prompt pattern'leri | — | — | — |
+| [x1xhlol/system-prompts-and-models-of-ai-tools](https://github.com/x1xhlol/system-prompts-and-models-of-ai-tools) | Referans: system prompt'lar | — | — | — |
+| [EliFuzz/awesome-system-prompts](https://github.com/EliFuzz/awesome-system-prompts) | Referans: system prompt'lar | — | — | — |
+| [Piebald-AI/claude-code-system-prompts](https://github.com/Piebald-AI/claude-code-system-prompts) | Referans: Claude'un kendi prompt'ları | — | — | — |
+| [hesreallyhim/awesome-claude-code](https://github.com/hesreallyhim/awesome-claude-code) | Referans: awesome-list meta | — | — | — |
 
 Tam liste ve sabitlenmiş commit'ler [`.gitmodules`](.gitmodules) içinde.
 
@@ -540,22 +543,47 @@ Installer minimal bir `~/.claude/CLAUDE.md` üretir. Kendinizinkiyle değiştirm
 
 ## Güncelleme
 
-Küratörlük periyodik olarak maintainer tarafından yenilenir. En yenisini almak için:
+Önceden eski sürümü kurduysan, tek komutla installer'ı tekrar çalıştırman yeterli — mevcut kurulumunu otomatik algılar, farkı önizler ve güvenli şekilde günceller. **`.credentials.json`, `projects/`, özelleştirdiğin `settings.json` anahtarları ve kendi eklediğin dosyalar korunur.**
+
+### Tek komutla güncelleme (önerilen)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh | bash
+```
+
+`install.sh`, `~/.claude/install-manifest.json` bulduğunda **UPDATE MODE** banner'ı gösterir: mevcut profilin + bileşen sayıların çıkar, sonra repoyu `git pull` + `git submodule update` yapar, installer'ı settings.json merge ile tekrar koşturur.
+
+### Zaten klonlanmış repodan
 
 ```bash
 cd CloaudeCodeCTO
-git pull
-git submodule update --init --recursive
-bash scripts/setup.sh
+bash scripts/update.sh
 ```
 
-Installer idempotent — yeniden çalıştırma:
-1. Mevcut `~/.claude/`'u yedekler
-2. Yeni seçimi hazırlar
-3. Diff alır ve sadece değişeni kopyalar
-4. Smoke test çalıştırır
+`scripts/update.sh` `setup.sh`'dan biraz daha dostane:
 
-Kurulum yapmadan güncelleme olup olmadığını kontrol etmek için:
+1. Mevcut `~/.claude/install-manifest.json`'u okur (profile, bileşen sayıları)
+2. `git pull` + `git submodule update --init --recursive`
+3. Yeni profile'ın bileşen sayılarını hesaplar
+4. Yan yana diff tablosu basar (Current vs After update)
+5. Onay sorar (`--yes` ile atlanır)
+6. Installer'ı koşturur, log'u stream eder ve sonunda **Claude Code'u yeniden başlat** hatırlatmasını gösterir (yeni hook'lar + skill'ler için)
+
+Flag'ler:
+- `--yes` / `-y` — onay promptunu atla
+- `--profile=minimal|standard|full` — update sırasında profile değiştir (default: eski manifest'teki, yoksa `standard`)
+- `--no-git-pull` — git pull adımını atla (mevcut local state kullan)
+
+### Update sırasında installer'ın garantileri
+
+- **Önce backup** — mevcut `~/.claude/` tamamen `/c/tmp/claude-install-backup-<timestamp>/`'a kopyalanır
+- **Stage-then-commit** — yeni kurulum önce `/c/tmp/claude-install-stage-<timestamp>/` altında hazırlanır, sonra atomik commit edilir
+- **settings.json merge** — `permissions.allow`, kullanıcı env var'ların ve özel anahtarların korunur; sadece `env.CLAUDE_PLUGIN_ROOT`, `env.ECC_HOOK_PROFILE` ve `hooks` bloğu yenilenir
+- **Asla dokunulmaz** — `.credentials.json`, `projects/`, katalogumuzda olmayan skill/agent/command dizinleri
+- **Sert verify** — beklenen bileşenlerin %80'inden azı yüklenirse installer exit 2 verir ve backup dokunulmadan kalır
+
+### Kurulum yapmadan kontrol
+
 ```bash
 bash scripts/setup.sh --check
 ```
@@ -590,7 +618,7 @@ CloaudeCodeCTO/
 ├── README.tr.md                ← buradasınız (Türkçe)
 ├── LICENSE                     MIT
 ├── install.sh                  tek komut kurulumu (curl-pipe uyumlu)
-├── .gitmodules                 14 kaynak repo
+├── .gitmodules                 17 kaynak repo
 ├── .gitignore                  üretilen artifact'leri hariç tutar
 ├── sources/                    SUBMODULE'LER (--recursive ile başlat)
 ├── scripts/                    kurulum altyapısı (GitHub'da)
@@ -600,7 +628,7 @@ CloaudeCodeCTO/
 │   ├── smoke_test.sh           kurulum sonrası doğrulama (8 test)
 │   └── tracker.sh              opsiyonel kullanım takibi
 └── decisions/                  TEK gerçek kaynak
-    ├── selected.json           2388 küratörlenmiş bileşen
+    ├── selected.json           3025 küratörlenmiş bileşen
     ├── install-assets.json     gömülü orkestratör dosyaları
     ├── install-manifest.json   son kurulum checkpoint'i
     ├── lifecycle-bindings.json 8 fazlı → bileşen haritası
@@ -720,11 +748,11 @@ Installer önce her şeyi `$TMP_BASE/claude-install-backup-<timestamp>/` konumun
 **S: Hangi bileşenleri kuracağımı seçebilir miyim?**
 Evet — `setup.sh`'ı çalıştırmadan önce `decisions/selected.json`'ı düzenleyin. Veya [Yapılandırma](#yapılandırma)'daki Python one-liner ile tüm domain'leri hariç tutun.
 
-**S: 1,845 skill'i yüklemenin token maliyeti ne?**
+**S: 2,044 skill'i yüklemenin token maliyeti ne?**
 Tam skill indeksi için oturum başında yaklaşık **105K token**. Tam dağılım için `decisions/budget-profile.json`'a bakın. Çoğu skill tetiklendiğinde lazy yüklenir, yani her turda 105K tam ödemezsiniz.
 
 **S: Neden 15 repo, daha fazla/az değil?**
-14, repo eklemenin yeni benzersiz yüksek kaliteli bileşen üretmeyi bıraktığı sayı. Rubrik duplicate'leri filtreler ve 14 repodan sonra çoğunlukla aynı skill'in varyasyonlarını puanlıyorduk.
+17, repo eklemenin yeni benzersiz yüksek kaliteli bileşen üretmeyi bıraktığı sayı. Rubrik duplicate'leri filtreler ve 17 repodan sonra çoğunlukla aynı skill'in varyasyonlarını puanlıyorduk.
 
 **S: Küratörlenmiş setin üzerine kendi custom skill'lerimi ekleyebilir miyim?**
 Evet — kurulumdan sonra `~/.claude/skills/senin-skill/` altına bırakın. Installer yeniden kurulumda sadece `decisions/selected.json`'da listelenen dizinlere dokunur.
@@ -770,6 +798,6 @@ MIT — [LICENSE](LICENSE).
 
 ## Teşekkürler
 
-Bu proje 14 açık kaynak repodan içerik küratörler. Tam liste [`.gitmodules`](.gitmodules)'da. Tüm submodule lisansları ilgili `sources/<repo>/` dizinlerinde korunur.
+Bu proje 17 açık kaynak repodan içerik küratörler. Tam liste [`.gitmodules`](.gitmodules)'da. Tüm submodule lisansları ilgili `sources/<repo>/` dizinlerinde korunur.
 
 [@isatuncer](https://github.com/isatuncer) tarafından yapıldı. PR ve issue'lar hoş karşılanır.
