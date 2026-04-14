@@ -25,18 +25,27 @@
 [submodule "sources/piebald-claude-prompts"]
 	path = sources/piebald-claude-prompts
 	url = https://github.com/Piebald-AI/claude-code-system-prompts.git
-[submodule "sources/awesome-cursorrules"]
-	path = sources/awesome-cursorrules
-	url = https://github.com/PatrickJS/awesome-cursorrules.git
 [submodule "sources/awesome-claude-code"]
 	path = sources/awesome-claude-code
 	url = https://github.com/hesreallyhim/awesome-claude-code.git
-[submodule "sources/awesome-chatgpt-prompts"]
-	path = sources/awesome-chatgpt-prompts
-	url = https://github.com/f/awesome-chatgpt-prompts.git
-[submodule "sources/prompt-engineering-guide"]
-	path = sources/prompt-engineering-guide
-	url = https://github.com/dair-ai/Prompt-Engineering-Guide.git
 [submodule "sources/continuous-claude-v3"]
 	path = sources/continuous-claude-v3
 	url = https://github.com/parcadei/Continuous-Claude-v3.git
+[submodule "sources/claude-plugins-official"]
+	path = sources/claude-plugins-official
+	url = https://github.com/anthropics/claude-plugins-official.git
+[submodule "sources/claude-code-official"]
+	path = sources/claude-code-official
+	url = https://github.com/anthropics/claude-code.git
+[submodule "sources/wshobson-agents"]
+	path = sources/wshobson-agents
+	url = https://github.com/wshobson/agents.git
+[submodule "sources/furai-subagents"]
+	path = sources/furai-subagents
+	url = https://github.com/0xfurai/claude-code-subagents.git
+[submodule "sources/vijay-agents"]
+	path = sources/vijay-agents
+	url = https://github.com/vijaythecoder/awesome-claude-agents.git
+[submodule "sources/daymade-skills"]
+	path = sources/daymade-skills
+	url = https://github.com/daymade/claude-code-skills.git
