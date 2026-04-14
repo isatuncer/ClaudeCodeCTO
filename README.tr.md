@@ -590,6 +590,36 @@ bash scripts/setup.sh --check
 
 ---
 
+## Manuals — Tarihli Katalog Snapshot'ları
+
+Katalog her değiştiğinde (yeni skill, kaldırılan agent, yeniden adlandırılan command, vs.) tarihli bir referans manuali üretebilirsin. Her bir bileşenin **detaylı açıklamasını** içerir. Dosyalar [`docs/manuals/`](docs/manuals/) altında yaşar ve zaman içinde diff alabileceğin bir changelog gibi çalışır.
+
+Her snapshot üç dosya üretir, her bileşen tipi için bir tane:
+
+- `docs/manuals/skills_<DD>_<MM>_<YYYY>.md`
+- `docs/manuals/agents_<DD>_<MM>_<YYYY>.md`
+- `docs/manuals/commands_<DD>_<MM>_<YYYY>.md`
+
+Her dosyanın içinde: kaynak repoya göre gruplanmış bir index, sonra her bileşen için frontmatter açıklaması, path link'i, metadata (version / tools / tags / domain / model) ve body excerpt. [`docs/manuals/INDEX.md`](docs/manuals/INDEX.md) tüm snapshot'ların kronolojik tablosudur — generator tarafından otomatik güncellenir.
+
+### Snapshot üret
+
+```bash
+# 1. sources/ dizinini catalog.json'a yeniden tara (sadece kaynaklar değiştiyse gerekir)
+python scripts/extractor.py
+
+# 2. Bugünün tarihli snapshot'ını üret + INDEX.md'yi güncelle
+python scripts/generate_manuals.py
+```
+
+Flag'ler:
+- `--date=DD-MM-YYYY` — timestamp'ı değiştir (örn. geriye tarihli snapshot için)
+- `--force` — aynı tarihteki mevcut snapshot'ın üzerine yaz
+
+Generator bileşenleri `(type, id)` ile dedupe eder ve canonical path'leri `docs/<i18n>/` çeviri kopyalarına tercih eder. Yeniden çalıştırmak güvenlidir: eğer bugünün snapshot'ı varsa, her tip `--force` geçilmediği sürece atlanır, böylece eski snapshot'ları yanlışlıkla kaybetmezsin.
+
+---
+
 ## Kaldırma
 
 ```bash

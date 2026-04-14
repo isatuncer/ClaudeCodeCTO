@@ -590,6 +590,36 @@ bash scripts/setup.sh --check
 
 ---
 
+## Manuals — Timestamped Catalog Snapshots
+
+Every time the catalog changes (new skill, removed agent, renamed command, etc.) you can produce a dated reference manual with **detailed descriptions of every component**. These live under [`docs/manuals/`](docs/manuals/) and work like a changelog you can diff across time.
+
+Each snapshot produces three files, one per component type:
+
+- `docs/manuals/skills_<DD>_<MM>_<YYYY>.md`
+- `docs/manuals/agents_<DD>_<MM>_<YYYY>.md`
+- `docs/manuals/commands_<DD>_<MM>_<YYYY>.md`
+
+Inside each file: an index grouped by source repository, then per-item sections with the component's frontmatter description, path link, metadata (version / tools / tags / domain / model), and a body excerpt. [`docs/manuals/INDEX.md`](docs/manuals/INDEX.md) is a chronological table of every snapshot, auto-updated by the generator.
+
+### Generate a snapshot
+
+```bash
+# 1. Rescan sources/ into catalog.json (only needed if sources changed)
+python scripts/extractor.py
+
+# 2. Produce today's dated snapshot + update INDEX.md
+python scripts/generate_manuals.py
+```
+
+Flags:
+- `--date=DD-MM-YYYY` — override the timestamp (e.g., for backdating)
+- `--force` — overwrite an existing snapshot for the same date
+
+The generator dedupes components by `(type, id)` and prefers canonical paths over `docs/<i18n>/` translated copies. It's safe to re-run: if a snapshot for today already exists, each type is skipped unless `--force` is passed, so you never accidentally lose older snapshots.
+
+---
+
 ## Uninstall
 
 ```bash

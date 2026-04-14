@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **`scripts/generate_manuals.py`** + **`docs/manuals/`** — timestamped reference manuals. On every catalog change, run `python scripts/generate_manuals.py` to produce `skills_DD_MM_YYYY.md`, `agents_DD_MM_YYYY.md`, `commands_DD_MM_YYYY.md` under `docs/manuals/`. Each file groups components by source repo and lists per-item description, path, metadata, and body excerpt. `docs/manuals/INDEX.md` is auto-maintained as a chronological table. The initial snapshot (15-04-2026) covers 2044 skills + 550 agents + 431 commands.
 - **`scripts/update.sh`** — user-friendly updater for existing installs. Reads `~/.claude/install-manifest.json`, shows a Current→After-update diff table, pulls latest repo + submodules, then runs the installer with settings.json merge. Supports `--yes`, `--profile=<name>`, `--no-git-pull`. Reminds the user to restart Claude Code at the end.
 - **`install.sh` auto-detects existing installs** — when `~/.claude/install-manifest.json` is present, `install.sh` shows an "UPDATE MODE — existing install detected" banner with the user's current profile + component counts, then proceeds with `git pull` + re-run (the existing path already handled this flow, but the banner makes it obvious).
 - **`+6` Claude-specific source repos** — anthropics/claude-plugins-official, anthropics/claude-code (bundled plugins), wshobson/agents (77 plugins), 0xfurai/claude-code-subagents, vijaythecoder/awesome-claude-agents, daymade/claude-code-skills.
