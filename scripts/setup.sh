@@ -253,22 +253,32 @@ fi
 # ============================================================
 header "4/6" "Install to ~/.claude/"
 
+INSTALL_LOG="${CCCTO_TMP:-/c/tmp}/ccct-install-$(date +%Y%m%d-%H%M%S).log"
+mkdir -p "$(dirname "$INSTALL_LOG")" 2>/dev/null || INSTALL_LOG="/tmp/ccct-install-$(date +%Y%m%d-%H%M%S).log"
+
 if [ "$NO_INSTALL" -eq 1 ]; then
     info "--no-install: skipped"
 elif [ "$DRY_RUN" -eq 1 ]; then
     step "DRY-RUN: bash scripts/installer.sh --dry-run"
-    bash "$SCRIPTS/installer.sh" --dry-run 2>&1 | tail -20 | sed 's/^/    /'
+    bash "$SCRIPTS/installer.sh" --dry-run > "$INSTALL_LOG" 2>&1
+    tail -20 "$INSTALL_LOG" | sed 's/^/    /'
+    info "Full log: $INSTALL_LOG"
 else
     info "Ready to install $TOTAL components to $CLAUDE_HOME"
     info "A backup of the current ~/.claude/ will be created first."
     echo ""
     if confirm "Proceed with install?" "Y"; then
         step "bash scripts/installer.sh"
-        if bash "$SCRIPTS/installer.sh" 2>&1 | tail -25 | sed 's/^/    /'; then
+        info "Log: $INSTALL_LOG"
+        bash "$SCRIPTS/installer.sh" > "$INSTALL_LOG" 2>&1
+        rc=$?
+        tail -30 "$INSTALL_LOG" | sed 's/^/    /'
+        if [ "$rc" -eq 0 ]; then
             ok "Install complete"
         else
-            err "Installer reported errors"
+            err "Installer FAILED (exit $rc). Full log: $INSTALL_LOG"
             info "Backup available at /c/tmp/claude-install-backup-*"
+            exit "$rc"
         fi
     else
         info "Install skipped by user"
@@ -285,10 +295,16 @@ if [ "$NO_SMOKE" -eq 1 ] || [ "$NO_INSTALL" -eq 1 ] || [ "$DRY_RUN" -eq 1 ]; the
     info "Skipping"
 else
     step "bash scripts/smoke_test.sh"
-    if bash "$SCRIPTS/smoke_test.sh" 2>&1 | tail -20 | sed 's/^/    /'; then
+    SMOKE_LOG="${CCCTO_TMP:-/c/tmp}/ccct-smoke-$(date +%Y%m%d-%H%M%S).log"
+    mkdir -p "$(dirname "$SMOKE_LOG")" 2>/dev/null || SMOKE_LOG="/tmp/ccct-smoke-$(date +%Y%m%d-%H%M%S).log"
+    bash "$SCRIPTS/smoke_test.sh" > "$SMOKE_LOG" 2>&1
+    rc=$?
+    tail -20 "$SMOKE_LOG" | sed 's/^/    /'
+    if [ "$rc" -eq 0 ]; then
         ok "Smoke test passed"
     else
         warn "Smoke test reported issues — see $DECISIONS/smoke-test-report.md"
+        info "Full log: $SMOKE_LOG"
     fi
 fi
 

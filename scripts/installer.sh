@@ -333,11 +333,22 @@ echo ""
 
 # --- [8/9] Verify ---
 echo -e "${CYAN}[8/9] Verify${NC}"
+VERIFY_FAILED=0
 if [ "$DRY_RUN" -eq 0 ]; then
     skills_c=$(find "$CLAUDE_HOME_BASH/skills" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')
     agents_c=$(find "$CLAUDE_HOME_BASH/agents" -maxdepth 1 -mindepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')
     cmds_c=$(find "$CLAUDE_HOME_BASH/commands" -maxdepth 1 -mindepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')
     echo "  Target has: skills=$skills_c  agents=$agents_c  commands=$cmds_c"
+
+    # Sanity check: fail loudly if committed count is wildly off
+    actual_total=$((skills_c + agents_c + cmds_c))
+    min_expected=$((TOTAL * 80 / 100))
+    if [ "$actual_total" -lt "$min_expected" ]; then
+        echo -e "  ${RED}FAIL${NC} Only $actual_total of $TOTAL components installed (<80%)."
+        echo -e "  ${RED}FAIL${NC} Something went wrong in the copy phase. Check stage dir:"
+        echo -e "         $STAGE_DIR_BASH"
+        VERIFY_FAILED=1
+    fi
 fi
 echo ""
 
@@ -383,6 +394,16 @@ print(f"  Selected: {total_selected}  Installed: {actual_total}")
 MFEOF
 fi
 echo ""
+
+if [ "$VERIFY_FAILED" -eq 1 ]; then
+    echo -e "${RED}==========================================${NC}"
+    echo -e "${BOLD}  Install FAILED verification${NC}"
+    echo -e "${RED}==========================================${NC}"
+    echo -e "  Backup:   $BACKUP_DIR_BASH"
+    echo -e "  Stage:    $STAGE_DIR_BASH"
+    echo ""
+    exit 2
+fi
 
 echo -e "${GREEN}==========================================${NC}"
 echo -e "${BOLD}  Install complete${NC}"
