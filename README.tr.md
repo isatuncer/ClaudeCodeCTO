@@ -543,6 +543,10 @@ Installer minimal bir `~/.claude/CLAUDE.md` üretir. Kendinizinkiyle değiştirm
 
 ## Güncelleme
 
+<p align="center">
+  <img src=".github/update-flow.svg" alt="Update akışı: tek komutla öncesinde 1840 skill ve ~91k session token'dan, sonrasında 432 skill ve ~21k token + 32 hook wired durumuna geçiş. Credentials, projects ve custom settings korunur." width="100%">
+</p>
+
 Önceden eski sürümü kurduysan, tek komutla installer'ı tekrar çalıştırman yeterli — mevcut kurulumunu otomatik algılar, farkı önizler ve güvenli şekilde günceller. **`.credentials.json`, `projects/`, özelleştirdiğin `settings.json` anahtarları ve kendi eklediğin dosyalar korunur.**
 
 ### Tek komutla güncelleme (önerilen)

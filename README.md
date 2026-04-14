@@ -543,6 +543,10 @@ The installer generates a minimal `~/.claude/CLAUDE.md`. To replace it with your
 
 ## Updating
 
+<p align="center">
+  <img src=".github/update-flow.svg" alt="Update flow: one command takes 1840 skills and ~91k session tokens before, to 432 skills and ~21k tokens after, with 32 hooks wired. Credentials, projects, and custom settings are preserved." width="100%">
+</p>
+
 Already installed an older version? Just re-run the one-command installer — it auto-detects your existing install, previews the diff, and updates safely. **Your `.credentials.json`, `projects/`, custom `settings.json` keys, and any files you added yourself are preserved.**
 
 ### One-command update (recommended)
