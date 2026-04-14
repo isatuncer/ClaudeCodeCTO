@@ -189,6 +189,22 @@ bash scripts/setup.sh
 
 ---
 
+## 제거
+
+```bash
+cd CloaudeCodeCTO
+bash scripts/uninstall.sh --dry-run   # 제거될 항목 미리 보기
+bash scripts/uninstall.sh             # 실제로 제거
+```
+
+제거 스크립트는 `decisions/install.tsv`를 읽고 CloaudeCodeCTO가 설치한 것**만** 삭제합니다.
+
+**보호됨 — 절대 건드리지 않음:** `~/.claude/.credentials.json` (Claude Code 로그인), `~/.claude/projects/` (프로젝트별 메모리), 직접 추가한 컴포넌트, 편집한 `CLAUDE.md`/`settings.json`.
+
+플래그: `--dry-run`, `--yes`/`-y`, `--keep-generated`.
+
+---
+
 ## 문제 해결
 
 ### 셋업이 "Environment Check"에서 실패

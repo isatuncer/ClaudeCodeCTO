@@ -189,6 +189,22 @@ bash scripts/setup.sh
 
 ---
 
+## アンインストール
+
+```bash
+cd CloaudeCodeCTO
+bash scripts/uninstall.sh --dry-run   # 削除される内容をプレビュー
+bash scripts/uninstall.sh             # 実際に削除
+```
+
+アンインストーラは `decisions/install.tsv` を読み取り、CloaudeCodeCTO がインストールしたもの**のみ**を削除します。
+
+**保護される — 決して触れない:** `~/.claude/.credentials.json` (Claude Code ログイン)、`~/.claude/projects/` (プロジェクト別メモリ)、あなたが自分で追加したコンポーネント、編集した `CLAUDE.md`/`settings.json`。
+
+フラグ: `--dry-run`、`--yes`/`-y`、`--keep-generated`。
+
+---
+
 ## トラブルシューティング
 
 ### セットアップが "Environment Check" で失敗

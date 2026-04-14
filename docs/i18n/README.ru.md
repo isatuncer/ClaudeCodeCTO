@@ -189,6 +189,22 @@ bash scripts/setup.sh
 
 ---
 
+## Удаление
+
+```bash
+cd CloaudeCodeCTO
+bash scripts/uninstall.sh --dry-run   # предпросмотр того, что будет удалено
+bash scripts/uninstall.sh             # фактически удалить
+```
+
+Скрипт удаления читает `decisions/install.tsv` и удаляет **только** то, что установил CloaudeCodeCTO.
+
+**Защищено — никогда не трогается:** `~/.claude/.credentials.json` (вход в Claude Code), `~/.claude/projects/` (память проектов), добавленные вами компоненты, отредактированные `CLAUDE.md`/`settings.json`.
+
+Флаги: `--dry-run`, `--yes`/`-y`, `--keep-generated`.
+
+---
+
 ## Устранение неполадок
 
 ### Setup падает на "Environment Check"

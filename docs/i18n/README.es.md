@@ -189,6 +189,22 @@ Plataformas soportadas: Windows (git-bash), macOS, Linux.
 
 ---
 
+## Desinstalación
+
+```bash
+cd CloaudeCodeCTO
+bash scripts/uninstall.sh --dry-run   # vista previa de lo que se eliminaría
+bash scripts/uninstall.sh             # eliminar realmente
+```
+
+El desinstalador lee `decisions/install.tsv` y elimina **solo** lo que CloaudeCodeCTO instaló.
+
+**Protegido — nunca se toca:** `~/.claude/.credentials.json` (tu login de Claude Code), `~/.claude/projects/` (memoria por proyecto), componentes que agregaste tú y `CLAUDE.md`/`settings.json` si los editaste.
+
+Flags: `--dry-run`, `--yes`/`-y`, `--keep-generated`.
+
+---
+
 ## Resolución de Problemas
 
 ### Setup falla en "Environment Check"

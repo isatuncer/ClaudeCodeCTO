@@ -189,6 +189,22 @@ bash scripts/setup.sh
 
 ---
 
+## 卸载
+
+```bash
+cd CloaudeCodeCTO
+bash scripts/uninstall.sh --dry-run   # 预览将被删除的内容
+bash scripts/uninstall.sh             # 实际删除
+```
+
+卸载器读取 `decisions/install.tsv`,**仅**删除 CloaudeCodeCTO 安装的内容。
+
+**受保护 — 永不触碰:** `~/.claude/.credentials.json` (Claude Code 登录)、`~/.claude/projects/` (按项目的记忆)、你自己添加的组件、你编辑过的 `CLAUDE.md`/`settings.json`。
+
+标志: `--dry-run`、`--yes`/`-y`、`--keep-generated`。
+
+---
+
 ## 故障排除
 
 ### 设置在 "Environment Check" 失败

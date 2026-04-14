@@ -509,6 +509,26 @@ bash scripts/setup.sh --check
 
 ---
 
+## Uninstall
+
+```bash
+cd CloaudeCodeCTO
+bash scripts/uninstall.sh --dry-run   # preview what would be removed
+bash scripts/uninstall.sh             # actually remove
+```
+
+The uninstaller reads `decisions/install.tsv` and removes **only** what CloaudeCodeCTO installed — every skill/agent/command listed, plus the orchestrator assets (`skills/project-lifecycle`, `commands/start-project.md`, `config/lifecycle.json`, `rules/agent-decision-tree.md`).
+
+**Protected — never touched:**
+- `~/.claude/.credentials.json` (your Claude Code login)
+- `~/.claude/projects/` (per-project memory)
+- Any skill/agent/command you added yourself
+- `CLAUDE.md` and `settings.json` if you edited them (only removed if they still carry the installer's signature)
+
+Flags: `--dry-run` (preview), `--yes`/`-y` (no prompt), `--keep-generated` (leave `CLAUDE.md`/`settings.json` alone).
+
+---
+
 ## Project Structure
 
 ```

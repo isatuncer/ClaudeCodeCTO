@@ -191,6 +191,22 @@ bash scripts/setup.sh
 
 ---
 
+## إلغاء التثبيت
+
+```bash
+cd CloaudeCodeCTO
+bash scripts/uninstall.sh --dry-run   # معاينة ما سيتم حذفه
+bash scripts/uninstall.sh             # الحذف الفعلي
+```
+
+يقرأ سكريبت إلغاء التثبيت `decisions/install.tsv` ويحذف **فقط** ما قام CloaudeCodeCTO بتثبيته.
+
+**محمي — لا يُمس أبدًا:** `~/.claude/.credentials.json` (تسجيل دخول Claude Code)، `~/.claude/projects/` (ذاكرة المشاريع)، المكونات التي أضفتها بنفسك، و `CLAUDE.md`/`settings.json` إذا قمت بتحريرها.
+
+الأعلام: `--dry-run`، `--yes`/`-y`، `--keep-generated`.
+
+---
+
 ## استكشاف الأخطاء
 
 ### الإعداد يفشل عند "Environment Check"

@@ -509,6 +509,26 @@ bash scripts/setup.sh --check
 
 ---
 
+## Kaldırma
+
+```bash
+cd CloaudeCodeCTO
+bash scripts/uninstall.sh --dry-run   # neyin silineceğini önizle
+bash scripts/uninstall.sh             # gerçekten sil
+```
+
+Kaldırıcı `decisions/install.tsv`'yi okur ve **yalnızca** CloaudeCodeCTO'nun kurduğu şeyleri siler — listelenen her skill/agent/command, artı orchestrator varlıkları (`skills/project-lifecycle`, `commands/start-project.md`, `config/lifecycle.json`, `rules/agent-decision-tree.md`).
+
+**Korunan — asla dokunulmaz:**
+- `~/.claude/.credentials.json` (Claude Code login bilgin)
+- `~/.claude/projects/` (proje başına hafıza)
+- Kendi eklediğin skill/agent/command'lar
+- Düzenlediğin `CLAUDE.md` ve `settings.json` (sadece installer imzası hâlâ varsa silinir)
+
+Flag'ler: `--dry-run` (önizleme), `--yes`/`-y` (soru sorma), `--keep-generated` (`CLAUDE.md`/`settings.json`'a dokunma).
+
+---
+
 ## Proje Yapısı
 
 ```
