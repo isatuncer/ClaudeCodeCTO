@@ -163,7 +163,10 @@ jobs:
         run: |
           count=$(grep -c "^\[submodule " .gitmodules)
           echo "Submodules declared: $count"
-          if [ "$count" -ne 14 ]; then
-            echo "::error::Expected 14 submodules, found $count"
+          # Sanity band: must be between 10 and 30. We started at 14 and
+          # the count grows/shrinks over time as repos are added/removed;
+          # pinning to an exact number forces a CI edit on every change.
+          if [ "$count" -lt 10 ] || [ "$count" -gt 30 ]; then
+            echo "::error::Submodule count $count outside sanity band [10, 30]"
             exit 1
           fi
