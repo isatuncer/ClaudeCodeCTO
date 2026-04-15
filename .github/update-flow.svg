@@ -91,11 +91,11 @@
   </g>
 
   <!-- ────────── BEFORE CARD ────────── -->
-  <g transform="translate(80, 220)">
-    <rect width="320" height="280" rx="18" fill="url(#cardBg)" stroke="url(#beforeBorder)" stroke-width="2"/>
+  <g transform="translate(40, 220)">
+    <rect width="300" height="280" rx="18" fill="url(#cardBg)" stroke="url(#beforeBorder)" stroke-width="2"/>
     <!-- Header strip -->
-    <rect width="320" height="48" rx="18" fill="#F97316" fill-opacity="0.12"/>
-    <rect y="30" width="320" height="18" fill="#F97316" fill-opacity="0.12"/>
+    <rect width="300" height="48" rx="18" fill="#F97316" fill-opacity="0.12"/>
+    <rect y="30" width="300" height="18" fill="#F97316" fill-opacity="0.12"/>
     <text x="28" y="31" font-family="-apple-system, 'Segoe UI', system-ui, sans-serif" font-size="13" font-weight="700" fill="#FDBA74" letter-spacing="2">BEFORE</text>
 
     <!-- Stats -->
@@ -114,28 +114,28 @@
   </g>
 
   <!-- ────────── ARROW 1 ────────── -->
-  <g transform="translate(410, 340)">
-    <path d="M 0 20 L 60 20" stroke="url(#accent)" stroke-width="3" stroke-linecap="round" filter="url(#glow)"/>
-    <path d="M 55 12 L 70 20 L 55 28 Z" fill="#EC4899" filter="url(#glow)"/>
+  <g transform="translate(350, 340)">
+    <path d="M 0 20 L 40 20" stroke="url(#accent)" stroke-width="3" stroke-linecap="round" filter="url(#glow)"/>
+    <path d="M 35 12 L 50 20 L 35 28 Z" fill="#EC4899" filter="url(#glow)"/>
   </g>
 
-  <!-- ────────── COMMAND CARD ────────── -->
-  <g transform="translate(490, 220)">
-    <rect width="300" height="280" rx="18" fill="url(#cardBg)" stroke="url(#cmdBorder)" stroke-width="2"/>
-    <rect width="300" height="48" rx="18" fill="#8B5CF6" fill-opacity="0.15"/>
-    <rect y="30" width="300" height="18" fill="#8B5CF6" fill-opacity="0.15"/>
+  <!-- ────────── COMMAND CARD (wider to fit full curl URL) ────────── -->
+  <g transform="translate(410, 220)">
+    <rect width="460" height="280" rx="18" fill="url(#cardBg)" stroke="url(#cmdBorder)" stroke-width="2"/>
+    <rect width="460" height="48" rx="18" fill="#8B5CF6" fill-opacity="0.15"/>
+    <rect y="30" width="460" height="18" fill="#8B5CF6" fill-opacity="0.15"/>
     <text x="28" y="31" font-family="-apple-system, 'Segoe UI', system-ui, sans-serif" font-size="13" font-weight="700" fill="#C4B5FD" letter-spacing="2">ONE COMMAND</text>
 
     <!-- Terminal -->
-    <rect x="18" y="70" width="264" height="140" rx="10" fill="#0B0F1C" stroke="#ffffff" stroke-opacity="0.08"/>
+    <rect x="18" y="70" width="424" height="140" rx="10" fill="#0B0F1C" stroke="#ffffff" stroke-opacity="0.08"/>
     <!-- Traffic lights -->
     <circle cx="36" cy="86" r="5" fill="#FF5F56"/>
     <circle cx="52" cy="86" r="5" fill="#FFBD2E"/>
     <circle cx="68" cy="86" r="5" fill="#27C93F"/>
-    <!-- Command text -->
+    <!-- Command text (full URL, no ellipsis) -->
     <g font-family="'JetBrains Mono', 'SF Mono', 'Consolas', monospace" font-size="11" fill="#E2E8F0">
-      <text x="28" y="118">$ curl -fsSL https://...</text>
-      <text x="28" y="136">  .../install.sh | bash</text>
+      <text x="28" y="114">$ curl -fsSL https://raw.githubusercontent.com/</text>
+      <text x="28" y="132">  isatuncer/ClaudeCodeCTO/main/install.sh | bash</text>
       <text x="28" y="160" fill="#FBBF24">▸ UPDATE MODE detected</text>
       <text x="28" y="178" fill="#94A3B8">  backing up ~/.claude/</text>
       <text x="28" y="196" fill="#10B981">✓ stage → commit → done</text>
@@ -150,16 +150,16 @@
   </g>
 
   <!-- ────────── ARROW 2 ────────── -->
-  <g transform="translate(800, 340)">
-    <path d="M 0 20 L 60 20" stroke="url(#accent)" stroke-width="3" stroke-linecap="round" filter="url(#glow)"/>
-    <path d="M 55 12 L 70 20 L 55 28 Z" fill="#EC4899" filter="url(#glow)"/>
+  <g transform="translate(880, 340)">
+    <path d="M 0 20 L 40 20" stroke="url(#accent)" stroke-width="3" stroke-linecap="round" filter="url(#glow)"/>
+    <path d="M 35 12 L 50 20 L 35 28 Z" fill="#EC4899" filter="url(#glow)"/>
   </g>
 
   <!-- ────────── AFTER CARD ────────── -->
-  <g transform="translate(880, 220)">
-    <rect width="320" height="280" rx="18" fill="url(#cardBg)" stroke="url(#afterBorder)" stroke-width="2"/>
-    <rect width="320" height="48" rx="18" fill="#10B981" fill-opacity="0.15"/>
-    <rect y="30" width="320" height="18" fill="#10B981" fill-opacity="0.15"/>
+  <g transform="translate(940, 220)">
+    <rect width="300" height="280" rx="18" fill="url(#cardBg)" stroke="url(#afterBorder)" stroke-width="2"/>
+    <rect width="300" height="48" rx="18" fill="#10B981" fill-opacity="0.15"/>
+    <rect y="30" width="300" height="18" fill="#10B981" fill-opacity="0.15"/>
     <text x="28" y="31" font-family="-apple-system, 'Segoe UI', system-ui, sans-serif" font-size="13" font-weight="700" fill="#6EE7B7" letter-spacing="2">AFTER</text>
 
     <!-- Stats -->
