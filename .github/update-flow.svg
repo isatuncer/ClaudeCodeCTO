@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640" role="img" aria-labelledby="title desc">
-  <title id="title">CloaudeCodeCTO — Update in one command</title>
-  <desc id="desc">Visual flow showing an existing CloaudeCodeCTO install being upgraded with a single curl-pipe command: before 1840 skills and 91 thousand session tokens, after 432 skills, 21 thousand tokens, and 32 hooks wired. User credentials, projects, and custom settings are preserved.</desc>
+  <title id="title">ClaudeCodeCTO — Update in one command</title>
+  <desc id="desc">Visual flow showing an existing ClaudeCodeCTO install being upgraded with a single curl-pipe command: before 1840 skills and 91 thousand session tokens, after 432 skills, 21 thousand tokens, and 32 hooks wired. User credentials, projects, and custom settings are preserved.</desc>
 
   <defs>
     <!-- Background gradient matches the main social preview (deep indigo) -->
@@ -74,7 +74,7 @@
   <g font-family="-apple-system, 'Segoe UI', system-ui, sans-serif">
     <!-- Small logo badge -->
     <rect x="60" y="48" width="160" height="32" rx="16" fill="#ffffff" fill-opacity="0.1" stroke="#ffffff" stroke-opacity="0.2"/>
-    <text x="140" y="69" font-size="15" font-weight="600" fill="#C4B5FD" text-anchor="middle" letter-spacing="1">CloaudeCodeCTO</text>
+    <text x="140" y="69" font-size="15" font-weight="600" fill="#C4B5FD" text-anchor="middle" letter-spacing="1">ClaudeCodeCTO</text>
 
     <!-- Main title -->
     <text x="640" y="132" font-size="48" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="-0.5">

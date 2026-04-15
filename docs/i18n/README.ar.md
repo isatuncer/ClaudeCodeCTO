@@ -1,6 +1,6 @@
 <div dir="rtl">
 
-# CloaudeCodeCTO
+# ClaudeCodeCTO
 
 > **اللغة:** [English](../../README.md) · [Türkçe](../../README.tr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Français](README.fr.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [中文](README.zh-CN.md) · [Русский](README.ru.md) · **العربية**
 
@@ -14,7 +14,7 @@
 
 ## ما هذا؟
 
-CloaudeCodeCTO هو **نظام تنظيم وتثبيت** يأخذ أفضل المهارات والوكلاء والأوامر من 17 مستودع Claude Code عام ويثبّتها في دليل `~/.claude/` الخاص بك كمجموعة أدوات موحدة.
+ClaudeCodeCTO هو **نظام تنظيم وتثبيت** يأخذ أفضل المهارات والوكلاء والأوامر من 17 مستودع Claude Code عام ويثبّتها في دليل `~/.claude/` الخاص بك كمجموعة أدوات موحدة.
 
 النتيجة: تثبيت Claude Code يمكن أن يرشدك **من الفكرة إلى الإنتاج** — عبر الاكتشاف، التخطيط، التصميم، البناء، الاختبار، التوثيق، الشحن، والصيانة — باستخدام وكلاء متخصصين في كل مرحلة.
 
@@ -34,7 +34,7 @@ curl -fsSL https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/instal
 wget -qO- https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh | bash
 ```
 
-الدليل الهدف الافتراضي هو `$HOME/CloaudeCodeCTO`. للاستبدال:
+الدليل الهدف الافتراضي هو `$HOME/ClaudeCodeCTO`. للاستبدال:
 
 ```bash
 CCCTO_DIR=/custom/path bash <(curl -fsSL https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh)
@@ -53,7 +53,7 @@ bash scripts/setup.sh
 
 | المتغير | الافتراضي | الوصف |
 |---|---|---|
-| `CCCTO_DIR` | `$HOME/CloaudeCodeCTO` | دليل الاستنساخ الهدف |
+| `CCCTO_DIR` | `$HOME/ClaudeCodeCTO` | دليل الاستنساخ الهدف |
 | `CCCTO_BRANCH` | `main` | الفرع المراد استنساخه |
 | `CCCTO_AUTO` | `0` | `1` = وضع غير تفاعلي |
 | `CCCTO_NO_INSTALL` | `0` | `1` = تخطي تثبيت `~/.claude/` |
@@ -194,12 +194,12 @@ bash scripts/setup.sh
 ## إلغاء التثبيت
 
 ```bash
-cd CloaudeCodeCTO
+cd ClaudeCodeCTO
 bash scripts/uninstall.sh --dry-run   # معاينة ما سيتم حذفه
 bash scripts/uninstall.sh             # الحذف الفعلي
 ```
 
-يقرأ سكريبت إلغاء التثبيت `decisions/install.tsv` ويحذف **فقط** ما قام CloaudeCodeCTO بتثبيته.
+يقرأ سكريبت إلغاء التثبيت `decisions/install.tsv` ويحذف **فقط** ما قام ClaudeCodeCTO بتثبيته.
 
 **محمي — لا يُمس أبدًا:** `~/.claude/.credentials.json` (تسجيل دخول Claude Code)، `~/.claude/projects/` (ذاكرة المشاريع)، المكونات التي أضفتها بنفسك، و `CLAUDE.md`/`settings.json` إذا قمت بتحريرها.
 

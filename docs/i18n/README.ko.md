@@ -1,4 +1,4 @@
-# CloaudeCodeCTO
+# ClaudeCodeCTO
 
 > **언어:** [English](../../README.md) · [Türkçe](../../README.tr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Français](README.fr.md) · [日本語](README.ja.md) · **한국어** · [中文](README.zh-CN.md) · [Русский](README.ru.md) · [العربية](README.ar.md)
 
@@ -12,7 +12,7 @@
 
 ## 이것은 무엇인가요?
 
-CloaudeCodeCTO는 17개 공개 Claude Code 저장소에서 최고의 스킬, 에이전트, 커맨드를 가져와 하나의 일관된 툴킷으로 `~/.claude/` 디렉토리에 설치하는 **큐레이션 및 설치 시스템**입니다.
+ClaudeCodeCTO는 17개 공개 Claude Code 저장소에서 최고의 스킬, 에이전트, 커맨드를 가져와 하나의 일관된 툴킷으로 `~/.claude/` 디렉토리에 설치하는 **큐레이션 및 설치 시스템**입니다.
 
 결과: 아이디어에서 프로덕션까지 안내해주는 Claude Code 설치 — Discovery, Planning, Design, Build, Test, 문서화, Shipping, 유지보수를 통해, 각 단계마다 목적에 맞는 에이전트를 사용합니다.
 
@@ -32,7 +32,7 @@ curl -fsSL https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/instal
 wget -qO- https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh | bash
 ```
 
-기본 타겟 디렉토리는 `$HOME/CloaudeCodeCTO`입니다. 변경하려면:
+기본 타겟 디렉토리는 `$HOME/ClaudeCodeCTO`입니다. 변경하려면:
 
 ```bash
 CCCTO_DIR=/custom/path bash <(curl -fsSL https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh)
@@ -51,7 +51,7 @@ bash scripts/setup.sh
 
 | 변수 | 기본값 | 설명 |
 |---|---|---|
-| `CCCTO_DIR` | `$HOME/CloaudeCodeCTO` | 타겟 클론 디렉토리 |
+| `CCCTO_DIR` | `$HOME/ClaudeCodeCTO` | 타겟 클론 디렉토리 |
 | `CCCTO_BRANCH` | `main` | 클론할 브랜치 |
 | `CCCTO_AUTO` | `0` | `1` = 비대화형 모드 |
 | `CCCTO_NO_INSTALL` | `0` | `1` = `~/.claude/` 설치 건너뛰기 |
@@ -192,12 +192,12 @@ bash scripts/setup.sh
 ## 제거
 
 ```bash
-cd CloaudeCodeCTO
+cd ClaudeCodeCTO
 bash scripts/uninstall.sh --dry-run   # 제거될 항목 미리 보기
 bash scripts/uninstall.sh             # 실제로 제거
 ```
 
-제거 스크립트는 `decisions/install.tsv`를 읽고 CloaudeCodeCTO가 설치한 것**만** 삭제합니다.
+제거 스크립트는 `decisions/install.tsv`를 읽고 ClaudeCodeCTO가 설치한 것**만** 삭제합니다.
 
 **보호됨 — 절대 건드리지 않음:** `~/.claude/.credentials.json` (Claude Code 로그인), `~/.claude/projects/` (프로젝트별 메모리), 직접 추가한 컴포넌트, 편집한 `CLAUDE.md`/`settings.json`.
 

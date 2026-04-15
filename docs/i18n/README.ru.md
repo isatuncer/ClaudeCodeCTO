@@ -1,4 +1,4 @@
-# CloaudeCodeCTO
+# ClaudeCodeCTO
 
 > **Язык:** [English](../../README.md) · [Türkçe](../../README.tr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Français](README.fr.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [中文](README.zh-CN.md) · **Русский** · [العربية](README.ar.md)
 
@@ -12,7 +12,7 @@
 
 ## Что это?
 
-CloaudeCodeCTO — это **система курирования и установки**, которая берёт лучшие навыки, агенты и команды из 17 публичных репозиториев Claude Code и устанавливает их в ваш каталог `~/.claude/` как единый согласованный инструментарий.
+ClaudeCodeCTO — это **система курирования и установки**, которая берёт лучшие навыки, агенты и команды из 17 публичных репозиториев Claude Code и устанавливает их в ваш каталог `~/.claude/` как единый согласованный инструментарий.
 
 Результат: установка Claude Code, которая может провести вас **от идеи до производства** — через Discovery, Planning, Design, Build, Test, документацию, Shipping и поддержку — используя специализированных агентов на каждом этапе.
 
@@ -32,7 +32,7 @@ curl -fsSL https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/instal
 wget -qO- https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh | bash
 ```
 
-Целевой каталог по умолчанию — `$HOME/CloaudeCodeCTO`. Чтобы переопределить:
+Целевой каталог по умолчанию — `$HOME/ClaudeCodeCTO`. Чтобы переопределить:
 
 ```bash
 CCCTO_DIR=/custom/path bash <(curl -fsSL https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh)
@@ -51,7 +51,7 @@ bash scripts/setup.sh
 
 | Переменная | По умолчанию | Описание |
 |---|---|---|
-| `CCCTO_DIR` | `$HOME/CloaudeCodeCTO` | Целевой каталог клонирования |
+| `CCCTO_DIR` | `$HOME/ClaudeCodeCTO` | Целевой каталог клонирования |
 | `CCCTO_BRANCH` | `main` | Ветка для клонирования |
 | `CCCTO_AUTO` | `0` | `1` = неинтерактивный режим |
 | `CCCTO_NO_INSTALL` | `0` | `1` = пропустить установку в `~/.claude/` |
@@ -192,12 +192,12 @@ bash scripts/setup.sh
 ## Удаление
 
 ```bash
-cd CloaudeCodeCTO
+cd ClaudeCodeCTO
 bash scripts/uninstall.sh --dry-run   # предпросмотр того, что будет удалено
 bash scripts/uninstall.sh             # фактически удалить
 ```
 
-Скрипт удаления читает `decisions/install.tsv` и удаляет **только** то, что установил CloaudeCodeCTO.
+Скрипт удаления читает `decisions/install.tsv` и удаляет **только** то, что установил ClaudeCodeCTO.
 
 **Защищено — никогда не трогается:** `~/.claude/.credentials.json` (вход в Claude Code), `~/.claude/projects/` (память проектов), добавленные вами компоненты, отредактированные `CLAUDE.md`/`settings.json`.
 

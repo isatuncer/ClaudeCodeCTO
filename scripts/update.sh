@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # ============================================================
-# CloaudeCodeCTO Updater
+# ClaudeCodeCTO Updater
 #
 # Safe, user-friendly update path for existing installs.
 #
 # What it does:
 #   1. Reads old manifest at ~/.claude/install-manifest.json (if any)
-#   2. Pulls latest CloaudeCodeCTO repo + updates submodules
+#   2. Pulls latest ClaudeCodeCTO repo + updates submodules
 #   3. Shows a diff: old components/profile vs new
 #   4. Confirms with user (unless --yes)
 #   5. Re-runs the installer — which merges settings.json, preserves
@@ -61,7 +61,7 @@ done
 
 echo ""
 echo -e "${CYAN}==========================================${NC}"
-echo -e "${BOLD}  CloaudeCodeCTO Update${NC}"
+echo -e "${BOLD}  ClaudeCodeCTO Update${NC}"
 echo -e "${CYAN}==========================================${NC}"
 echo ""
 
@@ -132,7 +132,7 @@ echo -e "  Current:  ${BOLD}$OLD_TOTAL${NC} components (skills=$OLD_SKILLS agent
 echo ""
 
 # -------- [2/5] Git pull + submodule update --------
-echo -e "${CYAN}[2/5] Pull latest CloaudeCodeCTO${NC}"
+echo -e "${CYAN}[2/5] Pull latest ClaudeCodeCTO${NC}"
 if [ "$NO_GIT_PULL" -eq 1 ]; then
     echo -e "  ${YELLOW}SKIP${NC} (--no-git-pull)"
 elif [ -d "$ROOT_BASH/.git" ]; then

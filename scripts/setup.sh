@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================
-# CloaudeCodeCTO Setup — Install-only flow
+# ClaudeCodeCTO Setup — Install-only flow
 #
 # This script installs the pre-curated component set into
 # ~/.claude/. The curation (analysis pipeline) happened on the
@@ -126,7 +126,7 @@ abort() {
 clear 2>/dev/null || true
 echo ""
 echo -e "${CYAN}╔══════════════════════════════════════════╗${NC}"
-echo -e "${CYAN}║${NC}  ${BOLD}CloaudeCodeCTO Setup${NC}                    ${CYAN}║${NC}"
+echo -e "${CYAN}║${NC}  ${BOLD}ClaudeCodeCTO Setup${NC}                    ${CYAN}║${NC}"
 echo -e "${CYAN}║${NC}  ${DIM}Install pre-curated Claude Code toolkit${NC}   ${CYAN}║${NC}"
 echo -e "${CYAN}╚══════════════════════════════════════════╝${NC}"
 echo ""

@@ -1,6 +1,6 @@
-# Contributing to CloaudeCodeCTO
+# Contributing to ClaudeCodeCTO
 
-Thanks for your interest in improving CloaudeCodeCTO! This project ships a pre-curated set of Claude Code skills, agents, and commands sourced from 15 upstream repositories. Contributions are welcome in several areas.
+Thanks for your interest in improving ClaudeCodeCTO! This project ships a pre-curated set of Claude Code skills, agents, and commands sourced from 15 upstream repositories. Contributions are welcome in several areas.
 
 ## Table of Contents
 
@@ -128,7 +128,7 @@ The install flow (5 scripts) is on GitHub. The analysis pipeline (8 Python scrip
 ## Repository Layout
 
 ```
-CloaudeCodeCTO/
+ClaudeCodeCTO/
 ├── install.sh                  ← curl-pipe compatible one-command installer
 ├── scripts/                    ← install infrastructure (GitHub-tracked)
 │   ├── setup.sh                main entry point (6 phases)
@@ -196,4 +196,4 @@ This project follows the [Contributor Covenant 2.1](CODE_OF_CONDUCT.md). By part
 - File an [issue](https://github.com/isatuncer/ClaudeCodeCTO/issues)
 - Contact [@isatuncer](https://github.com/isatuncer) directly
 
-Thank you for making CloaudeCodeCTO better! 🚀
+Thank you for making ClaudeCodeCTO better! 🚀

@@ -1,4 +1,4 @@
-# CloaudeCodeCTO
+# ClaudeCodeCTO
 
 > **语言:** [English](../../README.md) · [Türkçe](../../README.tr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Français](README.fr.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · **中文** · [Русский](README.ru.md) · [العربية](README.ar.md)
 
@@ -12,7 +12,7 @@
 
 ## 这是什么?
 
-CloaudeCodeCTO 是一个**策划和安装系统**,它从 17 个公共 Claude Code 代码库中获取最佳的技能、代理和命令,并将它们作为一个统一的工具包安装到您的 `~/.claude/` 目录中。
+ClaudeCodeCTO 是一个**策划和安装系统**,它从 17 个公共 Claude Code 代码库中获取最佳的技能、代理和命令,并将它们作为一个统一的工具包安装到您的 `~/.claude/` 目录中。
 
 结果:一个可以指导您**从想法到生产**的 Claude Code 安装 — 通过发现、规划、设计、构建、测试、文档、发布和维护 — 在每个阶段使用专门的代理。
 
@@ -32,7 +32,7 @@ curl -fsSL https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/instal
 wget -qO- https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh | bash
 ```
 
-默认目标目录是 `$HOME/CloaudeCodeCTO`。要覆盖:
+默认目标目录是 `$HOME/ClaudeCodeCTO`。要覆盖:
 
 ```bash
 CCCTO_DIR=/custom/path bash <(curl -fsSL https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh)
@@ -51,7 +51,7 @@ bash scripts/setup.sh
 
 | 变量 | 默认值 | 说明 |
 |---|---|---|
-| `CCCTO_DIR` | `$HOME/CloaudeCodeCTO` | 目标克隆目录 |
+| `CCCTO_DIR` | `$HOME/ClaudeCodeCTO` | 目标克隆目录 |
 | `CCCTO_BRANCH` | `main` | 要克隆的分支 |
 | `CCCTO_AUTO` | `0` | `1` = 非交互模式 |
 | `CCCTO_NO_INSTALL` | `0` | `1` = 跳过 `~/.claude/` 安装 |
@@ -192,12 +192,12 @@ bash scripts/setup.sh
 ## 卸载
 
 ```bash
-cd CloaudeCodeCTO
+cd ClaudeCodeCTO
 bash scripts/uninstall.sh --dry-run   # 预览将被删除的内容
 bash scripts/uninstall.sh             # 实际删除
 ```
 
-卸载器读取 `decisions/install.tsv`,**仅**删除 CloaudeCodeCTO 安装的内容。
+卸载器读取 `decisions/install.tsv`,**仅**删除 ClaudeCodeCTO 安装的内容。
 
 **受保护 — 永不触碰:** `~/.claude/.credentials.json` (Claude Code 登录)、`~/.claude/projects/` (按项目的记忆)、你自己添加的组件、你编辑过的 `CLAUDE.md`/`settings.json`。
 

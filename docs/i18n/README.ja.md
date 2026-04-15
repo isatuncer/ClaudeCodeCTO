@@ -1,4 +1,4 @@
-# CloaudeCodeCTO
+# ClaudeCodeCTO
 
 > **言語:** [English](../../README.md) · [Türkçe](../../README.tr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [Français](README.fr.md) · **日本語** · [한국어](README.ko.md) · [中文](README.zh-CN.md) · [Русский](README.ru.md) · [العربية](README.ar.md)
 
@@ -12,7 +12,7 @@
 
 ## これは何ですか?
 
-CloaudeCodeCTO は、17 の公開 Claude Code リポジトリから最高のスキル、エージェント、コマンドを取得し、統一されたツールキットとして `~/.claude/` ディレクトリにインストールする**キュレーションおよびインストールシステム**です。
+ClaudeCodeCTO は、17 の公開 Claude Code リポジトリから最高のスキル、エージェント、コマンドを取得し、統一されたツールキットとして `~/.claude/` ディレクトリにインストールする**キュレーションおよびインストールシステム**です。
 
 結果:アイデアから本番環境までガイドしてくれる Claude Code インストール — Discovery、Planning、Design、Build、Test、ドキュメント化、Shipping、メンテナンスを通じて、各フェーズで目的別のエージェントを使用します。
 
@@ -32,7 +32,7 @@ curl -fsSL https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/instal
 wget -qO- https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh | bash
 ```
 
-デフォルトのターゲットディレクトリは `$HOME/CloaudeCodeCTO` です。上書きするには:
+デフォルトのターゲットディレクトリは `$HOME/ClaudeCodeCTO` です。上書きするには:
 
 ```bash
 CCCTO_DIR=/custom/path bash <(curl -fsSL https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh)
@@ -51,7 +51,7 @@ bash scripts/setup.sh
 
 | 変数 | デフォルト | 説明 |
 |---|---|---|
-| `CCCTO_DIR` | `$HOME/CloaudeCodeCTO` | クローン先ディレクトリ |
+| `CCCTO_DIR` | `$HOME/ClaudeCodeCTO` | クローン先ディレクトリ |
 | `CCCTO_BRANCH` | `main` | クローンするブランチ |
 | `CCCTO_AUTO` | `0` | `1` = 非対話モード |
 | `CCCTO_NO_INSTALL` | `0` | `1` = `~/.claude/` インストールをスキップ |
@@ -192,12 +192,12 @@ bash scripts/setup.sh
 ## アンインストール
 
 ```bash
-cd CloaudeCodeCTO
+cd ClaudeCodeCTO
 bash scripts/uninstall.sh --dry-run   # 削除される内容をプレビュー
 bash scripts/uninstall.sh             # 実際に削除
 ```
 
-アンインストーラは `decisions/install.tsv` を読み取り、CloaudeCodeCTO がインストールしたもの**のみ**を削除します。
+アンインストーラは `decisions/install.tsv` を読み取り、ClaudeCodeCTO がインストールしたもの**のみ**を削除します。
 
 **保護される — 決して触れない:** `~/.claude/.credentials.json` (Claude Code ログイン)、`~/.claude/projects/` (プロジェクト別メモリ)、あなたが自分で追加したコンポーネント、編集した `CLAUDE.md`/`settings.json`。
 

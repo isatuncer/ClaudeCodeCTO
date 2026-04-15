@@ -1,8 +1,8 @@
 <p align="center">
-  <img src=".github/social-preview.svg" alt="CloaudeCodeCTO — Claude Code'u tam yaşam döngülü bir CTO'ya dönüştürün. 3,025 elle seçilmiş bileşen, 8 fazlı yaşam döngüsü, sıfır maliyet, tek komut." width="100%">
+  <img src=".github/social-preview.svg" alt="ClaudeCodeCTO — Claude Code'u tam yaşam döngülü bir CTO'ya dönüştürün. 3,025 elle seçilmiş bileşen, 8 fazlı yaşam döngüsü, sıfır maliyet, tek komut." width="100%">
 </p>
 
-<h1 align="center">CloaudeCodeCTO</h1>
+<h1 align="center">ClaudeCodeCTO</h1>
 
 <p align="center">
   <strong>Claude Code'u tam yaşam döngülü bir CTO'ya dönüştür</strong><br>
@@ -61,7 +61,7 @@
 
 ## Bu nedir?
 
-CloaudeCodeCTO, 17 açık kaynaklı Claude Code reposundan en iyi skill, agent ve command'ları alıp tek tutarlı bir araç seti olarak `~/.claude/` dizininize kuran bir **küratörlük ve kurulum sistemidir**.
+ClaudeCodeCTO, 17 açık kaynaklı Claude Code reposundan en iyi skill, agent ve command'ları alıp tek tutarlı bir araç seti olarak `~/.claude/` dizininize kuran bir **küratörlük ve kurulum sistemidir**.
 
 Sonuç: Claude Code kurulumu, sizi **fikirden canlıya** — keşif, planlama, tasarım, inşa, test, dokümantasyon, yayınlama ve bakım — boyunca her fazda amaca uygun ajanlar kullanarak yönlendirir.
 
@@ -78,7 +78,7 @@ Claude Code ekosistemi patladı. Artık düzinelerce repoda **binlerce** açık 
 - **Kalite çok değişken** — bazı skill'ler production-grade, bazıları yarım kalmış deneyler.
 - **Kurulum manuel** — her repoyu klonlamak, dosya seçmek ve hiçbir şeyin kırılmadığını ummak zorundasınız.
 
-CloaudeCodeCTO bunu şu şekilde çözer: maintainer'ın makinesinde (yerel olarak) çalışan 9 aşamalı bir küratörlük pipeline'ı ile:
+ClaudeCodeCTO bunu şu şekilde çözer: maintainer'ın makinesinde (yerel olarak) çalışan 9 aşamalı bir küratörlük pipeline'ı ile:
 
 1. 17 kaynak reposunun tamamını tarar
 2. Her bileşeni 100 puanlık bir rubrik ile puanlar
@@ -122,7 +122,7 @@ Veya `wget` ile:
 wget -qO- https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh | bash
 ```
 
-Varsayılan hedef dizin `$HOME/CloaudeCodeCTO`. Değiştirmek için:
+Varsayılan hedef dizin `$HOME/ClaudeCodeCTO`. Değiştirmek için:
 
 ```bash
 CCCTO_DIR=/ozel/yol bash <(curl -fsSL https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh)
@@ -143,7 +143,7 @@ Setup script sizi 6 faz boyunca yönlendirir (environment check → state incele
 
 | Değişken | Varsayılan | Açıklama |
 |---|---|---|
-| `CCCTO_DIR` | `$HOME/CloaudeCodeCTO` | Hedef klon dizini |
+| `CCCTO_DIR` | `$HOME/ClaudeCodeCTO` | Hedef klon dizini |
 | `CCCTO_BRANCH` | `main` | Klonlanacak branch |
 | `CCCTO_REPO_URL` | `https://github.com/isatuncer/ClaudeCodeCTO.git` | Git URL |
 | `CCCTO_AUTO` | `0` | `1` = interaktif olmayan mod |
@@ -161,7 +161,7 @@ CCCTO_AUTO=1 CCCTO_DIR=/opt/ccc bash <(curl -fsSL https://raw.githubusercontent.
 
 ## Profiller — Token Bütçesi Önemli
 
-Claude Code session başında kurulu her skill'in YAML frontmatter'ını yüklüyor. 1840 skill'i körlemesine kurmak siz daha bir prompt yazmadan **~91k token** yiyor. CloaudeCodeCTO üç küratörlü profil sunar — bütçeni sen seç:
+Claude Code session başında kurulu her skill'in YAML frontmatter'ını yüklüyor. 1840 skill'i körlemesine kurmak siz daha bir prompt yazmadan **~91k token** yiyor. ClaudeCodeCTO üç küratörlü profil sunar — bütçeni sen seç:
 
 | Profil | Bileşen | Tahmini session tokeni | Kapsam |
 |---|---|---|---|
@@ -194,7 +194,7 @@ Profil tanımları `decisions/profiles/*.tsv` altında yaşar ve kaynak listesi 
 
 ## Özellikler — Hazır Gelen Runtime
 
-CloaudeCodeCTO kurulumu `~/.claude/`'a sadece dosya atmıyor. Installer aynı zamanda **32 hook**'u 7 event türüne (`PreToolUse`, `PostToolUse`, `SessionStart`, `SessionEnd`, `PreCompact`, `Stop`, `PostToolUseFailure`) bağlıyor; her session bu altı yetenekle açılıyor:
+ClaudeCodeCTO kurulumu `~/.claude/`'a sadece dosya atmıyor. Installer aynı zamanda **32 hook**'u 7 event türüne (`PreToolUse`, `PostToolUse`, `SessionStart`, `SessionEnd`, `PreCompact`, `Stop`, `PostToolUseFailure`) bağlıyor; her session bu altı yetenekle açılıyor:
 
 | Özellik | Nasıl çalışır |
 |---|---|
@@ -581,7 +581,7 @@ curl -fsSL https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/instal
 ### Zaten klonlanmış repodan
 
 ```bash
-cd CloaudeCodeCTO
+cd ClaudeCodeCTO
 bash scripts/update.sh
 ```
 
@@ -648,12 +648,12 @@ Generator bileşenleri `(type, id)` ile dedupe eder ve canonical path'leri `docs
 ## Kaldırma
 
 ```bash
-cd CloaudeCodeCTO
+cd ClaudeCodeCTO
 bash scripts/uninstall.sh --dry-run   # neyin silineceğini önizle
 bash scripts/uninstall.sh             # gerçekten sil
 ```
 
-Kaldırıcı `decisions/install.tsv`'yi okur ve **yalnızca** CloaudeCodeCTO'nun kurduğu şeyleri siler — listelenen her skill/agent/command, artı orchestrator varlıkları (`skills/project-lifecycle`, `commands/start-project.md`, `config/lifecycle.json`, `rules/agent-decision-tree.md`).
+Kaldırıcı `decisions/install.tsv`'yi okur ve **yalnızca** ClaudeCodeCTO'nun kurduğu şeyleri siler — listelenen her skill/agent/command, artı orchestrator varlıkları (`skills/project-lifecycle`, `commands/start-project.md`, `config/lifecycle.json`, `rules/agent-decision-tree.md`).
 
 **Korunan — asla dokunulmaz:**
 - `~/.claude/.credentials.json` (Claude Code login bilgin)
@@ -668,7 +668,7 @@ Flag'ler: `--dry-run` (önizleme), `--yes`/`-y` (soru sorma), `--keep-generated`
 ## Proje Yapısı
 
 ```
-CloaudeCodeCTO/
+ClaudeCodeCTO/
 ├── README.md                   ← English
 ├── README.tr.md                ← buradasınız (Türkçe)
 ├── LICENSE                     MIT
@@ -732,7 +732,7 @@ winget install -e --id Python.Python.3 --scope user
 
 ### Windows'ta `python3` var ama "Python not found" diyor
 
-Windows'ta Microsoft Store'dan gelen fake bir `python3` launcher stub'ı var — komut olarak mevcut ama çalıştırılınca "Python was not found" diyor. CloaudeCodeCTO detection'ı `python3 --version` gerçekten "Python 3" döndürüyor mu diye doğrular, dönmüyorsa `python`'a düşer. İkisi de fail ederse Store alias'ı şuradan kapat: **Ayarlar → Uygulamalar → Gelişmiş uygulama ayarları → Uygulama yürütme takma adları**, sonra https://www.python.org/downloads/ adresinden Python kur.
+Windows'ta Microsoft Store'dan gelen fake bir `python3` launcher stub'ı var — komut olarak mevcut ama çalıştırılınca "Python was not found" diyor. ClaudeCodeCTO detection'ı `python3 --version` gerçekten "Python 3" döndürüyor mu diye doğrular, dönmüyorsa `python`'a düşer. İkisi de fail ederse Store alias'ı şuradan kapat: **Ayarlar → Uygulamalar → Gelişmiş uygulama ayarları → Uygulama yürütme takma adları**, sonra https://www.python.org/downloads/ adresinden Python kur.
 
 ### Submodule pull başarısız
 

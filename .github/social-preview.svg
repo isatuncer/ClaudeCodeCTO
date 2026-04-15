@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640">
-  <!-- CloaudeCodeCTO — Social Preview (1280x640) -->
+  <!-- ClaudeCodeCTO — Social Preview (1280x640) -->
   <!-- GitHub requires 1280x640 PNG for repo social preview.
        Convert: rsvg-convert -w 1280 -h 640 .github/social-preview.svg -o .github/social-preview.png
        Or: https://cloudconvert.com/svg-to-png
@@ -61,7 +61,7 @@
 
   <!-- Main title -->
   <text x="64" y="190" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="92" font-weight="900" letter-spacing="-2">
-    CloaudeCode<tspan fill="url(#accent)">CTO</tspan>
+    ClaudeCode<tspan fill="url(#accent)">CTO</tspan>
   </text>
 
   <!-- Tagline -->

@@ -1,5 +1,5 @@
 name: Feature Request
-description: Suggest a new feature, improvement, or change to CloaudeCodeCTO
+description: Suggest a new feature, improvement, or change to ClaudeCodeCTO
 title: "[Feature]: "
 labels: ["enhancement", "triage"]
 body:
@@ -15,7 +15,7 @@ body:
     attributes:
       label: Problem Statement
       description: What problem does this feature solve? Who benefits?
-      placeholder: "As a user who installs CloaudeCodeCTO on multiple machines, I need a way to..."
+      placeholder: "As a user who installs ClaudeCodeCTO on multiple machines, I need a way to..."
     validations:
       required: true
 
@@ -66,7 +66,7 @@ body:
       options:
         - Nice to have
         - Would noticeably improve my workflow
-        - Critical — I cannot use CloaudeCodeCTO effectively without it
+        - Critical — I cannot use ClaudeCodeCTO effectively without it
     validations:
       required: true
 

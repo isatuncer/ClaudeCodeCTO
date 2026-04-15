@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================
-# CloaudeCodeCTO Bootstrap — First-time setup wrapper
+# ClaudeCodeCTO Bootstrap — First-time setup wrapper
 #
 # For users who just cloned the repo. Handles:
 #   1. Environment check (tools, Claude Code presence)
@@ -53,7 +53,7 @@ confirm() {
 clear 2>/dev/null || true
 echo ""
 echo -e "${CYAN}╔══════════════════════════════════════════╗${NC}"
-echo -e "${CYAN}║${NC}  ${BOLD}CloaudeCodeCTO Bootstrap${NC}                ${CYAN}║${NC}"
+echo -e "${CYAN}║${NC}  ${BOLD}ClaudeCodeCTO Bootstrap${NC}                ${CYAN}║${NC}"
 echo -e "${CYAN}║${NC}  ${DIM}First-time setup wrapper${NC}               ${CYAN}║${NC}"
 echo -e "${CYAN}╚══════════════════════════════════════════╝${NC}"
 echo ""

@@ -8,7 +8,7 @@ contact_links:
     about: Report a security issue privately — do NOT open a public issue
   - name: Claude Code Documentation
     url: https://docs.claude.com/en/docs/claude-code
-    about: Official Claude Code docs (unrelated to CloaudeCodeCTO specifically)
+    about: Official Claude Code docs (unrelated to ClaudeCodeCTO specifically)
   - name: Upstream Submodule Issues
     url: https://github.com/isatuncer/ClaudeCodeCTO/blob/main/.gitmodules
     about: For issues in individual skills/agents, report to the upstream repo listed in .gitmodules

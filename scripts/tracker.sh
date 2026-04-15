@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================
-# CloaudeCodeCTO Tracker — Stage 6 OPTIMIZE
+# ClaudeCodeCTO Tracker — Stage 6 OPTIMIZE
 #
 # Parses ~/.claude/ runtime logs to extract usage metrics:
 # - Which skills/agents/commands were triggered
@@ -19,7 +19,7 @@ REPORT="$ROOT_BASH/decisions/usage-report.json"
 
 echo ""
 echo "=========================================="
-echo "  CloaudeCodeCTO Tracker"
+echo "  ClaudeCodeCTO Tracker"
 echo "=========================================="
 echo ""
 

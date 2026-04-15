@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================
-# CloaudeCodeCTO One-Command Installer
+# ClaudeCodeCTO One-Command Installer
 #
 # Clones the repo, initializes all submodules, installs Python
 # dependencies, and launches the setup pipeline — all in one
@@ -19,7 +19,7 @@
 #
 # Environment variables (all optional):
 #
-#   CCCTO_DIR         Target directory (default: $HOME/CloaudeCodeCTO)
+#   CCCTO_DIR         Target directory (default: $HOME/ClaudeCodeCTO)
 #   CCCTO_BRANCH      Branch to clone (default: main)
 #   CCCTO_REPO_URL    Git URL (default: https://github.com/isatuncer/ClaudeCodeCTO.git)
 #   CCCTO_AUTO        "1" for non-interactive mode (no prompts)
@@ -31,7 +31,7 @@
 set -uo pipefail
 
 # --- Defaults ---
-CCCTO_DIR="${CCCTO_DIR:-$HOME/CloaudeCodeCTO}"
+CCCTO_DIR="${CCCTO_DIR:-$HOME/ClaudeCodeCTO}"
 CCCTO_BRANCH="${CCCTO_BRANCH:-main}"
 CCCTO_REPO_URL="${CCCTO_REPO_URL:-https://github.com/isatuncer/ClaudeCodeCTO.git}"
 CCCTO_AUTO="${CCCTO_AUTO:-0}"
@@ -106,7 +106,7 @@ confirm() {
 clear 2>/dev/null || true
 echo ""
 echo -e "${CYAN}╔══════════════════════════════════════════════╗${NC}"
-echo -e "${CYAN}║${NC}  ${BOLD}CloaudeCodeCTO One-Command Installer${NC}       ${CYAN}║${NC}"
+echo -e "${CYAN}║${NC}  ${BOLD}ClaudeCodeCTO One-Command Installer${NC}       ${CYAN}║${NC}"
 echo -e "${CYAN}║${NC}  ${DIM}Clone + submodules + pipeline + install${NC}    ${CYAN}║${NC}"
 echo -e "${CYAN}╚══════════════════════════════════════════════╝${NC}"
 echo ""
@@ -117,7 +117,7 @@ info "Repo URL:         $CCCTO_REPO_URL"
 [ "$CCCTO_NO_INSTALL" = "1" ]  && echo -e "  ${YELLOW}[NO-INSTALL]${NC} ~/.claude/ install will be skipped"
 [ "$CCCTO_NO_SETUP" = "1" ]    && echo -e "  ${YELLOW}[NO-SETUP]${NC} setup.sh will not be launched"
 
-# Detect existing CloaudeCodeCTO install by looking for our manifest
+# Detect existing ClaudeCodeCTO install by looking for our manifest
 # in the user's ~/.claude/. If present, this is an UPDATE, not a fresh
 # install — show a banner so the user knows what's about to happen.
 EXISTING_MANIFEST="$HOME/.claude/install-manifest.json"

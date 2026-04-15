@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================
-# CloaudeCodeCTO Smoke Test (pure bash, no Python)
+# ClaudeCodeCTO Smoke Test (pure bash, no Python)
 #
 # Structural + syntactic verification of the installed system.
 # Does NOT test functional behavior (that requires a fresh
@@ -40,7 +40,7 @@ warn() { WARN=$((WARN + 1)); echo -e "  ${YELLOW}WARN${NC} $1"; }
 
 echo ""
 echo -e "${CYAN}==========================================${NC}"
-echo -e "${BOLD}  CloaudeCodeCTO Smoke Test${NC}"
+echo -e "${BOLD}  ClaudeCodeCTO Smoke Test${NC}"
 echo -e "${CYAN}==========================================${NC}"
 echo ""
 echo "  Target: $CLAUDE_HOME"

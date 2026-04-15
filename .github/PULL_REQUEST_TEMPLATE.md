@@ -1,5 +1,5 @@
 <!--
-Thanks for contributing to CloaudeCodeCTO!
+Thanks for contributing to ClaudeCodeCTO!
 
 Please fill in the sections below. Keep it concise and focused on the "why".
 -->

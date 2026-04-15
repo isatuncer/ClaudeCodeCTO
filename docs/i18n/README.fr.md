@@ -1,4 +1,4 @@
-# CloaudeCodeCTO
+# ClaudeCodeCTO
 
 > **Langue:** [English](../../README.md) · [Türkçe](../../README.tr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · **Français** · [日本語](README.ja.md) · [한국어](README.ko.md) · [中文](README.zh-CN.md) · [Русский](README.ru.md) · [العربية](README.ar.md)
 
@@ -12,7 +12,7 @@
 
 ## Qu'est-ce que c'est ?
 
-CloaudeCodeCTO est un **système de curation et d'installation** qui prend les meilleurs skills, agents et commandes de 17 dépôts Claude Code publics et les installe dans votre répertoire `~/.claude/` en tant que boîte à outils cohérente.
+ClaudeCodeCTO est un **système de curation et d'installation** qui prend les meilleurs skills, agents et commandes de 17 dépôts Claude Code publics et les installe dans votre répertoire `~/.claude/` en tant que boîte à outils cohérente.
 
 Le résultat : une installation Claude Code qui peut vous guider **de l'idée à la production** — à travers discovery, planning, design, build, test, documentation, shipping et maintenance — en utilisant des agents spécialisés à chaque phase.
 
@@ -32,7 +32,7 @@ Ou avec `wget` :
 wget -qO- https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh | bash
 ```
 
-Le répertoire cible par défaut est `$HOME/CloaudeCodeCTO`. Pour le remplacer :
+Le répertoire cible par défaut est `$HOME/ClaudeCodeCTO`. Pour le remplacer :
 
 ```bash
 CCCTO_DIR=/chemin/personnalise bash <(curl -fsSL https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh)
@@ -51,7 +51,7 @@ bash scripts/setup.sh
 
 | Variable | Défaut | Description |
 |---|---|---|
-| `CCCTO_DIR` | `$HOME/CloaudeCodeCTO` | Répertoire cible de clonage |
+| `CCCTO_DIR` | `$HOME/ClaudeCodeCTO` | Répertoire cible de clonage |
 | `CCCTO_BRANCH` | `main` | Branche à cloner |
 | `CCCTO_AUTO` | `0` | `1` = mode non interactif |
 | `CCCTO_NO_INSTALL` | `0` | `1` = ignorer l'installation dans `~/.claude/` |
@@ -192,12 +192,12 @@ Plateformes supportées : Windows (git-bash), macOS, Linux.
 ## Désinstallation
 
 ```bash
-cd CloaudeCodeCTO
+cd ClaudeCodeCTO
 bash scripts/uninstall.sh --dry-run   # prévisualiser ce qui serait supprimé
 bash scripts/uninstall.sh             # supprimer réellement
 ```
 
-Le désinstalleur lit `decisions/install.tsv` et supprime **uniquement** ce que CloaudeCodeCTO a installé.
+Le désinstalleur lit `decisions/install.tsv` et supprime **uniquement** ce que ClaudeCodeCTO a installé.
 
 **Protégé — jamais touché :** `~/.claude/.credentials.json` (votre login Claude Code), `~/.claude/projects/` (mémoire par projet), les composants que vous avez ajoutés et `CLAUDE.md`/`settings.json` si vous les avez modifiés.
 

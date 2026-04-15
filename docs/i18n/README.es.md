@@ -1,4 +1,4 @@
-# CloaudeCodeCTO
+# ClaudeCodeCTO
 
 > **Idioma:** [English](../../README.md) · [Türkçe](../../README.tr.md) · [Deutsch](README.de.md) · **Español** · [Français](README.fr.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [中文](README.zh-CN.md) · [Русский](README.ru.md) · [العربية](README.ar.md)
 
@@ -12,7 +12,7 @@
 
 ## ¿Qué es esto?
 
-CloaudeCodeCTO es un **sistema de curación e instalación** que toma los mejores skills, agents y commands de 17 repositorios públicos de Claude Code y los instala en tu directorio `~/.claude/` como un kit de herramientas unificado.
+ClaudeCodeCTO es un **sistema de curación e instalación** que toma los mejores skills, agents y commands de 17 repositorios públicos de Claude Code y los instala en tu directorio `~/.claude/` como un kit de herramientas unificado.
 
 El resultado: una instalación de Claude Code que puede guiarte **de la idea a producción** — a través de discovery, planning, design, build, test, documentación, shipping y mantenimiento — usando agents especializados en cada fase.
 
@@ -32,7 +32,7 @@ O con `wget`:
 wget -qO- https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh | bash
 ```
 
-El directorio destino por defecto es `$HOME/CloaudeCodeCTO`. Para cambiar:
+El directorio destino por defecto es `$HOME/ClaudeCodeCTO`. Para cambiar:
 
 ```bash
 CCCTO_DIR=/ruta/personalizada bash <(curl -fsSL https://raw.githubusercontent.com/isatuncer/ClaudeCodeCTO/main/install.sh)
@@ -51,7 +51,7 @@ bash scripts/setup.sh
 
 | Variable | Por defecto | Descripción |
 |---|---|---|
-| `CCCTO_DIR` | `$HOME/CloaudeCodeCTO` | Directorio de clonación destino |
+| `CCCTO_DIR` | `$HOME/ClaudeCodeCTO` | Directorio de clonación destino |
 | `CCCTO_BRANCH` | `main` | Rama a clonar |
 | `CCCTO_AUTO` | `0` | `1` = modo no interactivo |
 | `CCCTO_NO_INSTALL` | `0` | `1` = omitir instalación en `~/.claude/` |
@@ -192,12 +192,12 @@ Plataformas soportadas: Windows (git-bash), macOS, Linux.
 ## Desinstalación
 
 ```bash
-cd CloaudeCodeCTO
+cd ClaudeCodeCTO
 bash scripts/uninstall.sh --dry-run   # vista previa de lo que se eliminaría
 bash scripts/uninstall.sh             # eliminar realmente
 ```
 
-El desinstalador lee `decisions/install.tsv` y elimina **solo** lo que CloaudeCodeCTO instaló.
+El desinstalador lee `decisions/install.tsv` y elimina **solo** lo que ClaudeCodeCTO instaló.
 
 **Protegido — nunca se toca:** `~/.claude/.credentials.json` (tu login de Claude Code), `~/.claude/projects/` (memoria por proyecto), componentes que agregaste tú y `CLAUDE.md`/`settings.json` si los editaste.
 

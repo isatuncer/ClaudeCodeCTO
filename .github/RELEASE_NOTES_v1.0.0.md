@@ -1,10 +1,10 @@
-# CloaudeCodeCTO v1.0.0
+# ClaudeCodeCTO v1.0.0
 
 > Turn Claude Code into a full-lifecycle CTO with **one command**.
 
 ## 🎯 What's in this release
 
-CloaudeCodeCTO curates the best skills, agents, and commands from 14 public Claude Code repositories into a single, high-quality installation — **zero external cost**, **fully automated**, and **resumable**.
+ClaudeCodeCTO curates the best skills, agents, and commands from 14 public Claude Code repositories into a single, high-quality installation — **zero external cost**, **fully automated**, and **resumable**.
 
 ### Headline Numbers
 

@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-CloaudeCodeCTO follows [Semantic Versioning](https://semver.org/). Only the latest minor release receives security fixes.
+ClaudeCodeCTO follows [Semantic Versioning](https://semver.org/). Only the latest minor release receives security fixes.
 
 | Version | Supported |
 |---|---|
@@ -74,7 +74,7 @@ A good report contains:
 
 ## Known Risks and Mitigations
 
-CloaudeCodeCTO has several built-in safety properties:
+ClaudeCodeCTO has several built-in safety properties:
 
 - **No destructive git operations** — scripts never force-push, amend published commits, or bypass hooks
 - **Atomic install with backup** — automatic backup to `/c/tmp/claude-install-backup-<timestamp>/` before any `~/.claude/` changes
@@ -120,4 +120,4 @@ We practice **coordinated disclosure**:
 
 We maintain a `SECURITY_ACKNOWLEDGMENTS.md` file listing researchers who have contributed security fixes. If you'd like credit, mention it in your advisory.
 
-Thank you for helping keep CloaudeCodeCTO and its users safe.
+Thank you for helping keep ClaudeCodeCTO and its users safe.

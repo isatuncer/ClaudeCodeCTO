@@ -1,5 +1,5 @@
 # ============================================================
-# CloaudeCodeCTO .gitignore
+# ClaudeCodeCTO .gitignore
 # ============================================================
 
 # OS
@@ -41,7 +41,7 @@ __pycache__/
 *.dylib
 
 # ============================================================
-# CloaudeCodeCTO pipeline artifacts
+# ClaudeCodeCTO pipeline artifacts
 # These are regenerable via `bash scripts/setup.sh`
 # ============================================================
 

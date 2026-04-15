@@ -1,4 +1,4 @@
-# CloaudeCodeCTO — Resume Point
+# ClaudeCodeCTO — Resume Point
 > Last updated: 2026-04-12
 
 ## Project Goal
@@ -60,7 +60,7 @@ Mermaid diagrams: [`docs/diagrams/`](docs/diagrams/)
 ### First Time (from clone)
 ```bash
 git clone <this repo>
-cd CloaudeCodeCTO
+cd ClaudeCodeCTO
 bash scripts/bootstrap.sh
 ```
 
