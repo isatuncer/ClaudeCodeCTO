@@ -1,15 +1,36 @@
-# CloaudeCodeCTO
+<p align="center">
+  <img src=".github/social-preview.svg" alt="CloaudeCodeCTO — Turn Claude Code into a full-lifecycle CTO. 3,025 hand-curated components, 8-phase lifecycle, zero cost, one command." width="100%">
+</p>
 
-> **Language:** **English** · [Türkçe](README.tr.md) · [Deutsch](docs/i18n/README.de.md) · [Español](docs/i18n/README.es.md) · [Français](docs/i18n/README.fr.md) · [日本語](docs/i18n/README.ja.md) · [한국어](docs/i18n/README.ko.md) · [中文](docs/i18n/README.zh-CN.md) · [Русский](docs/i18n/README.ru.md) · [العربية](docs/i18n/README.ar.md)
+<h1 align="center">CloaudeCodeCTO</h1>
 
-> Turn Claude Code into a full-lifecycle CTO: 3,025 hand-curated skills, agents, and commands from 17 top open-source repositories, installed into `~/.claude/` with zero external cost.
+<p align="center">
+  <strong>Turn Claude Code into a full-lifecycle CTO</strong><br>
+  3,025 hand-curated skills, agents, and commands from 17 top open-source repositories, installed into <code>~/.claude/</code> with zero external cost.
+</p>
 
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-8A2BE2)](https://docs.claude.com/en/docs/claude-code)
-[![Components](https://img.shields.io/badge/Components-3025-green.svg)](decisions/install.tsv)
-[![Skills](https://img.shields.io/badge/Skills-2044-blue.svg)](decisions/install.tsv)
-[![Agents](https://img.shields.io/badge/Agents-550-purple.svg)](decisions/install.tsv)
-[![Commands](https://img.shields.io/badge/Commands-431-orange.svg)](decisions/install.tsv)
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License"></a>
+  <a href="https://docs.claude.com/en/docs/claude-code"><img src="https://img.shields.io/badge/Claude%20Code-Compatible-8A2BE2" alt="Claude Code"></a>
+  <a href="decisions/install.tsv"><img src="https://img.shields.io/badge/Components-3025-green.svg" alt="Components"></a>
+  <a href="decisions/install.tsv"><img src="https://img.shields.io/badge/Skills-2044-blue.svg" alt="Skills"></a>
+  <a href="decisions/install.tsv"><img src="https://img.shields.io/badge/Agents-550-purple.svg" alt="Agents"></a>
+  <a href="decisions/install.tsv"><img src="https://img.shields.io/badge/Commands-431-orange.svg" alt="Commands"></a>
+</p>
+
+<p align="center">
+  <strong>Language:</strong>
+  <strong>English</strong> ·
+  <a href="README.tr.md">Türkçe</a> ·
+  <a href="docs/i18n/README.de.md">Deutsch</a> ·
+  <a href="docs/i18n/README.es.md">Español</a> ·
+  <a href="docs/i18n/README.fr.md">Français</a> ·
+  <a href="docs/i18n/README.ja.md">日本語</a> ·
+  <a href="docs/i18n/README.ko.md">한국어</a> ·
+  <a href="docs/i18n/README.zh-CN.md">中文</a> ·
+  <a href="docs/i18n/README.ru.md">Русский</a> ·
+  <a href="docs/i18n/README.ar.md">العربية</a>
+</p>
 
 ---
 
